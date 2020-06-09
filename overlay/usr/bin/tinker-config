@@ -48,6 +48,125 @@ do_update() {
 }
 
 #
+# do_boot_menu functions
+#
+
+do_boot_behaviour() {
+  if [ "$INTERACTIVE" = True ]; then
+  FUN=$(whiptail --menu "Chose boot option" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
+    "B1 Console" "Text console, requiring user to login" \
+    "B2 Console Autologin" "Text console, automatically logged in as 'linaro' user" \
+    "B3 Desktop" "Desktop GUI, requiring user to login" \
+    "B4 Desktop Autologin" "Desktop GUI, automatically logged in as 'linaro' user" \
+    3>&1 1>&2 2>&3)
+  else
+    FUN=$1
+    true
+  fi
+
+  if [ $? -eq 0 ]; then
+    case "$FUN" in
+      B1*)
+        systemctl set-default multi-user.target
+        rm -f /etc/systemd/system/getty@tty1.service.d/override.conf
+        ;;
+      B2*)
+        systemctl set-default multi-user.target
+        mkdir -p /etc/systemd/system/getty@tty1.service.d/
+        cat > /etc/systemd/system/getty@tty1.service.d/override.conf << 'EOF'
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin linaro --noclear %I $TERM
+EOF
+        ;;
+      B3*)
+        if [ -e /etc/init.d/lightdm ]; then
+          systemctl set-default graphical.target
+          rm -f /etc/systemd/system/getty@tty1.service.d/override.conf
+          sed /etc/lightdm/lightdm.conf -i -e "s/^autologin-user=.*/#autologin-user=/"
+        else
+          whiptail --msgbox "Do sudo apt-get install lightdm to allow configuration of boot to desktop" 20 60 2
+          return 1
+        fi
+        ;;
+      B4*)
+        if [ -e /etc/init.d/lightdm ]; then
+          systemctl set-default graphical.target
+          mkdir -p /etc/systemd/system/getty@tty1.service.d/
+          cat > /etc/systemd/system/getty@tty1.service.d/override.conf << 'EOF'
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin linaro --noclear %I $TERM
+EOF
+          sed /etc/lightdm/lightdm.conf -i -e "s/^\(#\|\)autologin-user=.*/autologin-user=linaro/"
+        else
+          whiptail --msgbox "Do sudo apt-get install lightdm to allow configuration of boot to desktop" 20 60 2
+          return 1
+        fi
+        ;;
+      *) whiptail --msgbox "Programmer error, unrecognised boot option" 20 60 2
+        return 1 ;;
+    esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
+    ASK_TO_REBOOT=1
+  fi
+}
+
+get_boot_wait() {
+  if test -e /etc/systemd/system/dhcpcd.service.d/wait.conf; then
+    echo 0
+  else
+    echo 1
+  fi
+}
+
+get_init_sys() {
+  if command -v systemctl > /dev/null && systemctl | grep -q '\-\.mount'; then
+    SYSTEMD=1
+  elif [ -f /etc/init.d/cron ] && [ ! -h /etc/init.d/cron ]; then
+    SYSTEMD=0
+  else
+    echo "Unrecognised init system"
+    return 1
+  fi
+}
+
+do_boot_wait() {
+  get_init_sys
+  if [ $SYSTEMD -eq 0 ]; then
+    whiptail --msgbox "This option can only be selected when using systemd" 20 60 2
+    return 1
+  fi
+
+  DEFAULT=--defaultno
+  if [ $(get_boot_wait) -eq 0 ]; then
+    DEFAULT=
+  fi
+  if [ "$INTERACTIVE" = True ]; then
+    whiptail --yesno "Would you like boot to wait until a network connection is established?" $DEFAULT 20 60 2
+    RET=$?
+  else
+    RET=$1
+  fi
+  if [ $RET -eq 0 ]; then
+    mkdir -p /etc/systemd/system/dhcpcd.service.d/
+    cat > /etc/systemd/system/dhcpcd.service.d/wait.conf << EOF
+[Service]
+ExecStart=
+ExecStart=/sbin/dhcpcd -q -w
+EOF
+    STATUS=enabled
+  elif [ $RET -eq 1 ]; then
+    rm -f /etc/systemd/system/dhcpcd.service.d/wait.conf
+    STATUS=disabled
+  else
+    return $RET
+  fi
+  if [ "$INTERACTIVE" = True ]; then
+    whiptail --msgbox "Waiting for network on boot is $STATUS" 20 60 1
+  fi
+}
+
+#
 # do_internationalisation_menu functions
 #
 
@@ -151,6 +270,24 @@ Asus Tinker Board Software Configuration Tool v$TOOL_VERSION \n\nThis tool provi
   " 20 70 1
 }
 
+do_boot_menu() {
+  FUN=$(whiptail --title "Asus Tinkerboard Software Configuration Tool (tinker-config)" --menu "Boot Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
+    "B1 Desktop / CLI" "Choose whether to boot into a desktop environment or the command line" \
+    "B2 Wait for Network at Boot" "Choose whether to wait for network connection during boot" \
+    3>&1 1>&2 2>&3)
+
+  RET=$?
+  if [ $RET -eq 1 ]; then
+    return 0
+  elif [ $RET -eq 0 ]; then
+    case "$FUN" in
+      B1\ *) do_boot_behaviour ;;
+      B2\ *) do_boot_wait ;;
+      *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
+    esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
+  fi
+}
+
 #
 # Main function
 #
@@ -179,9 +316,10 @@ Currently some features may not be available as they were not originally designe
     FUN=$(whiptail --title "$TOOL_NAME" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Finish --ok-button Select \
       "1 Hostname" "Set the visible name for this Tinker Board on a network" \
       "2 Change User Password" "Change password for the default user ($USER_NAME)" \
-      "3 Internationalisation Options" "Set up language and regional settings to match your location" \
-      "4 Camera" "Camera setting" \
-      "5 About tinker-config" "Information about this configuration tool" \
+      "3 Boot Options" "Configure options for start-up" \
+      "4 Internationalisation Options" "Set up language and regional settings to match your location" \
+      "5 Camera" "Camera setting" \
+      "6 About tinker-config" "Information about this configuration tool" \
       3>&1 1>&2 2>&3)
     RET=$?
     if [ $RET -eq 1 ]; then
@@ -190,9 +328,10 @@ Currently some features may not be available as they were not originally designe
       case "$FUN" in
         1\ *) do_change_hostname ;;
         2\ *) do_change_pass ;;
-        3\ *) do_internationalisation_menu ;;
-        4\ *) do_camera ;;
-        5\ *) do_about ;;
+        3\ *) do_boot_menu ;;
+        4\ *) do_internationalisation_menu ;;
+        5\ *) do_camera ;;
+        6\ *) do_about ;;
         *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
       esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
     else
