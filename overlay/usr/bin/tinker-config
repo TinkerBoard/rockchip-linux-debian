@@ -280,7 +280,7 @@ do_internationalisation_menu() {
 }
 
 get_camera() {
-  if grep -q -E "overlay=camera-ov5647-overlay" $HWCONFIG; then
+  if grep -q -E "camera-ov5647-overlay" $HWCONFIG; then
     echo 1
   else
     echo 0
@@ -299,17 +299,26 @@ do_camera() {
   if [ $? -eq 0 ]; then
     case "$CAMERA_OUT" in
       0)
-         sed -i $HWCONFIG -e "/^overlay=camera.*$/d"
-         ;;
+        if grep -q "camera-ov5647-overlay" $HWCONFIG ; then
+          sed -i $HWCONFIG -e "s/ camera-ov5647-overlay //"
+          sed -i $HWCONFIG -e "s/ camera-ov5647-overlay//"
+          sed -i $HWCONFIG -e "s/camera-ov5647-overlay //"
+          sed -i $HWCONFIG -e "s/camera-ov5647-overlay//"
+        fi
+        ;;
       1)
-         sed -i $HWCONFIG -e "s/^overlay=camera.*$/overlay=camera-ov5647-overlay/g"
-         if ! grep -q -E "overlay=camera-ov5647-overlay" $HWCONFIG; then
-          printf "overlay=camera-ov5647-overlay\n" >> $HWCONFIG
-         fi
-         ;;
+        if ! grep -q "camera-ov5647-overlay" $HWCONFIG ; then
+          OUTPUT=$(tail -n1 $HWCONFIG)
+          if [ "$OUTPUT" = "overlay=" ]; then
+            sed -i $HWCONFIG -e "\$s/\$/camera-ov5647-overlay/"
+          else
+            sed -i $HWCONFIG -e "\$s/\$/ camera-ov5647-overlay/"
+          fi
+        fi
+        ;;
       *)
-         whiptail --msgbox "Programmer error: unrecognized option" 20 60 1
-         ;;
+        whiptail --msgbox "Programmer error: unrecognized option" 20 60 1
+        ;;
     esac
     ASK_TO_REBOOT=1
   fi
