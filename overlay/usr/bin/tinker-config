@@ -410,6 +410,120 @@ do_serial() {
   fi
 }
 
+do_spi() {
+  if [ "$INTERACTIVE" = True ]; then
+    INTF=spi
+    oIFS="$IFS"
+    IFS="#"
+    if grep -q "#intf:$INTF" $HWCONFIG ; then
+      sed $HWCONFIG -i -e "s/#intf:$INTF/intf:$INTF/g"
+    fi
+    if grep -q "#intf:uart4" $HWCONFIG ; then
+      sed $HWCONFIG -i -e "s/#intf:uart4/intf:uart4/g"
+    fi
+    value=$(cat $HWCONFIG | grep ^intf:$INTF | sed "s/^intf:\($INTF[0-9]\)=\(\(on\|off\)\)/\1#Enable\/Disable \1 #\2/g" | tr '\n' '#')
+    ENABLE=$(whiptail --separate-output \
+--checklist "You can select and deselect items using the SPACE key.\n\
+Switch between <Ok> and <Cancel> by pressing the TAB key.\nLegend: [*] Enable  [ ] Disable" 20 60 10 \
+                  $value  3>&1 1>&2 2>&3)
+    exitstatus=$?
+    IFS=$oIFS
+
+    ALLOPT=$( cat $HWCONFIG | grep ^intf:$INTF | sed "s/^intf:\($INTF[0-9]\)=.*/\1 /g" )
+    DISABLE=$( echo  $ENABLE $ALLOPT | tr ' ' '\n' | sort | uniq -u )
+
+    if [ $exitstatus = 0 ]; then
+        for ch in $ENABLE; do
+            sed -i $HWCONFIG -e "s/^intf:${ch}=.*$/intf:${ch}=on/g"
+            if [ $ch = "spi0" ]; then
+              sed -i $HWCONFIG -e "s/^intf:uart4=.*$/intf:uart4=off/g"
+            fi
+        done
+        for ch in $DISABLE; do
+            sed -i $HWCONFIG -e "s/^intf:${ch}=.*$/intf:${ch}=off/g"
+        done
+        whiptail --msgbox "These changes will take effect on the next reboot" 20 60 1
+        ASK_TO_REBOOT=1
+    else
+        return 0
+    fi
+  fi
+}
+
+do_i2c() {
+  if [ "$INTERACTIVE" = True ]; then
+    INTF=i2c
+    oIFS="$IFS"
+    IFS="#"
+    if grep -q "#intf:$INTF" $HWCONFIG ; then
+      sed $HWCONFIG -i -e "s/#intf:$INTF/intf:$INTF/g"
+    fi
+    value=$(cat $HWCONFIG | grep ^intf:$INTF | sed "s/^intf:\($INTF[0-9]\)=\(\(on\|off\)\)/\1#Enable\/Disable \1 #\2/g" | tr '\n' '#')
+    ENABLE=$(whiptail --separate-output \
+--checklist "You can select and deselect items using the SPACE key.\n\
+Switch between <Ok> and <Cancel> by pressing the TAB key.\nLegend: [*] Enable  [ ] Disable" 20 60 10 \
+                  $value  3>&1 1>&2 2>&3)
+    exitstatus=$?
+    IFS=$oIFS
+
+    ALLOPT=$( cat $HWCONFIG | grep ^intf:$INTF | sed "s/^intf:\($INTF[0-9]\)=.*/\1 /g" )
+    DISABLE=$( echo  $ENABLE $ALLOPT | tr ' ' '\n' | sort | uniq -u )
+
+    if [ $exitstatus = 0 ]; then
+        for ch in $ENABLE; do
+            sed -i $HWCONFIG -e "s/^intf:${ch}=.*$/intf:${ch}=on/g"
+        done
+        for ch in $DISABLE; do
+            sed -i $HWCONFIG -e "s/^intf:${ch}=.*$/intf:${ch}=off/g"
+        done
+        whiptail --msgbox "These changes will take effect on the next reboot" 20 60 1
+        ASK_TO_REBOOT=1
+    else
+        return 0
+    fi
+  fi
+}
+
+do_uart(){
+  if [ "$INTERACTIVE" = True ]; then
+    INTF=uart
+    oIFS="$IFS"
+    IFS="#"
+    if grep -q "#intf:$INTF" $HWCONFIG ; then
+      sed $HWCONFIG -i -e "s/#intf:$INTF/intf:$INTF/g"
+    fi
+    if grep -q "#intf:spi1" $HWCONFIG ; then
+      sed $HWCONFIG -i -e "s/#intf:spi1/intf:spi1/g"
+    fi
+    value=$(cat $HWCONFIG | grep ^intf:$INTF | sed "s/^intf:\($INTF[0-9]\)=\(\(on\|off\)\)/\1#Enable\/Disable \1 #\2/g" | tr '\n' '#')
+    ENABLE=$(whiptail --separate-output \
+--checklist "You can select and deselect items using the SPACE key.\n\
+Switch between <Ok> and <Cancel> by pressing the TAB key.\nLegend: [*] Enable  [ ] Disable" 20 60 10 \
+                  $value  3>&1 1>&2 2>&3)
+    exitstatus=$?
+    IFS=$oIFS
+
+    ALLOPT=$( cat $HWCONFIG | grep ^intf:$INTF | sed "s/^intf:\($INTF[0-9]\)=.*/\1 /g" )
+    DISABLE=$( echo  $ENABLE $ALLOPT | tr ' ' '\n' | sort | uniq -u )
+
+    if [ $exitstatus = 0 ]; then
+        for ch in $ENABLE; do
+            sed -i $HWCONFIG -e "s/^intf:${ch}=.*$/intf:${ch}=on/g"
+            if [ $ch = "uart4" ]; then
+              sed -i $HWCONFIG -e "s/^intf:spi1=.*$/intf:spi1=off/g"
+            fi
+        done
+        for ch in $DISABLE; do
+            sed -i $HWCONFIG -e "s/^intf:${ch}=.*$/intf:${ch}=off/g"
+        done
+        whiptail --msgbox "These changes will take effect on the next reboot" 20 60 1
+        ASK_TO_REBOOT=1
+    else
+        return 0
+    fi
+  fi
+}
+
 do_about() {
   whiptail --msgbox "\
 Asus Tinker Board Software Configuration Tool v$TOOL_VERSION \n\nThis tool provides a straight-forward way of doing initial configuration of the Asus Tinker Board. Although it can be run at any time, some of the options may have difficulties if you have heavily customised your installation.\
@@ -441,6 +555,9 @@ do_interface_menu() {
     "F1  Camera" "Camera setting" \
     "F2  SSH" "Enable/Disable remote command line access to your Tinkerboard using SSH" \
     "F3  Serial Shell" "Serial connection setting" \
+    "F4  SPI" "Enable/Disable automatic loading of SPI kernel module" \
+    "F5  I2C" "Enable/Disable automatic loading of I2C kernel module" \
+    "F6  UART" "Enable/Disable automatic loading of UART kernel module" \
     3>&1 1>&2 2>&3)
   RET=$?
   if [ $RET -eq 1 ]; then
@@ -450,6 +567,9 @@ do_interface_menu() {
       F1\ *) do_camera ;;
       F2\ *) do_ssh ;;
       F3\ *) do_serial ;;
+      F4\ *) do_spi ;;
+      F5\ *) do_i2c ;;
+      F6\ *) do_uart ;;
       *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
     esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
   fi
