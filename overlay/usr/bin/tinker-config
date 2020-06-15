@@ -324,6 +324,92 @@ do_camera() {
   fi
 }
 
+get_ssh() {
+  if systemctl status ssh.socket | grep -q "inactive"; then
+    echo 1
+  else
+    echo 0
+  fi
+}
+
+do_ssh() {
+  if [ -e /var/log/regen_ssh_keys.log ] && ! grep -q "^finished" /var/log/regen_ssh_keys.log; then
+    whiptail --msgbox "Initial ssh key generation still running. Please wait and try again." 20 60 2
+    return 1
+  fi
+  DEFAULT=--defaultno
+  if [ $(get_ssh) -eq 0 ]; then
+    DEFAULT=
+  fi
+  if [ "$INTERACTIVE" = True ]; then
+      whiptail --yesno "Would you like the SSH server enabled or disabled?" 20 60 2 \
+        --yes-button Enable --no-button Disable
+      RET=$?
+  else
+    RET=$1
+  fi
+  if [ $RET -eq 0 ]; then
+    systemctl unmask ssh.socket &&
+    systemctl enable ssh.socket &&
+    systemctl start ssh.socket &&
+    STATUS=enabled
+  elif [ $RET -eq 1 ]; then
+    systemctl stop ssh.socket &&
+    systemctl mask ssh.socket &&
+    STATUS=disabled
+  else
+    return $RET
+  fi
+  if [ "$INTERACTIVE" = True ]; then
+    whiptail --msgbox "The SSH server is $STATUS" 20 60 1
+  fi
+}
+
+get_serial() {
+  if grep -q -E "console-uart0-overlay" $HWCONFIG; then
+    echo 1
+  else
+    echo 0
+  fi
+}
+
+do_serial() {
+  if [ "$INTERACTIVE" = True ]; then
+    CAMERA_OUT=$(whiptail --menu "Choose a console setting (Need Reboot)" 20 60 10 --default-item $(get_serial)\
+    "0" "UART2c (J6 jumper)" \
+    "1" "UART0  (40pin)" \
+    3>&1 1>&2 2>&3)
+  else
+    CAMERA_OUT=$1
+  fi
+  if [ $? -eq 0 ]; then
+    case "$CAMERA_OUT" in
+      0)
+        if grep -q "console-uart0-overlay" $HWCONFIG ; then
+          sed -i $HWCONFIG -e "s/ console-uart0-overlay //"
+          sed -i $HWCONFIG -e "s/ console-uart0-overlay//"
+          sed -i $HWCONFIG -e "s/console-uart0-overlay //"
+          sed -i $HWCONFIG -e "s/console-uart0-overlay//"
+        fi
+        ;;
+      1)
+        if ! grep -q "console-uart0-overlay" $HWCONFIG ; then
+          OUTPUT=$(tail -n1 $HWCONFIG)
+          if [ "$OUTPUT" = "overlay=" ]; then
+            sed -i $HWCONFIG -e "\$s/\$/console-uart0-overlay/"
+          else
+            sed -i $HWCONFIG -e "\$s/\$/ console-uart0-overlay/"
+          fi
+        fi
+        ;;
+      *)
+        whiptail --msgbox "Programmer error: unrecognized option" 20 60 1
+        ;;
+    esac
+    ASK_TO_REBOOT=1
+  fi
+}
+
 do_about() {
   whiptail --msgbox "\
 Asus Tinker Board Software Configuration Tool v$TOOL_VERSION \n\nThis tool provides a straight-forward way of doing initial configuration of the Asus Tinker Board. Although it can be run at any time, some of the options may have difficulties if you have heavily customised your installation.\
@@ -345,6 +431,25 @@ do_boot_menu() {
       B1\ *) do_boot_behaviour ;;
       B2\ *) do_boot_wait ;;
       B3\ *) do_boot_splash ;;
+      *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
+    esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
+  fi
+}
+
+do_interface_menu() {
+  FUN=$(whiptail --title "Asus Tinkerboard Software Configuration Tool (tinker-config)" --menu "Interface Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
+    "F1  Camera" "Camera setting" \
+    "F2  SSH" "Enable/Disable remote command line access to your Tinkerboard using SSH" \
+    "F3  Serial Shell" "Serial connection setting" \
+    3>&1 1>&2 2>&3)
+  RET=$?
+  if [ $RET -eq 1 ]; then
+    return 0
+  elif [ $RET -eq 0 ]; then
+    case "$FUN" in
+      F1\ *) do_camera ;;
+      F2\ *) do_ssh ;;
+      F3\ *) do_serial ;;
       *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
     esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
   fi
@@ -380,7 +485,7 @@ Currently some features may not be available as they were not originally designe
       "2 Change User Password" "Change password for the default user ($USER_NAME)" \
       "3 Boot Options" "Configure options for start-up" \
       "4 Internationalisation Options" "Set up language and regional settings to match your location" \
-      "5 Camera" "Camera setting" \
+      "5 Interfacing Options" "Configure connections to peripherals" \
       "6 About tinker-config" "Information about this configuration tool" \
       3>&1 1>&2 2>&3)
     RET=$?
@@ -392,7 +497,7 @@ Currently some features may not be available as they were not originally designe
         2\ *) do_change_pass ;;
         3\ *) do_boot_menu ;;
         4\ *) do_internationalisation_menu ;;
-        5\ *) do_camera ;;
+        5\ *) do_interface_menu ;;
         6\ *) do_about ;;
         *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
       esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
