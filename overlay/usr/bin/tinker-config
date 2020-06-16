@@ -260,7 +260,11 @@ By the time, you can just replug the HDMI cable to get the defult resolusion set
 
         MODE_ARG=$(cvt $CUS_RES | grep Modeline | sed 's/Modeline "\([0-9]\+\)x\([0-9]\+\)_\([0-9]\+\).[0-9]*"/\1x\2/')
         MODE_NAME=$(echo $MODE_ARG | sed 's/\([0-9]\+\)x\([0-9]\+\).*/\1x\2/')
-        hdmi=$(DISPLAY=:0.0 xrandr | grep -w connected | sed 's/\(^.*\) connected.*/\1/')
+        if DISPLAY=:0.0 xrandr | grep -q DSI-1 ; then
+		hdmi=$(DISPLAY=:0.0 xrandr | sed '1,3d' | grep -w connected | sed 's/\(^.*\) connected.*/\1/')
+        else
+		hdmi=$(DISPLAY=:0.0 xrandr | grep -w connected | sed 's/\(^.*\) connected.*/\1/')
+        fi
 
         if ! DISPLAY=:0.0 xrandr | grep -q $MODE_NAME ; then
           DISPLAY=:0.0 xrandr --newmode $MODE_ARG
@@ -275,7 +279,33 @@ By the time, you can just replug the HDMI cable to get the defult resolusion set
 do_resolution() {
   INTERACTIVE=True
   if [ "$INTERACTIVE" = True ]; then
-    if DISPLAY=:0.0 xrandr | grep -q connected ; then
+    if DISPLAY=:0.0 xrandr | grep -q DSI-1 ; then
+      ores=$(DISPLAY=:0.0 xrandr | grep current | sed 's/.*current \([0-9]\+\) x \([0-9]\+\).*/\1x\2/')
+      hdmi=$(DISPLAY=:0.0 xrandr |sed '1,3d' |grep -w connected | sed 's/\(^.*\) connected.*/\1/')
+      value=$(DISPLAY=:0.0 xrandr | sed '1,3d' | grep '^[ ]*[0-9]' | sed 's/\([0-9]\+\)x\([0-9i]\+\)[ ]*\([0-9]\+\).\([0-9]\+\).* / \1x\2  \3.\4Hz/')
+
+      if ["$hdmi" = ""];then
+	whiptail --msgbox "There is no HDMI or DP connected" 20 60 2
+        return 0
+      fi
+
+      FUN=$(whiptail --title "Asus Tinkerboard Software Configuration Tool (tinker-config)" \
+      --menu "Choose screen resolution" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT \
+      $value "Custom    " "Add and set a custom screen resolution" 3>&1 1>&2 2>&3)
+      RET=$?
+
+      if [ $RET -eq 1 ]; then
+          return 0
+      elif [ $RET -eq 0 ]; then
+         if [ "$FUN" = "Custom    " ]; then
+          do_cus_resolution
+         else
+          DISPLAY=:0.0 xrandr --output $hdmi --mode $FUN
+         fi
+      else
+        return 1
+      fi
+    elif DISPLAY=:0.0 xrandr | grep -q connected ; then
       ores=$(DISPLAY=:0.0 xrandr | grep current | sed 's/.*current \([0-9]\+\) x \([0-9]\+\).*/\1x\2/')
       hdmi=$(DISPLAY=:0.0 xrandr | grep -w connected | sed 's/\(^.*\) connected.*/\1/')
       value=$(DISPLAY=:0.0 xrandr | sed '1,2d' | grep '^[ ]*[0-9]' | sed 's/\([0-9]\+\)x\([0-9i]\+\)[ ]*\([0-9]\+\).\([0-9]\+\).* / \1x\2  \3.\4Hz/')
@@ -297,7 +327,7 @@ do_resolution() {
         return 1
       fi
     else
-      whiptail --msgbox "There is no HDMI connected" 20 60 2
+      whiptail --msgbox "There is no HDMI/DP connected" 20 60 2
       return 0
     fi
   fi
