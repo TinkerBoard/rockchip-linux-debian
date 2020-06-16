@@ -628,6 +628,49 @@ Switch between <Ok> and <Cancel> by pressing the TAB key.\nLegend: [*] Enable  [
   fi
 }
 
+get_audio() {
+  DEFAULT_SINK=$(sudo -u linaro PULSE_RUNTIME_PATH=/run/user/1000/pulse pacmd stat | grep "Default sink name:" | sed -n 's/^Default sink name: *//p')
+  case "$DEFAULT_SINK" in
+    alsa_output.platform-hdmi-dp-sound.analog-stereo)
+      echo 1
+      ;;
+    alsa_output.platform-spdif-sound.analog-stereo)
+      echo 2
+      ;;
+    *)
+      /etc/pulse/movesinks.sh alsa_output.platform-hdmi-dp-sound.analog-stereo > /dev/null
+      echo 1
+      ;;
+  esac
+}
+
+do_audio() {
+  if [ "$INTERACTIVE" = True ]; then
+    AUDIO_OUT=$(whiptail --menu "Choose the audio output" 20 60 10 --default-item $(get_audio)\
+      "1" "Force HDMI-DP" \
+      "2" "Force SPDIF" \
+      3>&1 1>&2 2>&3)
+  else
+    AUDIO_OUT=$1
+  fi
+  if [ $? -eq 0 ]; then
+    case "$AUDIO_OUT" in
+      1)
+        AUDIO_ARG="alsa_output.platform-hdmi-dp-sound.analog-stereo"
+        ;;
+      2)
+        AUDIO_ARG="alsa_output.platform-spdif-sound.analog-stereo"
+        ;;
+      *)
+        whiptail --msgbox "Programmer error: unrecognized option" 20 60 1
+        ;;
+    esac
+    if ! [ "$AUDIO_ARG" = "" ]; then
+      /etc/pulse/movesinks.sh $AUDIO_ARG
+    fi
+  fi
+}
+
 do_about() {
   whiptail --msgbox "\
 Asus Tinker Board Software Configuration Tool v$TOOL_VERSION \n\nThis tool provides a straight-forward way of doing initial configuration of the Asus Tinker Board. Although it can be run at any time, some of the options may have difficulties if you have heavily customised your installation.\
@@ -681,6 +724,7 @@ do_interface_menu() {
     "F4  SPI" "Enable/Disable automatic loading of SPI kernel module" \
     "F5  I2C" "Enable/Disable automatic loading of I2C kernel module" \
     "F6  UART" "Enable/Disable automatic loading of UART kernel module" \
+    "F7  Audio" "Audio device setting" \
     3>&1 1>&2 2>&3)
   RET=$?
   if [ $RET -eq 1 ]; then
@@ -693,6 +737,7 @@ do_interface_menu() {
       F4\ *) do_spi ;;
       F5\ *) do_i2c ;;
       F6\ *) do_uart ;;
+      F7\ *) do_audio ;;
       *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
     esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
   fi
