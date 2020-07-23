@@ -671,6 +671,97 @@ do_audio() {
   fi
 }
 
+is_installed() {
+    if [ "$(dpkg -l "$1" 2> /dev/null | tail -n 1 | cut -d ' ' -f 1)" != "ii" ]; then
+      return 1
+    else
+      return 0
+    fi
+}
+
+get_vnc() {
+  if systemctl status vncserver.service  | grep -q -w active; then
+    echo 0
+  else
+    echo 1
+  fi
+}
+
+do_vnc() {              
+  # Terminal colors
+  NORMAL='\033[0m'
+  RED='\033[31m'
+  GREEN='\033[32;01m'
+  YELLOW='\033[33;01m'
+  BLUE='\033[34m'
+  PURPLE='\033[1;35m'
+  LIGHT_BLUE='\033[1;34m'
+  
+  STATUS=""
+  DEFAULT=--defaultno
+  if [ $(get_vnc) -eq 0 ]; then
+    DEFAULT=
+  fi
+  if [ "$INTERACTIVE" = True ]; then
+    whiptail --yesno "Would you like the VNC Server to be enabled?" $DEFAULT 20 60 2
+    RET=$?
+  else
+    RET=$1
+  fi
+  if [ $RET -eq 0 ]; then
+    printf "$GREEN [vnc] %s $NORMAL\n" "Install tightvncserver"
+    if is_installed tightvncserver || sudo apt-get update && sudo apt-get install xfonts-base tightvncserver -y ; then
+
+      if [ -f /root/.vnc/passwd ]; then
+        printf "$GREEN [vnc] %s $NORMAL\n" "have old passwd"
+      else
+        count=0
+        while true; do
+            count=$(($count+1))
+            printf "$GREEN [vnc] %s $NORMAL\n" "Please Input vnc password more than six words."
+            vncpasswd
+            RET=$?
+            if [ $count -gt 4 ]; then
+                printf "$RED [result] %s $NORMAL\n" "vnc passwd mistakes too much give up."
+                break;
+            elif [ $RET -eq 0 ]; then
+                if [ ! -d /home/linaro/.vnc ]; then
+                  mkdir -p /home/linaro/.vnc
+                fi
+                
+                sudo cp -pdR /root/.vnc/passwd /home/linaro/.vnc/passwd
+                sudo chown linaro:linaro /home/linaro/.vnc -R
+                printf "$GREEN [vnc] %s $NORMAL\n" "vnc passwd success."
+                break;
+            elif [ $RET -eq 1 ]; then
+                printf "$RED [result] %s $NORMAL\n" "vnc passwd fail, Please Again."
+            fi
+        done
+      fi
+      
+      echo 'linaro' | sudo -S systemctl enable vncserver.service &&
+      echo 'linaro' | sudo -S systemctl start vncserver.service
+      #vncserver :1 -geometry 1920x1080 -depth 24 -dpi 120 -alwaysshared
+    else
+      return 1
+    fi
+    STATUS="enabled"
+  elif [ $RET -eq 1 ]; then
+    sudo vncserver -kill :1 
+    if is_installed tightvncserver; then
+        systemctl disable vncserver.service
+        systemctl stop vncserver.service
+    fi
+    STATUS="disabled"
+  else
+    return $RET
+  fi
+  if [ "$INTERACTIVE" = True ]; then
+    whiptail --msgbox "The VNC Server is $STATUS 5901 Port." 20 60 1
+  fi
+set +x
+}
+
 do_about() {
   whiptail --msgbox "\
 Asus Tinker Board Software Configuration Tool v$TOOL_VERSION \n\nThis tool provides a straight-forward way of doing initial configuration of the Asus Tinker Board. Although it can be run at any time, some of the options may have difficulties if you have heavily customised your installation.\
@@ -725,6 +816,7 @@ do_interface_menu() {
     "F5  I2C" "Enable/Disable automatic loading of I2C kernel module" \
     "F6  UART" "Enable/Disable automatic loading of UART kernel module" \
     "F7  Audio" "Audio device setting" \
+    "F8  VNC" "Enable/Disable graphical remote access to your Tinker using TightVNC" \
     3>&1 1>&2 2>&3)
   RET=$?
   if [ $RET -eq 1 ]; then
@@ -738,6 +830,7 @@ do_interface_menu() {
       F5\ *) do_i2c ;;
       F6\ *) do_uart ;;
       F7\ *) do_audio ;;
+      F8\ *) do_vnc ;;
       *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
     esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
   fi
