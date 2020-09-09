@@ -710,7 +710,7 @@ do_vnc() {
   fi
   if [ $RET -eq 0 ]; then
     printf "$GREEN [vnc] %s $NORMAL\n" "Install tightvncserver"
-    if is_installed tightvncserver || sudo apt-get update && sudo apt-get install xfonts-base tightvncserver -y ; then
+    if is_installed tightvncserver || sudo apt-get update && sudo apt-get install xfonts-base tightvncserver autocutsel -y ; then
 
       if [ -f /root/.vnc/passwd ]; then
         printf "$GREEN [vnc] %s $NORMAL\n" "have old passwd"
@@ -739,6 +739,22 @@ do_vnc() {
         done
       fi
       
+	cat << EOF > /home/linaro/.vnc/xstartup
+#!/bin/sh
+
+xsetroot -solid grey
+autocutsel -fork
+#x-window-manager &
+# Fix to make GNOME work
+export XKL_XMODMAP_DISABLE=1
+/etc/X11/Xsession
+EOF
+
+	sed -i '3ixrdb $HOME/.Xresources' /home/linaro/.vnc/xstartup
+	sed -i '6i#x-terminal-emulator -geometry 80x24+10+10 -ls -title "$VNCDESKTOP Desktop" &' /home/linaro/.vnc/xstartup
+    sudo chown linaro:linaro /home/linaro/.vnc/xstartup
+    sudo chmod 755 /home/linaro/.vnc/xstartup
+    
       echo 'linaro' | sudo -S systemctl enable vncserver.service &&
       echo 'linaro' | sudo -S systemctl start vncserver.service
       #vncserver :1 -geometry 1920x1080 -depth 24 -dpi 120 -alwaysshared
