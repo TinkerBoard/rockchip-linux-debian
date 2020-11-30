@@ -189,11 +189,17 @@ do_boot_splash() {
 
   if [ $RET -eq 0 ]; then
     if ! grep -q "splash" $CMDLINE ; then
-        sed -i $CMDLINE -e "s/$/ quiet splash plymouth.ignore-serial-consoles/"
+        cmd_length=$(awk 'FNR==3 { print length($0) }' $CMDLINE)
+        if [ $cmd_length -eq 0 ]; then
+            sed -i $CMDLINE -e "3s/$/quiet splash plymouth.ignore-serial-consoles/"
+        else
+            sed -i $CMDLINE -e "3s/$/ quiet splash plymouth.ignore-serial-consoles/"
+        fi
     fi
     STATUS=enabled
   elif [ $RET -eq 1 ]; then
     if grep -q "splash" $CMDLINE ; then
+        sed -i $CMDLINE -e "s/quiet//"
         sed -i $CMDLINE -e "s/ quiet//"
         sed -i $CMDLINE -e "s/ splash//"
         sed -i $CMDLINE -e "s/ plymouth.ignore-serial-consoles//"
