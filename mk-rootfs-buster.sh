@@ -87,23 +87,22 @@ apt-get install -y busybox pm-utils triggerhappy
 cp /etc/Powermanager/triggerhappy.service  /lib/systemd/system/triggerhappy.service
 
 #---------------Rga--------------
-dpkg -i /packages/rga/*.deb
+apt-get install -fy /packages/rga/*.deb
 
 echo -e "\033[36m Setup Video.................... \033[0m"
 apt-get install -y gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gstreamer1.0-tools gstreamer1.0-alsa \
 gstreamer1.0-plugins-base-apps qtmultimedia5-examples
 apt-get install -f -y
 
-dpkg -i  /packages/mpp/*
-dpkg -i  /packages/gst-rkmpp/*.deb
-dpkg -i  /packages/gst-base/*.deb
-apt-get install -f -y
+apt-get install -fy /packages/mpp/*
+apt-get install -fy /packages/gst-rkmpp/*.deb
+apt-get install -fy /packages/gst-base/*.deb
 
 #---------Camera---------
 echo -e "\033[36m Install camera.................... \033[0m"
 apt-get install cheese v4l-utils -y
-dpkg -i  /packages/rkisp/*.deb
-dpkg -i  /packages/libv4l/*.deb
+apt-get install -fy /packages/rkisp/*.deb
+apt-get install -fy /packages/libv4l/*.deb
 
 #---------Xserver---------
 echo -e "\033[36m Install Xserver.................... \033[0m"
@@ -112,28 +111,22 @@ apt-get install -y xserver-xorg-dev libaudit-dev libx11-xcb1 xtrans-dev xfonts-u
 
 apt-get install -f -y
 
-dpkg -i /packages/xserver/*.deb
-apt-get install -f -y
+apt-get install -fy /packages/xserver/*.deb
 
 #---------------Openbox--------------
 echo -e "\033[36m Install openbox.................... \033[0m"
-apt-get install -y openbox
-dpkg -i  /packages/openbox/*.deb
-apt-get install -f -y
+apt-get install -fy /packages/openbox/*.deb
 
 #---------update chromium-----
-apt-get install -y chromium
-apt-get install -f -y /packages/chromium/*.deb
+apt-get install -fy /packages/chromium/*.deb
 
 #------------------libdrm------------
 echo -e "\033[36m Install libdrm.................... \033[0m"
-dpkg -i  /packages/libdrm/*.deb
-apt-get install -f -y
+apt-get install -fy /packages/libdrm/*.deb
 
 #------------------libdrm-cursor------------
 echo -e "\033[36m Install libdrm-cursor.................... \033[0m"
-dpkg -i  /packages/libdrm-cursor/*.deb
-apt-get install -f -y
+apt-get install -fy /packages/libdrm-cursor/*.deb
 
 # Only preload libdrm-cursor for X
 sed -i "/libdrm-cursor.so/d" /etc/ld.so.preload
@@ -141,20 +134,17 @@ sed -i "1aexport LD_PRELOAD=libdrm-cursor.so.1" /usr/bin/X
 
 #------------------pcmanfm------------
 echo -e "\033[36m Install pcmanfm.................... \033[0m"
-dpkg -i  /packages/pcmanfm/*.deb
-apt-get install -f -y
+apt-get install -fy /packages/pcmanfm/*.deb
 
 #------------------rkwifibt------------
 echo -e "\033[36m Install rkwifibt.................... \033[0m"
-dpkg -i  /packages/rkwifibt/*.deb
-apt-get install -f -y
+apt-get install -fy /packages/rkwifibt/*.deb
 ln -s /system/etc/firmware /vendor/etc/
 
 if [ "$VERSION" == "debug" ]; then
 #------------------glmark2------------
 echo -e "\033[36m Install glmark2.................... \033[0m"
-dpkg -i  /packages/glmark2/*.deb
-apt-get install -f -y
+apt-get install -fy /packages/glmark2/*.deb
 fi
 
 # mark package to hold
