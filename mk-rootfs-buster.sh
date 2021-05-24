@@ -142,6 +142,10 @@ apt-get install -y openbox
 dpkg -i  /packages/openbox/*.deb
 apt-get install -f -y
 
+#---------update chromium-----
+apt-get install -y chromium
+apt-get install -f -y /packages/chromium/*.deb
+
 #------------------libdrm------------
 echo -e "\033[36m Install libdrm.................... \033[0m"
 dpkg -i  /packages/libdrm/*.deb
