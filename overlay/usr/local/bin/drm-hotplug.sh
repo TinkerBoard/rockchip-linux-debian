@@ -49,10 +49,6 @@ function handle_monitor() {
 
         # Ether disabled or wrongly configured
         xrandr_wrapper --output $MONITOR --auto
-    else
-        # The DP needs reinit every time, so turn it off
-        [ $MONITOR == DP ] && \
-            xrandr_wrapper --output $MONITOR --off
     fi
 }
 
