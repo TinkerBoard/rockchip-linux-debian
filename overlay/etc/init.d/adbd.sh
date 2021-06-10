@@ -115,6 +115,8 @@ configfs_init()
 {
 	mkdir -p ${USB_CONFIGFS_DIR} -m 0770
 	echo 0x2207 > ${USB_CONFIGFS_DIR}/idVendor
+	echo 0x0310 > ${USB_CONFIGFS_DIR}/bcdDevice
+	echo 0x0200 > ${USB_CONFIGFS_DIR}/bcdUSB
 	echo $PID > ${USB_CONFIGFS_DIR}/idProduct
 	mkdir -p ${USB_STRINGS_DIR}   -m 0770
 
@@ -127,9 +129,11 @@ configfs_init()
 	echo "rk3xxx"  > ${USB_STRINGS_DIR}/product
 	mkdir -p ${USB_CONFIGS_DIR}  -m 0770
 	mkdir -p ${USB_CONFIGS_DIR}/strings/${USB_ATTRIBUTE}  -m 0770
+
+	echo 0x1 > ${USB_CONFIGFS_DIR}/os_desc/b_vendor_code
+	echo "MSFT100" > ${USB_CONFIGFS_DIR}/os_desc/qw_sign
 	echo 500 > ${USB_CONFIGS_DIR}/MaxPower
 	echo ${CONFIG_STRING} > ${USB_CONFIGS_DIR}/strings/${USB_ATTRIBUTE}/configuration
-
 }
 
 configure_uvc_resolution()
@@ -142,6 +146,20 @@ configure_uvc_resolution()
 	echo $((UVC_DISPLAY_W*UVC_DISPLAY_H*160)) > ${USB_FUNCTIONS_DIR}/uvc.gs6/streaming/mjpeg/m/$UVC_DISPLAY_H/dwMaxBitRate
 	echo $((UVC_DISPLAY_W*UVC_DISPLAY_H*2)) > ${USB_FUNCTIONS_DIR}/uvc.gs6/streaming/mjpeg/m/$UVC_DISPLAY_H/dwMaxVideoFrameBufferSize
 	echo -e "666666\n1000000\n2000000" > ${USB_FUNCTIONS_DIR}/uvc.gs6/streaming/mjpeg/m/$UVC_DISPLAY_H/dwFrameInterval
+}
+
+program_kill()
+{
+        P_PID=`ps | grep $1 | grep -v grep | awk '{print $1}'`
+        test -z ${P_PID} || kill -9 ${P_PID}
+}
+
+usb_device_stop()
+{
+        echo "none" > ${USB_CONFIGFS_DIR}/UDC
+        program_kill adbd
+       # program_kill mtp-server
+        ls ${USB_CONFIGS_DIR} | grep f[0-9] | xargs -I {} rm ${USB_CONFIGS_DIR}/{}
 }
 
 function_init()
@@ -261,7 +279,7 @@ start)
 	if [ $ADB_EN = on ];then
 		if [ ! -e "/dev/usb-ffs/adb" ] ;
 		then
-			mkdir -p /dev/usb-ffs/adb
+			mkdir -p /dev/usb-ffs/adb -m 0770
 			mount -o uid=2000,gid=2000 -t functionfs adb /dev/usb-ffs/adb
 		fi
 		export service_adb_tcp_port=5555
@@ -289,12 +307,16 @@ start)
 	 echo $UDC > ${USB_CONFIGFS_DIR}/UDC
 	;;
 stop)
-	echo "none" > ${USB_CONFIGFS_DIR}/UDC
-	if [ $ADB_EN = on ];then
-		start-stop-daemon --stop --oknodo --pidfile /var/run/adbd.pid --retry 5
-	fi
+	usb_device_stop
 	;;
 restart|reload)
+	# Do restart usb by udev
+	echo "USB_FORCE_CHANGED" >> /tmp/.usb_config
+	usb_device_stop
+	sleep 1
+	$0 start
+	# Don't forget to clear "USB_FORCE_CHANGED"
+	sed -i "/USB_FORCE_CHANGED/d" /tmp/.usb_config
 	;;
 *)
 	echo "Usage: $0 {start|stop|restart}"

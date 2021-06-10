@@ -51,10 +51,10 @@ fi
 sudo cp -f overlay/usr/lib/systemd/system/serial-getty@.service $TARGET_ROOTFS_DIR/lib/systemd/system/serial-getty@.service
 
 # adb
-if [ "$ARCH" == "armhf" ] && [ "$VERSION" == "debug" ]; then
-	sudo cp -rf overlay-debug/usr/local/share/adb/adbd-32 $TARGET_ROOTFS_DIR/usr/local/bin/adbd
-elif [ "$ARCH" == "arm64" ] && ["$VERSION" == "debug"]; then
-	sudo cp -rf overlay-debug/usr/local/share/adb/adbd-64 $TARGET_ROOTFS_DIR/usr/local/bin/adbd
+if [[ "$ARCH" == "armhf" && "$VERSION" == "debug" ]]; then
+	sudo cp -f overlay-debug/usr/local/share/adb/adbd-32 $TARGET_ROOTFS_DIR/usr/local/bin/adbd
+elif [[ "$ARCH" == "arm64" && "$VERSION" == "debug" ]]; then
+	sudo cp -f overlay-debug/usr/local/share/adb/adbd-64 $TARGET_ROOTFS_DIR/usr/local/bin/adbd
 fi
 
 # bt/wifi firmware
@@ -72,10 +72,10 @@ sudo find ../kernel/drivers/net/wireless/rockchip_wlan/*  -name "*.ko" | \
 # glmark2
 sudo rm -rf $TARGET_ROOTFS_DIR/usr/local/share/glmark2
 sudo mkdir -p $TARGET_ROOTFS_DIR/usr/local/share/glmark2
-if [ "$ARCH" == "armhf" ] && [ "$VERSION" == "debug" ]; then
+if [[ "$ARCH" == "armhf" && "$VERSION" == "debug" ]]; then
 	sudo cp -rf overlay-debug/usr/local/share/glmark2/armhf/share/* $TARGET_ROOTFS_DIR/usr/local/share/glmark2
 	sudo cp overlay-debug/usr/local/share/glmark2/armhf/bin/glmark2-es2 $TARGET_ROOTFS_DIR/usr/local/bin/glmark2-es2
-elif [ "$ARCH" == "arm64" ] && [ "$VERSION" == "debug" ]; then
+elif [[ "$ARCH" == "arm64" && "$VERSION" == "debug" ]]; then
 	sudo cp -rf overlay-debug/usr/local/share/glmark2/aarch64/share/* $TARGET_ROOTFS_DIR/usr/local/share/glmark2
 	sudo cp overlay-debug/usr/local/share/glmark2/aarch64/bin/glmark2-es2 $TARGET_ROOTFS_DIR/usr/local/bin/glmark2-es2
 fi
