@@ -91,6 +91,7 @@ sudo mount -o bind /dev $TARGET_ROOTFS_DIR/dev
 cat << EOF | sudo chroot $TARGET_ROOTFS_DIR
 
 apt-get update
+apt-get upgrade -y
 
 chmod o+x /usr/lib/dbus-1.0/dbus-daemon-launch-helper
 chmod +x /etc/rc.local
@@ -127,9 +128,15 @@ dpkg -i  /packages/libv4l/*.deb
 #---------Xserver---------
 echo -e "\033[36m Install Xserver.................... \033[0m"
 #apt-get build-dep -y xorg-server-source
-apt-get install -y libgl1-mesa-dev libgles1 libgles1 libegl1-mesa-dev libc-dev-bin libc6-dev libfontenc-dev libfreetype6-dev \
-libpciaccess-dev libpng-dev libpng-tools libxfont-dev libxkbfile-dev linux-libc-dev manpages manpages-dev xserver-common zlib1g-dev \
-libdmx1 libpixman-1-dev libxcb-xf86dri0 libxcb-xv0
+
+apt-get install -y libaudit-dev libbison-dev libbsd-dev libcap-ng-dev libdbus-1-dev libgbm-dev \
+libgcrypt20-dev libgmp-dev libgmpxx4ldbl libgpg-error-dev libice-dev liblzma-dev libpcre16-3 \
+libpcre3-dev libpcre32-3 libpcrecpp0v5 libselinux1-dev libsepol1-dev libsm-dev libstdc++-8-dev \
+libsystemd-dev libudev-dev libunwind-dev libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev \
+libxcb-render-util0-dev libxcb-shm0-dev libxcb-util0-dev libxcb-xf86dri0-dev libxcb-xkb-dev \
+libxcb-xv0-dev nettle-dev pkg-config quilt x11proto-input-dev x11proto-record-dev \
+x11proto-xinerama-dev xfonts-encodings xfonts-utils xutils-dev
+
 apt-get install -f -y
 
 dpkg -i /packages/xserver/*.deb
