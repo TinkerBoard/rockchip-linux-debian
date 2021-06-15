@@ -158,6 +158,16 @@ echo -e "\033[36m Install libdrm.................... \033[0m"
 dpkg -i  /packages/libdrm/*.deb
 apt-get install -f -y
 
+#------------------libdrm-cursor------------
+echo -e "\033[36m Install libdrm-cursor.................... \033[0m"
+dpkg -i  /packages/libdrm-cursor/*.deb
+apt-get install -f -y
+
+#------------------pcmanfm------------
+echo -e "\033[36m Install pcmanfm.................... \033[0m"
+dpkg -i  /packages/pcmanfm/*.deb
+apt-get install -f -y
+
 # mark package to hold
 # apt-mark hold libv4l-0 libv4l2rds0 libv4lconvert0 libv4l-dev v4l-utils
 #apt-mark hold librockchip-mpp1 librockchip-mpp-static librockchip-vpu0 rockchip-mpp-demos

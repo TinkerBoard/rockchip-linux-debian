@@ -1,0 +1,9 @@
+prefix=/usr
+libdir=${prefix}/lib/aarch64-linux-gnu
+includedir=${prefix}/include
+
+Name: libdrm-cursor
+Description: A hook of drm cursor APIs to fake cursor plane.
+Version: 1.0.0
+Libs: libdrm-cursor
+Cflags: -I${includedir}
