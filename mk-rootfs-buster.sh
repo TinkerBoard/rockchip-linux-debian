@@ -16,7 +16,7 @@ else
 fi
 
 if [ ! $VERSION ]; then
-	VERSION="debug"
+	VERSION="release"
 fi
 
 if [ ! -e linaro-buster-alip-*.tar.gz ]; then
@@ -68,17 +68,6 @@ fi
 sudo mkdir -p $TARGET_ROOTFS_DIR/system/lib/modules/
 sudo find ../kernel/drivers/net/wireless/rockchip_wlan/*  -name "*.ko" | \
     xargs -n1 -i sudo cp {} $TARGET_ROOTFS_DIR/system/lib/modules/
-
-# glmark2
-sudo rm -rf $TARGET_ROOTFS_DIR/usr/local/share/glmark2
-sudo mkdir -p $TARGET_ROOTFS_DIR/usr/local/share/glmark2
-if [[ "$ARCH" == "armhf" && "$VERSION" == "debug" ]]; then
-	sudo cp -rf overlay-debug/usr/local/share/glmark2/armhf/share/* $TARGET_ROOTFS_DIR/usr/local/share/glmark2
-	sudo cp overlay-debug/usr/local/share/glmark2/armhf/bin/glmark2-es2 $TARGET_ROOTFS_DIR/usr/local/bin/glmark2-es2
-elif [[ "$ARCH" == "arm64" && "$VERSION" == "debug" ]]; then
-	sudo cp -rf overlay-debug/usr/local/share/glmark2/aarch64/share/* $TARGET_ROOTFS_DIR/usr/local/share/glmark2
-	sudo cp overlay-debug/usr/local/share/glmark2/aarch64/bin/glmark2-es2 $TARGET_ROOTFS_DIR/usr/local/bin/glmark2-es2
-fi
 
 echo -e "\033[36m Change root.....................\033[0m"
 if [ "$ARCH" == "armhf" ]; then
@@ -167,6 +156,13 @@ apt-get install -f -y
 echo -e "\033[36m Install pcmanfm.................... \033[0m"
 dpkg -i  /packages/pcmanfm/*.deb
 apt-get install -f -y
+
+if [ "$VERSION" == "debug" ]; then
+#------------------glmark2------------
+echo -e "\033[36m Install glmark2.................... \033[0m"
+dpkg -i  /packages/glmark2/*.deb
+apt-get install -f -y
+fi
 
 # mark package to hold
 # apt-mark hold libv4l-0 libv4l2rds0 libv4lconvert0 libv4l-dev v4l-utils
