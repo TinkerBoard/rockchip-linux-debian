@@ -39,6 +39,32 @@ install_mali() {
     apt install -f /packages/libmali/libmali-*$MALI*-x11*.deb
 }
 
+init_rkwifibt() {
+    case $1 in
+        rk3288)
+	    rk_wifi_init /dev/ttyS0
+            ;;
+        rk3399|rk3399pro)
+	    rk_wifi_init /dev/ttyS0
+            ;;
+        rk3328)
+	    rk_wifi_init /dev/ttyS0
+            ;;
+        rk3326|px30)
+	    rk_wifi_init /dev/ttyS1
+            ;;
+        rk3128|rk3036)
+	    rk_wifi_init /dev/ttyS0
+            ;;
+        rk3566)
+	    rk_wifi_init /dev/ttyS1
+            ;;
+        rk3568)
+	    rk_wifi_init /dev/ttyS8
+            ;;
+    esac
+}
+
 function update_npu_fw() {
     /usr/bin/npu-image.sh
     sleep 1
@@ -101,6 +127,9 @@ then
 
     touch /usr/local/first_boot_flag
 fi
+
+# init rkwifibt
+init_rkwifibt ${CHIPNAME}
 
 # enable adbd service
 if [ -e "/etc/init.d/adbd.sh" ] ;

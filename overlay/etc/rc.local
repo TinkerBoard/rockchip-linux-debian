@@ -10,7 +10,6 @@
 # bits.
 #
 # By default this script does nothing.
-rk_wifi_init /dev/ttyS0
 
 # HACK: Prevent blueman from changing rfkill states
 rm /dev/rfkill

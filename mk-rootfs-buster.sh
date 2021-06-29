@@ -58,14 +58,8 @@ elif [[ "$ARCH" == "arm64" && "$VERSION" == "debug" ]]; then
 fi
 
 # bt/wifi firmware
-if [ "$ARCH" == "armhf" ]; then
-    sudo cp overlay-firmware/usr/bin/brcm_patchram_plus1_32 $TARGET_ROOTFS_DIR/usr/bin/brcm_patchram_plus1
-    sudo cp overlay-firmware/usr/bin/rk_wifi_init_32 $TARGET_ROOTFS_DIR/usr/bin/rk_wifi_init
-elif [ "$ARCH" == "arm64" ]; then
-    sudo cp overlay-firmware/usr/bin/brcm_patchram_plus1_64 $TARGET_ROOTFS_DIR/usr/bin/brcm_patchram_plus1
-    sudo cp overlay-firmware/usr/bin/rk_wifi_init_64 $TARGET_ROOTFS_DIR/usr/bin/rk_wifi_init
-fi
 sudo mkdir -p $TARGET_ROOTFS_DIR/system/lib/modules/
+sudo mkdir -p $TARGET_ROOTFS_DIR/vendor/etc
 sudo find ../kernel/drivers/net/wireless/rockchip_wlan/*  -name "*.ko" | \
     xargs -n1 -i sudo cp {} $TARGET_ROOTFS_DIR/system/lib/modules/
 
@@ -156,6 +150,12 @@ apt-get install -f -y
 echo -e "\033[36m Install pcmanfm.................... \033[0m"
 dpkg -i  /packages/pcmanfm/*.deb
 apt-get install -f -y
+
+#------------------rkwifibt------------
+echo -e "\033[36m Install rkwifibt.................... \033[0m"
+dpkg -i  /packages/rkwifibt/*.deb
+apt-get install -f -y
+ln -s /system/etc/firmware /vendor/etc/
 
 if [ "$VERSION" == "debug" ]; then
 #------------------glmark2------------
