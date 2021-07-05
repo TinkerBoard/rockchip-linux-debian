@@ -52,9 +52,9 @@ sudo cp -f overlay/usr/lib/systemd/system/serial-getty@.service $TARGET_ROOTFS_D
 
 # adb
 if [[ "$ARCH" == "armhf" && "$VERSION" == "debug" ]]; then
-	sudo cp -f overlay-debug/usr/local/share/adb/adbd-32 $TARGET_ROOTFS_DIR/usr/local/bin/adbd
+	sudo cp -f overlay-debug/usr/local/share/adb/adbd-32 $TARGET_ROOTFS_DIR/usr/bin/adbd
 elif [[ "$ARCH" == "arm64" && "$VERSION" == "debug" ]]; then
-	sudo cp -f overlay-debug/usr/local/share/adb/adbd-64 $TARGET_ROOTFS_DIR/usr/local/bin/adbd
+	sudo cp -f overlay-debug/usr/local/share/adb/adbd-64 $TARGET_ROOTFS_DIR/usr/bin/adbd
 fi
 
 # bt/wifi firmware

@@ -132,21 +132,8 @@ fi
 init_rkwifibt ${CHIPNAME}
 
 # enable adbd service
-if [ -e "/etc/init.d/adbd.sh" ] ;
-then
-    cd /etc/rcS.d
-    if [ ! -e "S01adbd.sh" ] ;
-    then
-        ln -s ../init.d/adbd.sh S01adbd.sh
-    fi
-    cd /etc/rc6.d
-    if [ ! -e "K01adbd.sh" ] ;
-    then
-        ln -s ../init.d/adbd.sh K01adbd.sh
-    fi
 
-    service adbd.sh start
-fi
+service adbd start
 
 # support power management
 if [ -e "/usr/sbin/pm-suspend" -a -e /etc/Powermanager ] ;
