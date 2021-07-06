@@ -111,14 +111,7 @@ dpkg -i  /packages/libv4l/*.deb
 #---------Xserver---------
 echo -e "\033[36m Install Xserver.................... \033[0m"
 #apt-get build-dep -y xorg-server-source
-
-apt-get install -y libaudit-dev libbison-dev libbsd-dev libcap-ng-dev libdbus-1-dev libgbm-dev \
-libgcrypt20-dev libgmp-dev libgmpxx4ldbl libgpg-error-dev libice-dev liblzma-dev libpcre16-3 \
-libpcre3-dev libpcre32-3 libpcrecpp0v5 libselinux1-dev libsepol1-dev libsm-dev libstdc++-8-dev \
-libsystemd-dev libudev-dev libunwind-dev libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev \
-libxcb-render-util0-dev libxcb-shm0-dev libxcb-util0-dev libxcb-xf86dri0-dev libxcb-xkb-dev \
-libxcb-xv0-dev nettle-dev pkg-config quilt x11proto-input-dev x11proto-record-dev \
-x11proto-xinerama-dev xfonts-encodings xfonts-utils xutils-dev
+apt-get install -y xserver-xorg-dev libaudit-dev libx11-xcb1 xtrans-dev xfonts-utils x11proto-dev libxdmcp-dev libxau-dev libxdmcp-dev libxfont-dev libxkbfile-dev libpixman-1-dev libpciaccess-dev libgcrypt-dev nettle-dev libudev-dev libselinux1-dev:arm64 libaudit-dev libgl1-mesa-dev libunwind-dev libxmuu-dev libxext-dev libx11-dev libxrender-dev libxi-dev libdmx-dev libxpm-dev libxaw7-dev libxt-dev libxmu-dev libxtst-dev libxres-dev libxfixes-dev libxv-dev libxinerama-dev libxshmfence-dev libepoxy-dev libegl1-mesa-dev libgbm-dev
 
 apt-get install -f -y
 
