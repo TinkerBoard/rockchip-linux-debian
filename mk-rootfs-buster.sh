@@ -85,7 +85,7 @@ cp /etc/Powermanager/triggerhappy.service  /lib/systemd/system/triggerhappy.serv
 
 #---------------system--------------
 apt-get install -y git fakeroot devscripts cmake binfmt-support dh-make dh-exec pkg-kde-tools device-tree-compiler \
-bc cpio parted dosfstools mtools libssl-dev dpkg-dev isc-dhcp-client-ddns
+bc cpio parted dosfstools mtools libssl-dev dpkg-dev
 apt-get install -f -y
 
 #---------------Rga--------------
