@@ -52,18 +52,16 @@ function handle_monitor() {
     fi
 }
 
-{
-    prepare_env
+prepare_env
 
-    SCREENS=$(sudo -u $XUSER xdpyinfo|grep screens|cut -d':' -f2)
-    for SCREEN in $(seq 0 ${SCREENS:-0}); do
-        # Find monitors of screen
-        MONITORS=$(xrandr_wrapper 2>/dev/null|grep connect|cut -d' ' -f1)
+SCREENS=$(sudo -u $XUSER xdpyinfo|grep screens|cut -d':' -f2)
+for SCREEN in $(seq 0 ${SCREENS:-0}); do
+    # Find monitors of screen
+    MONITORS=$(xrandr_wrapper 2>/dev/null|grep connect|cut -d' ' -f1)
 
-        for MONITOR in $MONITORS;do
-            handle_monitor
-        done
+    for MONITOR in $MONITORS;do
+        handle_monitor
     done
-}&
+done
 
 exit 0
