@@ -79,14 +79,16 @@ apt-get upgrade -y
 chmod o+x /usr/lib/dbus-1.0/dbus-daemon-launch-helper
 chmod +x /etc/rc.local
 
+#---------------system--------------
+apt-get install -y git fakeroot devscripts cmake binfmt-support dh-make dh-exec pkg-kde-tools device-tree-compiler \
+bc cpio parted dosfstools mtools libssl-dev dpkg-dev ntp rsyslog wget gdb net-tools inetutils-ping openssh-server \
+ifupdown alsa-utils python vim ntp git libssl-dev vsftpd tcpdump can-utils i2c-tools strace network-manager onboard \
+evtest sox libsox-fmt-all
+apt-get install -f -y
+
 #---------------power management --------------
 apt-get install -y busybox pm-utils triggerhappy
 cp /etc/Powermanager/triggerhappy.service  /lib/systemd/system/triggerhappy.service
-
-#---------------system--------------
-apt-get install -y git fakeroot devscripts cmake binfmt-support dh-make dh-exec pkg-kde-tools device-tree-compiler \
-bc cpio parted dosfstools mtools libssl-dev dpkg-dev ntp
-apt-get install -f -y
 
 #---------------Rga--------------
 dpkg -i /packages/rga/*.deb
