@@ -26,24 +26,6 @@ function xrandr_wrapper() {
     xrandr --screen ${SCREEN:-0} $@
 }
 
-function handle_monitor() {
-    # X11 modesetting drv uses HDMI for HDMI-A
-    CRTC=$(echo $MONITOR|sed "s/HDMI\(-[^B]\)/HDMI-A\1/")
-
-    SYS="/sys/class/drm/card*-$CRTC/"
-
-    # Make sure every connected monitors been enabled with a valid mode.
-    if grep -wq connected $SYS/status; then
-        # Already got a valid mode
-        grep -wq "$(cat $SYS/mode 2>/dev/null)" $SYS/modes && return 0
-
-        # Ether disabled or wrongly configured
-        xrandr_wrapper --output $MONITOR --auto
-
-        logger -t $0 "Output $MONITOR enabled."
-    fi
-}
-
 if ! xdpyinfo &>/dev/null; then
     # Try to setup env
     prepare_env
@@ -62,14 +44,34 @@ if ! xdpyinfo &>/dev/null; then
     fi
 fi
 
+TMP=$(mktemp)
+
 SCREENS=$(xdpyinfo|grep screens|cut -d':' -f2)
 for SCREEN in $(seq 0 ${SCREENS:-0}); do
-    # Find monitors of screen
-    MONITORS=$(xrandr_wrapper 2>/dev/null|grep connect|cut -d' ' -f1)
+    # Get monitors and current mode info
+    xrandr_wrapper 2>&1|grep -oE "^.*connected|^.*\*"|tee $TMP
 
-    for MONITOR in $MONITORS;do
-        handle_monitor
+    # Result:
+    # eDP-1 connected
+    #   1536x2048     59.99*
+    # DP-1 disconnected
+    # HDMI-1 connected
+    #   1920x1080     60.00*
+    #
+    # "*" means valid current mode.
+
+    # Make sure every connected monitors been enabled with a valid mode.
+    for MONITOR in $(grep -w connected $TMP|cut -d' ' -f1); do
+        # Find monitors without a valid current mode
+        if ! grep -w $MONITOR $TMP -A 1|grep "\*"; then
+            # Ether disabled or wrongly configured
+            xrandr_wrapper --output $MONITOR --auto
+
+            logger -t $0 "Output $MONITOR enabled."
+        fi
     done
 done
+
+rm -rf $TMP
 
 exit 0
