@@ -3,10 +3,6 @@
 # Directory contains the target rootfs
 TARGET_ROOTFS_DIR="binary"
 
-if [ -e $TARGET_ROOTFS_DIR ]; then
-	sudo rm -rf $TARGET_ROOTFS_DIR
-fi
-
 if [ "$ARCH" == "armhf" ]; then
 	ARCH='armhf'
 elif [ "$ARCH" == "arm64" ]; then
