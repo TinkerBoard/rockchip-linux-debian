@@ -131,8 +131,10 @@ fi
 # init rkwifibt
 init_rkwifibt ${CHIPNAME}
 
-# enable adbd service
+# enable async service
+service async start
 
+# enable adbd service
 service adbd start
 
 # support power management
