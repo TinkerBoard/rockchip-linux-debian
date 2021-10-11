@@ -78,7 +78,7 @@ chmod +x /etc/rc.local
 #---------------system--------------
 apt-get install -y git fakeroot devscripts cmake binfmt-support dh-make dh-exec pkg-kde-tools device-tree-compiler \
 bc cpio parted dosfstools mtools dpkg-dev ntp rsyslog wget gdb net-tools inetutils-ping openssh-server \
-ifupdown alsa-utils python vim ntp git libssl-dev vsftpd tcpdump can-utils i2c-tools strace network-manager onboard \
+ifupdown alsa-utils python vim ntp git vsftpd tcpdump can-utils i2c-tools strace network-manager onboard \
 evtest sox libsox-fmt-all
 apt-get install -f -y
 
