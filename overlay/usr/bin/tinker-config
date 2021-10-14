@@ -638,14 +638,14 @@ Switch between <Ok> and <Cancel> by pressing the TAB key.\nLegend: [*] Enable  [
 get_audio() {
   DEFAULT_SINK=$(sudo -u linaro PULSE_RUNTIME_PATH=/run/user/1000/pulse pacmd stat | grep "Default sink name:" | sed -n 's/^Default sink name: *//p')
   case "$DEFAULT_SINK" in
-    alsa_output.platform-hdmi-dp-sound.analog-stereo)
+    alsa_output.platform-hdmi-dp-sound.stereo-fallback)
       echo 1
       ;;
-    alsa_output.platform-spdif-sound.analog-stereo)
+    alsa_output.platform-spdif-sound.stereo-fallback)
       echo 2
       ;;
     *)
-      /etc/pulse/movesinks.sh alsa_output.platform-hdmi-dp-sound.analog-stereo > /dev/null
+      /etc/pulse/movesinks.sh alsa_output.platform-hdmi-dp-sound.stereo-fallback > /dev/null
       echo 1
       ;;
   esac
@@ -663,10 +663,10 @@ do_audio() {
   if [ $? -eq 0 ]; then
     case "$AUDIO_OUT" in
       1)
-        AUDIO_ARG="alsa_output.platform-hdmi-dp-sound.analog-stereo"
+        AUDIO_ARG="alsa_output.platform-hdmi-dp-sound.stereo-fallback"
         ;;
       2)
-        AUDIO_ARG="alsa_output.platform-spdif-sound.analog-stereo"
+        AUDIO_ARG="alsa_output.platform-spdif-sound.stereo-fallback"
         ;;
       *)
         whiptail --msgbox "Programmer error: unrecognized option" 20 60 1
