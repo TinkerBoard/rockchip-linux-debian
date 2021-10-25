@@ -19,7 +19,8 @@ if [ ! $VERSION ]; then
 fi
 
 if [ ! -e linaro-buster-alip-*.tar.gz ]; then
-	echo "\033[36m Run mk-base-debian.sh first \033[0m"
+	echo -e "\033[36m Run mk-base-debian.sh first \033[0m"
+	exit -1
 fi
 
 finish() {
