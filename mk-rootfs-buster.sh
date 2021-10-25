@@ -3,13 +3,16 @@
 # Directory contains the target rootfs
 TARGET_ROOTFS_DIR="binary"
 
-if [ "$ARCH" == "armhf" ]; then
-	ARCH='armhf'
-elif [ "$ARCH" == "arm64" ]; then
-	ARCH='arm64'
-else
-    echo -e "\033[36m please input is: armhf or arm64...... \033[0m"
-fi
+case "${ARCH:-$1}" in
+	arm|arm32|armhf)
+		ARCH=armhf
+		;;
+	*)
+		ARCH=arm64
+		;;
+esac
+
+echo -e "\033[36m Building for $ARCH \033[0m"
 
 if [ ! $VERSION ]; then
 	VERSION="release"
