@@ -97,7 +97,6 @@ apt-get install -f -y
 dpkg -i  /packages/mpp/*
 dpkg -i  /packages/gst-rkmpp/*.deb
 dpkg -i  /packages/gst-base/*.deb
-apt-mark hold gstreamer1.0-x
 apt-get install -f -y
 
 #---------Camera---------
@@ -115,7 +114,6 @@ apt-get install -f -y
 
 dpkg -i /packages/xserver/*.deb
 apt-get install -f -y
-apt-mark hold xserver-common xserver-xorg-core xserver-xorg-legacy
 
 #---------------Openbox--------------
 echo -e "\033[36m Install openbox.................... \033[0m"
@@ -160,11 +158,7 @@ apt-get install -f -y
 fi
 
 # mark package to hold
-# apt-mark hold libv4l-0 libv4l2rds0 libv4lconvert0 libv4l-dev v4l-utils
-#apt-mark hold librockchip-mpp1 librockchip-mpp-static librockchip-vpu0 rockchip-mpp-demos
-#apt-mark hold xserver-common xserver-xorg-core xserver-xorg-legacy
-#apt-mark hold libegl-mesa0 libgbm1 libgles1 alsa-utils
-#apt-get install -f -y
+apt list --installed | grep -w local | cut -d/ -f1 | xargs apt-mark hold
 
 #---------------Custom Script--------------
 systemctl mask systemd-networkd-wait-online.service
