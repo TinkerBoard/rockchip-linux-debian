@@ -106,11 +106,6 @@ apt-get install -fy /packages/libv4l/*.deb
 
 #---------Xserver---------
 echo -e "\033[36m Install Xserver.................... \033[0m"
-#apt-get build-dep -y xorg-server-source
-apt-get install -y xserver-xorg-dev libaudit-dev libx11-xcb1 xtrans-dev xfonts-utils x11proto-dev libxdmcp-dev libxau-dev libxdmcp-dev libxfont-dev libxkbfile-dev libpixman-1-dev libpciaccess-dev libgcrypt-dev nettle-dev libudev-dev libselinux1-dev:arm64 libaudit-dev libgl1-mesa-dev libunwind-dev libxmuu-dev libxext-dev libx11-dev libxrender-dev libxi-dev libdmx-dev libxpm-dev libxaw7-dev libxt-dev libxmu-dev libxtst-dev libxres-dev libxfixes-dev libxv-dev libxinerama-dev libxshmfence-dev libepoxy-dev libegl1-mesa-dev libgbm-dev
-
-apt-get install -f -y
-
 apt-get install -fy /packages/xserver/*.deb
 
 #---------------Openbox--------------
