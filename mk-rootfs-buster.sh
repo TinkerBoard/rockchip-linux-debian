@@ -79,46 +79,47 @@ apt-get upgrade -y
 chmod o+x /usr/lib/dbus-1.0/dbus-daemon-launch-helper
 chmod +x /etc/rc.local
 
+export APT_INSTALL="apt-get install -fy --allow-downgrades"
+
 #---------------power management --------------
-apt-get install -y busybox pm-utils triggerhappy
+\${APT_INSTALL} busybox pm-utils triggerhappy
 cp /etc/Powermanager/triggerhappy.service  /lib/systemd/system/triggerhappy.service
 
 #---------------Rga--------------
-apt-get install -fy /packages/rga/*.deb
+\${APT_INSTALL} /packages/rga/*.deb
 
 echo -e "\033[36m Setup Video.................... \033[0m"
-apt-get install -y gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gstreamer1.0-tools gstreamer1.0-alsa \
+\${APT_INSTALL} gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gstreamer1.0-tools gstreamer1.0-alsa \
 gstreamer1.0-plugins-base-apps qtmultimedia5-examples
-apt-get install -f -y
 
-apt-get install -fy /packages/mpp/*
-apt-get install -fy /packages/gst-rkmpp/*.deb
-apt-get install -fy /packages/gst-base/*.deb
+\${APT_INSTALL} /packages/mpp/*
+\${APT_INSTALL} /packages/gst-rkmpp/*.deb
+\${APT_INSTALL} /packages/gst-base/*.deb
 
 #---------Camera---------
 echo -e "\033[36m Install camera.................... \033[0m"
-apt-get install cheese v4l-utils -y
-apt-get install -fy /packages/rkisp/*.deb
-apt-get install -fy /packages/libv4l/*.deb
+\${APT_INSTALL} cheese v4l-utils
+\${APT_INSTALL} /packages/rkisp/*.deb
+\${APT_INSTALL} /packages/libv4l/*.deb
 
 #---------Xserver---------
 echo -e "\033[36m Install Xserver.................... \033[0m"
-apt-get install -fy /packages/xserver/*.deb
+\${APT_INSTALL} /packages/xserver/*.deb
 
 #---------------Openbox--------------
 echo -e "\033[36m Install openbox.................... \033[0m"
-apt-get install -fy /packages/openbox/*.deb
+\${APT_INSTALL} /packages/openbox/*.deb
 
 #---------update chromium-----
-apt-get install -fy /packages/chromium/*.deb
+\${APT_INSTALL} /packages/chromium/*.deb
 
 #------------------libdrm------------
 echo -e "\033[36m Install libdrm.................... \033[0m"
-apt-get install -fy /packages/libdrm/*.deb
+\${APT_INSTALL} /packages/libdrm/*.deb
 
 #------------------libdrm-cursor------------
 echo -e "\033[36m Install libdrm-cursor.................... \033[0m"
-apt-get install -fy /packages/libdrm-cursor/*.deb
+\${APT_INSTALL} /packages/libdrm-cursor/*.deb
 
 # Only preload libdrm-cursor for X
 sed -i "/libdrm-cursor.so/d" /etc/ld.so.preload
@@ -126,21 +127,21 @@ sed -i "1aexport LD_PRELOAD=libdrm-cursor.so.1" /usr/bin/X
 
 #------------------pcmanfm------------
 echo -e "\033[36m Install pcmanfm.................... \033[0m"
-apt-get install -fy /packages/pcmanfm/*.deb
+\${APT_INSTALL} /packages/pcmanfm/*.deb
 
 #------------------rkwifibt------------
 echo -e "\033[36m Install rkwifibt.................... \033[0m"
-apt-get install -fy /packages/rkwifibt/*.deb
+\${APT_INSTALL} /packages/rkwifibt/*.deb
 ln -s /system/etc/firmware /vendor/etc/
 
 if [ "$VERSION" == "debug" ]; then
 #------------------glmark2------------
 echo -e "\033[36m Install glmark2.................... \033[0m"
-apt-get install -fy /packages/glmark2/*.deb
+\${APT_INSTALL} /packages/glmark2/*.deb
 fi
 
 # mark package to hold
-apt list --installed | grep -w local | cut -d/ -f1 | xargs apt-mark hold
+apt list --installed | grep -v oldstable | cut -d/ -f1 | xargs apt-mark hold
 
 #---------------Custom Script--------------
 systemctl mask systemd-networkd-wait-online.service
