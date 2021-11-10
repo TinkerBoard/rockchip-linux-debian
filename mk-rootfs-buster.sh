@@ -56,8 +56,11 @@ fi
 # bt/wifi firmware
 sudo mkdir -p $TARGET_ROOTFS_DIR/system/lib/modules/
 sudo mkdir -p $TARGET_ROOTFS_DIR/vendor/etc
-sudo find ../kernel/drivers/net/wireless/rockchip_wlan/*  -name "*.ko" | \
-    xargs -n1 -i sudo cp {} $TARGET_ROOTFS_DIR/system/lib/modules/
+#sudo find ../kernel/drivers/net/wireless/rockchip_wlan/*  -name "*.ko" | \
+#    xargs -n1 -i sudo cp {} $TARGET_ROOTFS_DIR/system/lib/modules/
+
+# ASUS: Change to copy all the kernel modules built from build.sh.
+sudo cp -rf lib_modules/lib/modules $TARGET_ROOTFS_DIR/lib/
 
 echo -e "\033[36m Change root.....................\033[0m"
 if [ "$ARCH" == "armhf" ]; then
