@@ -177,6 +177,9 @@ rm /lib/systemd/system/wpa_supplicant@.service
 #-------ASUS customization start-------
 echo $VERSION_NUMBER-$VERSION > /etc/version
 
+#-------- Florence Virtual Keyboard --------
+apt-get install -y at-spi2-core
+apt-get install -y florence
 #-------ASUS customization end-------
 
 #---------------Clean--------------
