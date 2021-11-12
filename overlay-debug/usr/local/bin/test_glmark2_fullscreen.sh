@@ -19,6 +19,9 @@ elif [[  "$1" == "rk3399pro"  ]]; then
 elif [[  "$1" == "rk3566" || "$1" == "rk3568"  ]]; then
 	glmark2-es2 --fullscreen --visual-config='a=0:buf=24' --annotate
 
+elif [[  "$1" == "rk3588" || "$1" == "rk3588s"  ]]; then
+	glmark2-es2 --fullscreen --visual-config='a=0:buf=24' --annotate
+
 elif [[  "$1" == "px30" || "$1" == "rk3326"  ]]; then
 	glmark2-es2 --fullscreen --visual-config='a=0:buf=24' --annotate
 
@@ -54,6 +57,8 @@ elif [[ $(expr $COMPATIBLE : ".*rk3566") -ne 0 ]]; then
     CHIPNAME="rk3566"
 elif [[ $(expr $COMPATIBLE : ".*rk3568") -ne 0 ]]; then
     CHIPNAME="rk3568"
+elif [[ $(expr $COMPATIBLE : ".*rk3588") -ne 0 ]]; then
+    CHIPNAME="rk3588"
 elif [[ $(expr $COMPATIBLE : ".*rk1808") -ne 0 ]]; then
     CHIPNAME="rk1808"
 elif [[ $(expr $COMPATIBLE : ".*px3se") -ne 0 ]]; then

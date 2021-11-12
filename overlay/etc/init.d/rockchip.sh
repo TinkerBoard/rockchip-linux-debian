@@ -34,6 +34,9 @@ install_mali() {
         rk3568|rk3566)
             MALI=bifrost-g52-g2p0
             ;;
+        rk3588|rk3588s)
+            MALI=valhall-g610-g6p0
+            ;;
     esac
 
     apt install -f /packages/libmali/libmali-*$MALI*-x11*.deb
@@ -60,6 +63,9 @@ init_rkwifibt() {
 	    rk_wifi_init /dev/ttyS1
             ;;
         rk3568)
+	    rk_wifi_init /dev/ttyS8
+            ;;
+        rk3588|rk3588s)
 	    rk_wifi_init /dev/ttyS8
             ;;
     esac
@@ -92,6 +98,8 @@ elif [[ $COMPATIBLE =~ "rk3566" ]]; then
     CHIPNAME="rk3566"
 elif [[ $COMPATIBLE =~ "rk3568" ]]; then
     CHIPNAME="rk3568"
+elif [[ $COMPATIBLE =~ "rk3588" ]]; then
+    CHIPNAME="rk3588"
 else
     CHIPNAME="rk3036"
 fi
