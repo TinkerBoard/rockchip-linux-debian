@@ -51,9 +51,9 @@ fi
 sudo cp -f overlay/usr/lib/systemd/system/serial-getty@.service $TARGET_ROOTFS_DIR/lib/systemd/system/serial-getty@.service
 
 # adb
-if [[ "$ARCH" == "armhf" && "$VERSION" == "debug" ]]; then
+if [ "$ARCH" == "armhf" ]; then
 	sudo cp -f overlay-debug/usr/local/share/adb/adbd-32 $TARGET_ROOTFS_DIR/usr/bin/adbd
-elif [[ "$ARCH" == "arm64" && "$VERSION" == "debug" ]]; then
+elif [ "$ARCH" == "arm64" ]; then
 	sudo cp -f overlay-debug/usr/local/share/adb/adbd-64 $TARGET_ROOTFS_DIR/usr/bin/adbd
 fi
 
