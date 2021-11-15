@@ -1,0 +1,13 @@
+#start
+[Unit]
+Description=mount /dev/mmcblkp7 partition
+Before=lightdm.service
+After=systemd-remount-fs.service
+
+[Service]
+Type=simple
+ExecStart=/etc/init.d/mountboot.sh
+
+[Install]
+WantedBy=multi-user.target
+#end
