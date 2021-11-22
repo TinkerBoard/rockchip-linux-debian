@@ -82,7 +82,7 @@ chmod +x /etc/rc.local
 export APT_INSTALL="apt-get install -fy --allow-downgrades"
 
 #---------------power management --------------
-\${APT_INSTALL} busybox pm-utils triggerhappy
+\${APT_INSTALL} pm-utils triggerhappy
 cp /etc/Powermanager/triggerhappy.service  /lib/systemd/system/triggerhappy.service
 
 #---------------Rga--------------
@@ -100,6 +100,7 @@ gstreamer1.0-plugins-base-apps qtmultimedia5-examples
 echo -e "\033[36m Install camera.................... \033[0m"
 \${APT_INSTALL} cheese v4l-utils
 \${APT_INSTALL} /packages/rkisp/*.deb
+\${APT_INSTALL} /packages/rkaiq/*.deb
 \${APT_INSTALL} /packages/libv4l/*.deb
 
 #---------Xserver---------
