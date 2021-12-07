@@ -39,40 +39,9 @@ install_mali() {
             ;;
     esac
 
-    apt install -f /packages/libmali/libmali-*$MALI*-x11*.deb
+    apt install -fy --allow-downgrades /packages/libmali/libmali-*$MALI*-x11*.deb
 }
 
-init_rkwifibt() {
-    case $1 in
-        rk3288)
-	    rk_wifi_init /dev/ttyS0
-            ;;
-        rk3399|rk3399pro)
-	    rk_wifi_init /dev/ttyS0
-            ;;
-        rk3328)
-	    rk_wifi_init /dev/ttyS0
-            ;;
-        rk3326|px30)
-	    rk_wifi_init /dev/ttyS1
-            ;;
-        rk3128|rk3036)
-	    rk_wifi_init /dev/ttyS0
-            ;;
-        rk3566)
-	    rk_wifi_init /dev/ttyS1
-            ;;
-        rk3568)
-	    rk_wifi_init /dev/ttyS8
-	    ;;
-        rk3588|rk3588s)
-	    rk_wifi_init /dev/ttyS8
-            ;;
-        rk3588|rk3588s)
-	    rk_wifi_init /dev/ttyS8
-            ;;
-    esac
-}
 
 function update_npu_fw() {
     /usr/bin/npu-image.sh
@@ -124,11 +93,11 @@ then
     # Cannot open pixbuf loader module file
     if [ -e "/usr/lib/arm-linux-gnueabihf" ] ;
     then
-	/usr/lib/arm-linux-gnueabihf/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders > /usr/lib/arm-linux-gnueabihf/gdk-pixbuf-2.0/2.10.0/loaders.cache
-	update-mime-database /usr/share/mime/
+       /usr/lib/arm-linux-gnueabihf/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders > /usr/lib/arm-linux-gnueabihf/gdk-pixbuf-2.0/2.10.0/loaders.cache
+       update-mime-database /usr/share/mime/
     elif [ -e "/usr/lib/aarch64-linux-gnu" ];
     then
-	/usr/lib/aarch64-linux-gnu/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders > /usr/lib/aarch64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders.cache
+       /usr/lib/aarch64-linux-gnu/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders > /usr/lib/aarch64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders.cache
     fi
 
     rm -rf /packages
@@ -139,14 +108,14 @@ then
     touch /usr/local/first_boot_flag
 fi
 
-# init rkwifibt
-init_rkwifibt ${CHIPNAME}
+# enable rkwifbt service
+#service rkwifibt start
 
 # enable async service
-service async start
+#service async start
 
 # enable adbd service
-service adbd start
+#service adbd start
 
 # support power management
 if [ -e "/usr/sbin/pm-suspend" -a -e /etc/Powermanager ] ;
