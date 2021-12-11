@@ -47,8 +47,6 @@ sudo cp -rf overlay-firmware/* $TARGET_ROOTFS_DIR/
 if [ "$VERSION" == "debug" ]; then
 	sudo cp -rf overlay-debug/* $TARGET_ROOTFS_DIR/
 fi
-## hack the serial
-sudo cp -f overlay/usr/lib/systemd/system/serial-getty@.service $TARGET_ROOTFS_DIR/lib/systemd/system/serial-getty@.service
 
 # adb
 if [[ "$ARCH" == "armhf" && "$VERSION" == "debug" ]]; then
@@ -130,10 +128,6 @@ sed -i "1aexport LD_PRELOAD=libdrm-cursor.so.1" /usr/bin/X
 echo -e "\033[36m Install pcmanfm.................... \033[0m"
 \${APT_INSTALL} /packages/pcmanfm/*.deb
 
-#------------------pulseaudio---------
-echo -e "\033[36m Install pulseaudio................. \033[0m"
-dpkg -i /packages/pulseaudio/*.deb
-
 #------------------rkwifibt------------
 echo -e "\033[36m Install rkwifibt.................... \033[0m"
 \${APT_INSTALL} /packages/rkwifibt/*.deb
@@ -144,6 +138,17 @@ if [ "$VERSION" == "debug" ]; then
 echo -e "\033[36m Install glmark2.................... \033[0m"
 \${APT_INSTALL} /packages/glmark2/*.deb
 fi
+
+echo -e "\033[36m Install synaptic/onboard.................... \033[0m"
+\${APT_INSTALL} synaptic onboard
+
+echo -e "\033[36m Install network vpn.................... \033[0m"
+\${APT_INSTALL} network-manager-l2tp network-manager-openvpn network-manager-pptp network-manager-strongswan network-manager-vpnc
+apt install -fy network-manager-gnome --reinstall
+
+#------------------pulseaudio---------
+echo -e "\033[36m Install pulseaudio................. \033[0m"
+no|apt-get install -fy --allow-downgrades /packages/pulseaudio/*.deb
 
 # mark package to hold
 apt list --installed | grep -v oldstable | cut -d/ -f1 | xargs apt-mark hold
