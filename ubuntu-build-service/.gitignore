@@ -5,6 +5,7 @@
 */binary
 
 */*.build-log.txt
+*/*.modified_timestamps
 */*.packages.install
 */*.config.tar.bz2
 */*.contents

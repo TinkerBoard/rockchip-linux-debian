@@ -4,6 +4,8 @@ if [ "$RELEASE" == "stretch" ]; then
 	RELEASE='stretch'
 elif [ "$RELEASE" == "buster" ]; then
 	RELEASE='buster'
+elif [ "$RELEASE" == "bullseye" ]; then
+	RELEASE='bullseye'
 else
     echo -e "\033[36m please input the os type,stretch or buster...... \033[0m"
 fi

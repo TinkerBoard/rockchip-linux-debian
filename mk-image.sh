@@ -15,7 +15,7 @@ fi
 
 # Create directories
 mkdir ${MOUNTPOINT}
-dd if=/dev/zero of=${ROOTFSIMAGE} bs=1M count=0 seek=4000
+dd if=/dev/zero of=${ROOTFSIMAGE} bs=1M count=0 seek=6000
 
 finish() {
 	sudo umount ${MOUNTPOINT} || true

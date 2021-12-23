@@ -14,11 +14,11 @@ case "$1" in
 	unset QT_XCB_GL_INTEGRATION
 #	export QT_GSTREAMER_WIDGET_VIDEOSINK=rkximagesink
 	export QT_GSTREAMER_WIDGET_VIDEOSINK=xvimagesink
-	su linaro -c "DISPLAY=:0.0 /usr/lib/aarch64-linux-gnu/qt5/examples/multimediawidgets/player/player /usr/local/test.mp4 "
+	/usr/lib/aarch64-linux-gnu/qt5/examples/multimediawidgets/player/player /usr/local/test.mp4
 	;;
 	*)
 #	export QT_GSTREAMER_WIDGET_VIDEOSINK=rkximagesink
 	export QT_GSTREAMER_WIDGET_VIDEOSINK=xvimagesink
-	su linaro -c "DISPLAY=:0.0 /usr/lib/arm-linux-gnueabihf/qt5/examples/multimediawidgets/player/player /usr/local/test.mp4 "
+	/usr/lib/arm-linux-gnueabihf/qt5/examples/multimediawidgets/player/player /usr/local/test.mp4
 	;;
 esac
