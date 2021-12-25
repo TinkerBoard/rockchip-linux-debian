@@ -9,7 +9,5 @@ export DISPLAY=:0.0
 # :v4l2-height=480 --sout="#transcode{vcodec=h264,vb=800,scale=1,\
 # acodec=mp4a,ab=128,channels=2,samplerate=44100}:rtp{sdp=rtsp://:8554/}" -I dummy
 
-su linaro -c "\
-    gst-launch-1.0 rtspsrc location=rtsp://192.168.31.163:8554/ ! \
-            ! rtph264depay ! h264parse ! mppvideodec ! rkximagesink sync=false \
-"
+gst-launch-1.0 rtspsrc location=rtsp://192.168.31.163:8554/ ! \
+            ! rtph264depay ! h264parse ! mppvideodec ! rkximagesink sync=false

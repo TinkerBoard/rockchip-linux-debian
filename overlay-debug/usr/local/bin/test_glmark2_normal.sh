@@ -67,7 +67,7 @@ else
 fi
 COMPATIBLE=${COMPATIBLE#rockchip,}
 
-echo performance | tee $(find /sys/ -name *governor)
+echo performance | tee $(find /sys/ -name *governor) /dev/null || true
 
 run_glmark2 ${CHIPNAME}
 
