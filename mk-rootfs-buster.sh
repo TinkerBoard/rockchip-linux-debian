@@ -92,9 +92,6 @@ gstreamer1.0-plugins-base-apps qtmultimedia5-examples
 
 \${APT_INSTALL} /packages/mpp/*
 \${APT_INSTALL} /packages/gst-rkmpp/*.deb
-\${APT_INSTALL} /packages/gst-base/*.deb
-\${APT_INSTALL} /packages/mpp/*
-\${APT_INSTALL} /packages/gst-rkmpp/*.deb
 \${APT_INSTALL} /packages/gstreamer/*.deb
 \${APT_INSTALL} /packages/gst-plugins-base1.0/*.deb
 \${APT_INSTALL} /packages/gst-plugins-bad1.0/*.deb
