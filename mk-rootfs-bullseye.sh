@@ -85,7 +85,7 @@ chmod +x /etc/rc.local
 export APT_INSTALL="apt-get install -fy --allow-downgrades"
 
 #---------------power management --------------
-\${APT_INSTALL} pm-utils triggerhappy
+\${APT_INSTALL} pm-utils triggerhappy bsdmainutils
 cp /etc/Powermanager/triggerhappy.service  /lib/systemd/system/triggerhappy.service
 
 #---------------Rga--------------
