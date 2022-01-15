@@ -144,6 +144,10 @@ chmod +x /usr/sbin/policy-rc.d
 \${APT_INSTALL} blueman
 rm -f /usr/sbin/policy-rc.d
 
+#------------------blueman------------
+echo -e "\033[36m Install blueman.................... \033[0m"
+\${APT_INSTALL} /packages/blueman/*.deb
+
 #------------------rkwifibt------------
 echo -e "\033[36m Install rkwifibt.................... \033[0m"
 \${APT_INSTALL} /packages/rkwifibt/*.deb
