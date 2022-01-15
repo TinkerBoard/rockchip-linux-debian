@@ -138,6 +138,10 @@ sed -i "1aexport LD_PRELOAD=libdrm-cursor.so.1" /usr/bin/X
 echo -e "\033[36m Install pcmanfm.................... \033[0m"
 \${APT_INSTALL} /packages/pcmanfm/*.deb
 
+#------------------blueman------------
+echo -e "\033[36m Install blueman.................... \033[0m"
+\${APT_INSTALL} /packages/blueman/*.deb
+
 #------------------rkwifibt------------
 echo -e "\033[36m Install rkwifibt.................... \033[0m"
 \${APT_INSTALL} /packages/rkwifibt/*.deb
