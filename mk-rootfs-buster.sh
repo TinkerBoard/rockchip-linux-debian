@@ -156,6 +156,10 @@ systemctl mask NetworkManager-wait-online.service
 rm /lib/systemd/system/wpa_supplicant@.service
 
 #-------ASUS customization start-------
+# Switching iptables/ip6tables to the legacy version
+update-alternatives --set iptables /usr/sbin/iptables-legacy
+update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+
 echo $VERSION_NUMBER-$VERSION > /etc/version
 
 #-------- Florence Virtual Keyboard --------
