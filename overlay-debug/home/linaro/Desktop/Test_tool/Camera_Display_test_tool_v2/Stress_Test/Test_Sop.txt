@@ -1,0 +1,22 @@
+測試Script 螢幕保持恆亮: 
+menu ->Preferences -> PowerManager -> Display -> 取消勾選Handle display power management、 Bland after > Never
+
+Record:
+	Script執行流程:
+		錄影一小時並循環(預設12小時)，請檢查/tmp/底下影片是否正常
+
+	Script使用方法:
+		錄影12小時(預設)
+		$./Record.sh
+		指定錄影時間(單位小時)
+		$./Record.sh 1
+
+Capture:
+	Script執行流程:
+		連續拍照(預設3000張)，請檢查/tmp/底下照片是否正常
+
+    Script使用方法:
+		連續拍照3000張(預設)
+		$./Capture.sh
+		指定拍照張數
+		$./Capture.sh 100

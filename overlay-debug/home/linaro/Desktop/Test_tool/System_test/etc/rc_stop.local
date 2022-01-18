@@ -1,0 +1,45 @@
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+#create HDMI/DP config for xrandr to save hotplug status
+HDMI_HOTPLUG_CONFIG="/boot/display/hdmi/hdmi_plug_flag.cfg"
+DP_HOTPLUG_CONFIG="/boot/display/dp/dp_plug_flag.cfg"
+
+if [ ! -d /boot/display ]; then
+    mkdir /boot/display
+	if [ ! -d /boot/display/hdmi ]; then
+		mkdir /boot/display/hdmi
+	fi
+
+	if [ ! -d /boot/display/dp ]; then
+		mkdir /boot/display/dp
+	fi
+fi
+
+if [ -f $HDMI_HOTPLUG_CONFIG ]; then
+	rm -rf $HDMI_HOTPLUG_CONFIG
+fi
+
+if [ -f $DP_HOTPLUG_CONFIG ]; then
+	rm -rf $DP_HOTPLUG_CONFIG
+fi
+
+touch $HDMI_HOTPLUG_CONFIG
+touch $DP_HOTPLUG_CONFIG
+
+
+rk_wifi_init /dev/ttyS0
+
+# Generate the SSH keys if non-existent
+ssh-keygen -A
+
+exit 0
