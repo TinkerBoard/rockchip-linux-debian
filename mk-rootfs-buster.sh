@@ -165,6 +165,13 @@ echo $VERSION_NUMBER-$VERSION > /etc/version
 #-------- Florence Virtual Keyboard --------
 apt-get install -y at-spi2-core
 apt-get install -y florence
+
+#---------------tinker-power-management--------------
+cd /usr/local/share/tinker-power-management
+gcc tinker-power-management.c -o tinker-power-management -lncursesw
+mv tinker-power-management /usr/bin
+cd /
+
 #-------ASUS customization end-------
 
 #---------------Clean--------------

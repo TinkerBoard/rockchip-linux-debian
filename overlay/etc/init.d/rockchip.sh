@@ -140,6 +140,32 @@ service async start
 # enable adbd service
 service adbd start
 
+# set cpu governor and frequence
+CPU_GOVERNOR=$(cat /boot/config.txt | grep 'cpu_governor' | cut -d '=' -f2)
+A53_MINFREQ=$(cat /boot/config.txt | grep 'a53_minfreq' | cut -d '=' -f2)
+A53_MAXFREQ=$(cat /boot/config.txt | grep 'a53_maxfreq' | cut -d '=' -f2)
+A72_MINFREQ=$(cat /boot/config.txt | grep 'a72_minfreq' | cut -d '=' -f2)
+A72_MAXFREQ=$(cat /boot/config.txt | grep 'a72_maxfreq' | cut -d '=' -f2)
+
+GPU_GOVERNOR=$(cat /boot/config.txt | grep 'gpu_governor' | cut -d '=' -f2)
+T86X_MINFREQ=$(cat /boot/config.txt | grep 't86x_minfreq' | cut -d '=' -f2)
+T86X_MAXFREQ=$(cat /boot/config.txt | grep 't86x_maxfreq' | cut -d '=' -f2)
+
+if [ $CPU_GOVERNOR ] && [ $A53_MINFREQ -gt 0 ] && [ $A53_MAXFREQ -gt 0 ] && [ $A72_MINFREQ -gt 0 ] && [ $A72_MAXFREQ -gt 0 ]; then
+    sudo su -c "echo $CPU_GOVERNOR > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor"
+    sudo su -c "echo $CPU_GOVERNOR > /sys/devices/system/cpu/cpufreq/policy4/scaling_governor"
+    sudo su -c "echo $A53_MINFREQ > /sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq"
+    sudo su -c "echo $A53_MAXFREQ > /sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq"
+    sudo su -c "echo $A72_MINFREQ > /sys/devices/system/cpu/cpufreq/policy4/scaling_min_freq"
+    sudo su -c "echo $A72_MAXFREQ > /sys/devices/system/cpu/cpufreq/policy4/scaling_max_freq"
+fi
+
+if [ $GPU_GOVERNOR ] && [ $T86X_MINFREQ -gt 0 ] && [ $T86X_MAXFREQ -gt 0 ]; then
+    sudo su -c "echo $GPU_GOVERNOR > /sys/class/devfreq/ff9a0000.gpu/governor"
+    sudo su -c "echo $T86X_MINFREQ > /sys/class/devfreq/ff9a0000.gpu/min_freq"
+    sudo su -c "echo $T86X_MAXFREQ > /sys/class/devfreq/ff9a0000.gpu/max_freq"
+fi
+
 # support power management
 if [ -e "/usr/sbin/pm-suspend" -a -e /etc/Powermanager ] ;
 then
