@@ -26,7 +26,7 @@ install_mali() {
             MALI=utgard-450
             ;;
         rk3326|px30)
-            MALI=bifrost-g31
+            MALI=bifrost-g31-g2p0
             ;;
         rk3128|rk3036)
             MALI=utgard-400

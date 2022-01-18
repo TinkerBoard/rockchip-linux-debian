@@ -7,20 +7,24 @@ if [ -e $TARGET_ROOTFS_DIR ]; then
 	sudo rm -rf $TARGET_ROOTFS_DIR
 fi
 
-if [ "$ARCH" == "armhf" ]; then
-	ARCH='armhf'
-elif [ "$ARCH" == "arm64" ]; then
-	ARCH='arm64'
-else
-    echo -e "\033[36m please input is: armhf or arm64...... \033[0m"
-fi
+case "${ARCH:-$1}" in
+	arm|arm32|armhf)
+		ARCH=armhf
+		;;
+	*)
+		ARCH=arm64
+		;;
+esac
+
+echo -e "\033[36m Building for $ARCH \033[0m"
 
 if [ ! $VERSION ]; then
 	VERSION="release"
 fi
 
 if [ ! -e linaro-buster-alip-*.tar.gz ]; then
-	echo "\033[36m Run mk-base-debian.sh first \033[0m"
+	echo -e "\033[36m Run mk-base-debian.sh first \033[0m"
+	exit -1
 fi
 
 finish() {
@@ -82,67 +86,47 @@ apt-get upgrade -y
 chmod o+x /usr/lib/dbus-1.0/dbus-daemon-launch-helper
 chmod +x /etc/rc.local
 
-#---------------system--------------
-apt-get install -y git fakeroot devscripts cmake binfmt-support dh-make dh-exec pkg-kde-tools device-tree-compiler \
-bc cpio parted dosfstools mtools libssl-dev dpkg-dev ntp rsyslog wget gdb net-tools inetutils-ping openssh-server \
-ifupdown alsa-utils python vim ntp git libssl-dev vsftpd tcpdump can-utils i2c-tools strace network-manager onboard \
-evtest sox libsox-fmt-all
-apt-get install -f -y
+export APT_INSTALL="apt-get install -fy --allow-downgrades"
 
 #---------------power management --------------
-apt-get install -y busybox pm-utils triggerhappy
+\${APT_INSTALL} busybox pm-utils triggerhappy
 cp /etc/Powermanager/triggerhappy.service  /lib/systemd/system/triggerhappy.service
 
 #---------------Rga--------------
-dpkg -i /packages/rga/*.deb
+\${APT_INSTALL} /packages/rga/*.deb
 
 echo -e "\033[36m Setup Video.................... \033[0m"
-apt-get install -y gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gstreamer1.0-tools gstreamer1.0-alsa \
+\${APT_INSTALL} gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gstreamer1.0-tools gstreamer1.0-alsa \
 gstreamer1.0-plugins-base-apps qtmultimedia5-examples
-apt-get install -f -y
 
-dpkg -i  /packages/mpp/*
-dpkg -i  /packages/gst-rkmpp/*.deb
-dpkg -i  /packages/gst-base/*.deb
-apt-mark hold gstreamer1.0-x
-apt-get install -f -y
+\${APT_INSTALL} /packages/mpp/*
+\${APT_INSTALL} /packages/gst-rkmpp/*.deb
+\${APT_INSTALL} /packages/gst-base/*.deb
 
 #---------Camera---------
 echo -e "\033[36m Install camera.................... \033[0m"
-apt-get install cheese v4l-utils -y
-dpkg -i  /packages/rkisp/*.deb
-dpkg -i  /packages/libv4l/*.deb
+\${APT_INSTALL} cheese v4l-utils
+\${APT_INSTALL} /packages/rkisp/*.deb
+\${APT_INSTALL} /packages/libv4l/*.deb
 
 #---------Xserver---------
 echo -e "\033[36m Install Xserver.................... \033[0m"
-#apt-get build-dep -y xorg-server-source
-apt-get install -y xserver-xorg-dev libaudit-dev libx11-xcb1 xtrans-dev xfonts-utils x11proto-dev libxdmcp-dev libxau-dev libxdmcp-dev libxfont-dev libxkbfile-dev libpixman-1-dev libpciaccess-dev libgcrypt-dev nettle-dev libudev-dev libselinux1-dev:arm64 libaudit-dev libgl1-mesa-dev libunwind-dev libxmuu-dev libxext-dev libx11-dev libxrender-dev libxi-dev libdmx-dev libxpm-dev libxaw7-dev libxt-dev libxmu-dev libxtst-dev libxres-dev libxfixes-dev libxv-dev libxinerama-dev libxshmfence-dev libepoxy-dev libegl1-mesa-dev libgbm-dev
-
-apt-get install -f -y
-
-dpkg -i /packages/xserver/*.deb
-apt-get install -f -y
-apt-mark hold xserver-common xserver-xorg-core xserver-xorg-legacy
+\${APT_INSTALL} /packages/xserver/*.deb
 
 #---------------Openbox--------------
 echo -e "\033[36m Install openbox.................... \033[0m"
-apt-get install -y openbox
-dpkg -i  /packages/openbox/*.deb
-apt-get install -f -y
+\${APT_INSTALL} /packages/openbox/*.deb
 
 #---------update chromium-----
-apt-get install -y chromium
-apt-get install -f -y /packages/chromium/*.deb
+\${APT_INSTALL} /packages/chromium/*.deb
 
 #------------------libdrm------------
 echo -e "\033[36m Install libdrm.................... \033[0m"
-dpkg -i  /packages/libdrm/*.deb
-apt-get install -f -y
+\${APT_INSTALL} /packages/libdrm/*.deb
 
 #------------------libdrm-cursor------------
 echo -e "\033[36m Install libdrm-cursor.................... \033[0m"
-dpkg -i  /packages/libdrm-cursor/*.deb
-apt-get install -f -y
+\${APT_INSTALL} /packages/libdrm-cursor/*.deb
 
 # Only preload libdrm-cursor for X
 sed -i "/libdrm-cursor.so/d" /etc/ld.so.preload
@@ -150,28 +134,21 @@ sed -i "1aexport LD_PRELOAD=libdrm-cursor.so.1" /usr/bin/X
 
 #------------------pcmanfm------------
 echo -e "\033[36m Install pcmanfm.................... \033[0m"
-dpkg -i  /packages/pcmanfm/*.deb
-apt-get install -f -y
+\${APT_INSTALL} /packages/pcmanfm/*.deb
 
 #------------------rkwifibt------------
 echo -e "\033[36m Install rkwifibt.................... \033[0m"
-dpkg -i  /packages/rkwifibt/*.deb
-apt-get install -f -y
+\${APT_INSTALL} /packages/rkwifibt/*.deb
 ln -s /system/etc/firmware /vendor/etc/
 
 if [ "$VERSION" == "debug" ]; then
 #------------------glmark2------------
 echo -e "\033[36m Install glmark2.................... \033[0m"
-dpkg -i  /packages/glmark2/*.deb
-apt-get install -f -y
+\${APT_INSTALL} /packages/glmark2/*.deb
 fi
 
 # mark package to hold
-# apt-mark hold libv4l-0 libv4l2rds0 libv4lconvert0 libv4l-dev v4l-utils
-#apt-mark hold librockchip-mpp1 librockchip-mpp-static librockchip-vpu0 rockchip-mpp-demos
-#apt-mark hold xserver-common xserver-xorg-core xserver-xorg-legacy
-#apt-mark hold libegl-mesa0 libgbm1 libgles1 alsa-utils
-#apt-get install -f -y
+apt list --installed | grep -v oldstable | cut -d/ -f1 | xargs apt-mark hold
 
 #---------------Custom Script--------------
 systemctl mask systemd-networkd-wait-online.service
