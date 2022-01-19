@@ -172,6 +172,9 @@ gcc tinker-power-management.c -o tinker-power-management -lncursesw
 mv tinker-power-management /usr/bin
 cd /
 
+# Change systemd-suspend.service method to pm-suspend
+cp /etc/Powermanager/systemd-suspend.service  /lib/systemd/system/systemd-suspend.service
+
 #-------ASUS customization end-------
 
 #---------------Clean--------------
