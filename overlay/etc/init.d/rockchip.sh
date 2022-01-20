@@ -181,8 +181,8 @@ fi
 # support power management
 if [ -e "/usr/sbin/pm-suspend" -a -e /etc/Powermanager ] ;
 then
-    mv /etc/Powermanager/power-key.sh /usr/bin/
-    mv /etc/Powermanager/power-key.conf /etc/triggerhappy/triggers.d/
+    #mv /etc/Powermanager/power-key.sh /usr/bin/
+    #mv /etc/Powermanager/power-key.conf /etc/triggerhappy/triggers.d/
     if [[ "$CHIPNAME" == "rk3399pro" ]];
     then
         mv /etc/Powermanager/01npu /usr/lib/pm-utils/sleep.d/
