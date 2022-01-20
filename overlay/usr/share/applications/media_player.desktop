@@ -1,0 +1,11 @@
+[Desktop Entry]
+Categories=Qt;KDE;AudioVideo;Player;Video;
+Comment=A gstreamer base player
+Exec=env QT_GSTREAMER_WIDGET_VIDEOSINK=rkximagesink /usr/lib/aarch64-linux-gnu/qt5/examples/multimediawidgets/player/player --geometry 960x640+0+0
+GenericName=Media Player
+Icon=
+Name=Media Player
+Type=Application
+X-KDE-StartupNotify=false
+Keywords=movie;player;media;kde;qt;
+X-Ayatana-Desktop-Shortcuts=Screen;Window
