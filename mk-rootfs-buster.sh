@@ -175,6 +175,12 @@ cd /
 # Change systemd-suspend.service method to pm-suspend
 cp /etc/Powermanager/systemd-suspend.service  /lib/systemd/system/systemd-suspend.service
 
+# Test tool
+if [ "$VERSION" == "debug" ]; then
+	systemctl enable test.service
+fi
+update-alternatives --auto x-terminal-emulator
+
 #-------ASUS customization end-------
 
 #---------------Clean--------------
