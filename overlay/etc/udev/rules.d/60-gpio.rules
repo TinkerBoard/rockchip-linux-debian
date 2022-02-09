@@ -1,0 +1,1 @@
+SUBSYSTEM=="gpio*",PROGRAM="/bin/sh -c 'chown -R root:gpiouser /sys/class/gpio && chmod -R 770 /sys/class/gpio && chown -R root:gpiouser /sys/devices/platform/*/gpio* && chmod -R 770 /sys/devices/platform/*/gpio*'"

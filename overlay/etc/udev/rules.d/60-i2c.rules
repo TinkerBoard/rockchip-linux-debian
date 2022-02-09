@@ -1,0 +1,2 @@
+KERNEL=="i2c-6", GROUP="i2cuser", MODE="0660"
+KERNEL=="i2c-7", GROUP="i2cuser", MODE="0660"

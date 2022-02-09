@@ -1,0 +1,24 @@
+language: python
+
+cache:
+  directories:
+  - env
+
+python:
+  - "2.7"
+
+env:
+  - TARGET=pylint
+  - TARGET=pycodestyle
+  - TARGET=pydocstyle
+  - TARGET=test
+
+matrix:
+  allow_failures:
+    - env: TARGET=pylint
+    - env: TARGET=pycodestyle
+    - env: TARGET=pydocstyle
+
+install: make devenv
+
+script: make ${TARGET}

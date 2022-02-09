@@ -1,0 +1,1 @@
+SUBSYSTEM=="pwm*",PROGRAM="/bin/sh -c 'chown -R root:pwmuser /sys/class/pwm/* && chmod -R 770 /sys/class/pwm/* && chown -R root:pwmuser /sys/devices/platform/*.pwm/pwm/* && chmod -R 770 /sys/devices/platform/*.pwm/pwm/*'"

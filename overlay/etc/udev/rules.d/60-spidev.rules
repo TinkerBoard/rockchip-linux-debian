@@ -1,0 +1,2 @@
+KERNEL=="spidev1.0", GROUP="spidevuser", MODE="0660"
+KERNEL=="spidev5.0", GROUP="spidevuser", MODE="0660"

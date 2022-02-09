@@ -51,6 +51,17 @@ sudo cp -rf overlay-firmware/* $TARGET_ROOTFS_DIR/
 if [ "$VERSION" == "debug" ]; then
 	sudo cp -rf overlay-debug/* $TARGET_ROOTFS_DIR/
 fi
+
+# gpio library
+sudo rm -rf $TARGET_ROOTFS_DIR/usr/local/share/gpio_lib_c_rk3399
+sudo rm -rf $TARGET_ROOTFS_DIR/usr/local/share/gpio_lib_python_rk3399
+sudo cp -rf overlay-debug/usr/local/share/gpio_lib_c_rk3399 $TARGET_ROOTFS_DIR/usr/local/share/gpio_lib_c_rk3399
+sudo cp -rf overlay-debug/usr/local/share/gpio_lib_python_rk3399 $TARGET_ROOTFS_DIR/usr/local/share/gpio_lib_python_rk3399
+
+# mraa library
+sudo rm -rf $TARGET_ROOTFS_DIR/usr/local/share/mraa
+sudo cp -rf overlay-debug/usr/local/share/mraa $TARGET_ROOTFS_DIR/usr/local/share/mraa
+
 ## hack the serial
 sudo cp -f overlay/usr/lib/systemd/system/serial-getty@.service $TARGET_ROOTFS_DIR/lib/systemd/system/serial-getty@.service
 
@@ -174,6 +185,42 @@ cd /
 
 # Change systemd-suspend.service method to pm-suspend
 cp /etc/Powermanager/systemd-suspend.service  /lib/systemd/system/systemd-suspend.service
+
+#---------------gpio library --------------
+# For gpio wiring c library
+chmod a+x /usr/local/share/gpio_lib_c_rk3399
+cd /usr/local/share/gpio_lib_c_rk3399
+./build
+# For gpio python library
+cd /usr/local/share/gpio_lib_python_rk3399/
+python setup.py install
+python3 setup.py install
+cd /
+
+#---------------mraa library --------------
+apt-get install -y swig3.0
+chmod a+x /usr/local/share/mraa
+cd /usr/local/share/mraa
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr --BUILDARCH=aarch64 ..
+make
+make install
+cd /
+
+#---------------40 pin permission for user --------------
+groupadd gpiouser
+adduser linaro gpiouser
+groupadd i2cuser
+adduser linaro i2cuser
+groupadd spidevuser
+adduser linaro spidevuser
+groupadd uartuser
+adduser linaro uartuser
+groupadd pwmuser
+adduser linaro pwmuser
+
+#----------------------------------------
 
 # Test tool
 if [ "$VERSION" == "debug" ]; then

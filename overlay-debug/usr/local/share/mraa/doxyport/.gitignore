@@ -1,0 +1,8 @@
+env/
+
+# Object files
+*.pyc
+
+# Temp files
+*.swp
+*~
