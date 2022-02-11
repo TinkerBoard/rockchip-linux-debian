@@ -124,6 +124,7 @@ mraa_gpio_init_internal(mraa_adv_func_t* func_table, int pin)
                 status = MRAA_ERROR_INVALID_RESOURCE;
                 goto init_internal_cleanup;
             }
+	    usleep(500000);
             dev->owner = 1;
             close(export);
         }

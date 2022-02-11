@@ -312,6 +312,7 @@ mraa_pwm_init_raw(int chipin, int pin)
         close(export_f);
     }
 
+    usleep(500000);
     mraa_pwm_setup_duty_fp(dev);
 
     return dev;
