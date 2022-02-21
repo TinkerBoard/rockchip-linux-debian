@@ -32,7 +32,7 @@
 
 int main (void)
 {
-  printf ("Tinker board R blink\n") ;
+  printf ("Tinker board 2 blink\n") ;
 
   wiringPiSetup () ;
   pinMode (LED, OUTPUT) ;

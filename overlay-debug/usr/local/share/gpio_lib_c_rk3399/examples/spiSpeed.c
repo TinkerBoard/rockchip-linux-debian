@@ -39,7 +39,7 @@
 #define	TRUE	(1==1)
 #define	FALSE	(!TRUE)
 
-#define	SPI_CHAN		0
+#define	SPI_CHAN		1
 #define	NUM_TIMES		100
 #define	MAX_SIZE		(1024*1024)
 

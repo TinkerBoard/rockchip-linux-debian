@@ -39,8 +39,8 @@
 //	Variables as they need to be passed as pointers later on
 
 #ifdef TINKER_BOARD
-const static char       *spiDev0  = "/dev/spidev2.0" ;
-const static char       *spiDev1  = "/dev/spidev2.1" ;
+const static char       *spiDev0  = "/dev/spidev1.0" ;
+const static char       *spiDev1  = "/dev/spidev5.0" ;
 #else
 const static char       *spiDev0  = "/dev/spidev0.0" ;
 const static char       *spiDev1  = "/dev/spidev0.1" ;
@@ -60,7 +60,7 @@ static int         spiFds [2] ;
 
 int wiringPiSPIGetFd (int channel)
 {
-  return spiFds [channel & 1] ;
+  return spiFds [channel] ;
 }
 
 
@@ -77,7 +77,7 @@ int wiringPiSPIDataRW (int channel, unsigned char *data, int len)
 {
   struct spi_ioc_transfer spi ;
 
-  channel &= 1 ;
+//  channel &= 1 ;
 
 // Mentioned in spidev.h but not used in the original kernel documentation
 //	test program )-:
@@ -106,9 +106,9 @@ int wiringPiSPISetupMode (int channel, int speed, int mode)
   int fd ;
 
   mode    &= 3 ;	// Mode is 0, 1, 2 or 3
-  channel &= 1 ;	// Channel is 0 or 1
+//  channel &= 1 ;	// Channel is 0 or 1
 
-  if ((fd = open (channel == 0 ? spiDev0 : spiDev1, O_RDWR)) < 0)
+  if ((fd = open (channel == 1 ? spiDev0 : spiDev1, O_RDWR)) < 0)
     return wiringPiFailure (WPI_ALMOST, "Unable to open SPI device: %s\n", strerror (errno)) ;
 
   spiSpeeds [channel] = speed ;
