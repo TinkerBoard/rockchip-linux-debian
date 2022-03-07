@@ -22,6 +22,7 @@ Remove_TestResult
 time=2
 echo -e "Start Record Test!" | tee -a $ResultFile
 echo 60 > /tmp/flicker_mode
+
 cat /sys/bus/i2c/drivers/imx219/1-0010/name |grep "imx219"
 if [ "$?" == "0" ]; then
 	media-ctl -d /dev/media0 --set-v4l2 '"rkisp1-isp-subdev":0[fmt:SRGGB10_1X10/3280x2464]'
@@ -31,12 +32,22 @@ if [ "$?" == "0" ]; then
 	media-ctl -d /dev/media0 --set-v4l2 '"m00_b_imx219 1-0010":0[fmt:SRGGB10_1X10/3280x2464]'
 	v4l2-ctl -d /dev/video0 --set-fmt-video=width=3280,height=2464,pixelformat=NV12 --set-crop=top=0,left=0,width=3280,height=2464
 else
-	media-ctl -d /dev/media0 --set-v4l2 '"rkisp1-isp-subdev":0[fmt:SBGGR8_1X8/2592x1944]'
-	media-ctl -d /dev/media0 --set-v4l2 '"rkisp1-isp-subdev":0[crop:(0,0)/2592x1944]'
-	media-ctl -d /dev/media0 --set-v4l2 '"rkisp1-isp-subdev":2[fmt:YUYV8_2X8/2592x1944]'
-	media-ctl -d /dev/media0 --set-v4l2 '"rkisp1-isp-subdev":2[crop:(0,0)/2592x1944]'
-	media-ctl -d /dev/media0 --set-v4l2 '"m00_b_ov5647 1-0036":0[fmt:SBGGR8_1X8/2592x1944]'
-	v4l2-ctl -d /dev/video0 --set-fmt-video=width=2592,height=1944,pixelformat=NV12 --set-crop=top=0,left=0,width=2592,height=1944
+	cat /sys/bus/i2c/drivers/imx477/1-001a/name |grep "imx477"
+	if [ "$?" == "0" ]; then
+		media-ctl -d /dev/media0 --set-v4l2 '"rkisp1-isp-subdev":0[fmt:SRGGB12_1X12/2024x1520]'
+		media-ctl -d /dev/media0 --set-v4l2 '"rkisp1-isp-subdev":0[crop:(0,0)/2024x1520]'
+		media-ctl -d /dev/media0 --set-v4l2 '"rkisp1-isp-subdev":2[fmt:YUYV8_2X8/2024x1520]'
+		media-ctl -d /dev/media0 --set-v4l2 '"rkisp1-isp-subdev":2[crop:(0,0)/2024x1520]'
+		media-ctl -d /dev/media0 --set-v4l2 '"m00_b_imx477 1-001a":0[fmt:SRGGB12_1X12/2024x1520]'
+		v4l2-ctl -d /dev/video0 --set-fmt-video=width=2024,height=1520,pixelformat=NV12 --set-crop=top=0,left=0,width=2024,height=1520
+	else
+		media-ctl -d /dev/media0 --set-v4l2 '"rkisp1-isp-subdev":0[fmt:SBGGR8_1X8/2592x1944]'
+		media-ctl -d /dev/media0 --set-v4l2 '"rkisp1-isp-subdev":0[crop:(0,0)/2592x1944]'
+		media-ctl -d /dev/media0 --set-v4l2 '"rkisp1-isp-subdev":2[fmt:YUYV8_2X8/2592x1944]'
+		media-ctl -d /dev/media0 --set-v4l2 '"rkisp1-isp-subdev":2[crop:(0,0)/2592x1944]'
+		media-ctl -d /dev/media0 --set-v4l2 '"m00_b_ov5647 1-0036":0[fmt:SBGGR8_1X8/2592x1944]'
+		v4l2-ctl -d /dev/video0 --set-fmt-video=width=2592,height=1944,pixelformat=NV12 --set-crop=top=0,left=0,width=2592,height=1944
+	fi
 fi
 
 gst-launch-1.0 v4l2src device=$CSI0 ! video/x-raw,width=640,height=480 ! tee name=t t. ! queue ! autovideosink sync=false t. ! queue ! mpph264enc ! queue ! h264parse ! mpegtsmux ! filesink location=/tmp/Record_480p.ts &

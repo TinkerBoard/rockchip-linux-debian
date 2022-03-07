@@ -403,6 +403,7 @@ do_camera() {
     CAMERA_OUT=$(whiptail --menu "Choose a camera setting (Need Reboot)" 20 60 10 --default-item $(get_camera)\
     "0" "IMX219 (Raspiberry Camera V2, 8MP)" \
     "1" "OV5647 (Raspiberry Camera V1, 5MP)" \
+    "2" "IMX477 (Raspberry Pi HQ Camera, 12MP)" \
     3>&1 1>&2 2>&3)
   else
     CAMERA_OUT=$1
@@ -416,14 +417,43 @@ do_camera() {
           sed -i $HWCONFIG -e "s/camera-ov5647-overlay //"
           sed -i $HWCONFIG -e "s/camera-ov5647-overlay//"
         fi
+        if grep -q "camera-imx477-overlay" $HWCONFIG ; then
+          sed -i $HWCONFIG -e "s/ camera-imx477-overlay //"
+          sed -i $HWCONFIG -e "s/ camera-imx477-overlay//"
+          sed -i $HWCONFIG -e "s/camera-imx477-overlay //"
+          sed -i $HWCONFIG -e "s/camera-imx477-overlay//"
+        fi
+
         ;;
       1)
+        if grep -q "camera-imx477-overlay" $HWCONFIG ; then
+          sed -i $HWCONFIG -e "s/ camera-imx477-overlay //"
+          sed -i $HWCONFIG -e "s/ camera-imx477-overlay//"
+          sed -i $HWCONFIG -e "s/camera-imx477-overlay //"
+          sed -i $HWCONFIG -e "s/camera-imx477-overlay//"
+        fi
         if ! grep -q "camera-ov5647-overlay" $HWCONFIG ; then
           OUTPUT=$(tail -n1 $HWCONFIG)
           if [ "$OUTPUT" = "overlay=" ]; then
             sed -i $HWCONFIG -e "\$s/\$/camera-ov5647-overlay/"
           else
             sed -i $HWCONFIG -e "\$s/\$/ camera-ov5647-overlay/"
+          fi
+        fi
+        ;;
+      2)
+        if grep -q "camera-ov5647-overlay" $HWCONFIG ; then
+          sed -i $HWCONFIG -e "s/ camera-ov5647-overlay //"
+          sed -i $HWCONFIG -e "s/ camera-ov5647-overlay//"
+          sed -i $HWCONFIG -e "s/camera-ov5647-overlay //"
+          sed -i $HWCONFIG -e "s/camera-ov5647-overlay//"
+        fi
+        if ! grep -q "camera-imx477-overlay" $HWCONFIG ; then
+          OUTPUT=$(tail -n1 $HWCONFIG)
+          if [ "$OUTPUT" = "overlay=" ]; then
+            sed -i $HWCONFIG -e "\$s/\$/camera-imx477-overlay/"
+          else
+            sed -i $HWCONFIG -e "\$s/\$/ camera-imx477-overlay/"
           fi
         fi
         ;;
