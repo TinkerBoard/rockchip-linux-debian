@@ -153,8 +153,11 @@ echo -e "\033[36m Install glmark2.................... \033[0m"
 \${APT_INSTALL} /packages/glmark2/*.deb
 fi
 
-echo -e "\033[36m Install Chinese fonts.................... \033[0m"
+#------------------rknpu2------------
+echo -e "\033[36m Install rknpu2.................... \033[0m"
+tar xvf /packages/rknpu2/*.tar -C /
 
+echo -e "\033[36m Install Chinese fonts.................... \033[0m"
 # Uncomment zh_CN.UTF-8 for inclusion in generation
 sed -i 's/^# *\(zh_CN.UTF-8\)/\1/' /etc/locale.gen
 echo "LANG=zh_CN.UTF-8" >> /etc/default/locale
