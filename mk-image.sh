@@ -13,6 +13,8 @@ if [ -e ${MOUNTPOINT} ]; then
 	rm -r ${MOUNTPOINT}
 fi
 
+sudo ./post-build.sh $TARGET_ROOTFS_DIR
+
 # Create directories
 mkdir ${MOUNTPOINT}
 dd if=/dev/zero of=${ROOTFSIMAGE} bs=1M count=0 seek=6000
