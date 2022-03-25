@@ -155,7 +155,12 @@ fi
 
 #------------------rknpu2------------
 echo -e "\033[36m Install rknpu2.................... \033[0m"
+\${APT_INSTALL} libgtk-3-dev libgtk2.0-dev
 tar xvf /packages/rknpu2/*.tar -C /
+
+#------------------rktoolkit------------
+echo -e "\033[36m Install rktoolkit.................... \033[0m"
+\${APT_INSTALL} /packages/rktoolkit/*.deb
 
 echo -e "\033[36m Install Chinese fonts.................... \033[0m"
 # Uncomment zh_CN.UTF-8 for inclusion in generation
