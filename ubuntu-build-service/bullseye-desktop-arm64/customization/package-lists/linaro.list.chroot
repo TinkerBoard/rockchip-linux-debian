@@ -82,6 +82,8 @@ kmod
 less
 #libxatracker2
 #libreoffice
+libgtk-3-dev
+libgtk2.0-dev
 libsox-fmt-all
 lightdm
 #linaro-artwork
@@ -194,4 +196,3 @@ zip
 desktop-base
 systemd-sysv
 zathura
-
