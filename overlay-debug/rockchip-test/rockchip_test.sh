@@ -37,6 +37,7 @@ module_choice()
     echo "camera test:          14 (use rkaiq_demo)"
     echo "video test:           15 (use gstreamer-wayland and app_demo)"
     echo "chromium test:        16 (chromium with video hardware acceleration)"
+    echo "hardware infomation:  17 (to get the hardware infomation)"
     echo "*****************************************************"
 
     echo  "please input your test moudle: "
@@ -136,6 +137,10 @@ power_lost_test()
         bash /rockchip-test/flash_test/power_lost_test.sh &
 }
 
+sys_info_get()
+{
+    bash /rockchip-test/system_infomation/get_sys_info.sh
+}
 module_test()
 {
 	case ${MODULE_CHOICE} in
@@ -186,6 +191,9 @@ module_test()
 			;;
 		16)
 			chromium_test
+			;;
+		17)
+			sys_info_get
 			;;
 	esac
 }

@@ -10,4 +10,4 @@ gst-launch-1.0 videotestsrc num-buffers=512 ! video/x-raw,format=NV12,width=1920
 
 echo "message: playing encoded video!"
 
-gst-launch-1.0 uridecodebin uri=file:///home/linaro/2k.ts  ! rkximagesink
+gst-launch-1.0 uridecodebin uri=file:///home/linaro/2k.ts  ! xvimagesink

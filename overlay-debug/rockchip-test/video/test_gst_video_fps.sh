@@ -1,6 +1,6 @@
 #!/bin/bash
 
-URI=/usr/local/test.mp4
+URI=/oem/SampleVideo_1280x720_5mb.mp4
 
 if [ "$1" != "" ]
 then
