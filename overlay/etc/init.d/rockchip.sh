@@ -10,10 +10,11 @@
 ### END INIT INFO
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-install_mali() {
+install_packages() {
     case $1 in
         rk3288)
             MALI=midgard-t76x-r18p0-r0p0
+	    ISP=rkisp
 
             # 3288w
             cat /sys/devices/platform/*gpu/gpuinfo | grep -q r1p0 && \
@@ -21,25 +22,32 @@ install_mali() {
             ;;
         rk3399|rk3399pro)
             MALI=midgard-t86x-r18p0
+	    ISP=rkisp
             ;;
         rk3328)
             MALI=utgard-450
+	    ISP=rkisp
             ;;
         rk3326|px30)
             MALI=bifrost-g31-g2p0
+	    ISP=rkisp
             ;;
         rk3128|rk3036)
             MALI=utgard-400
+	    ISP=rkisp
             ;;
         rk3568|rk3566)
             MALI=bifrost-g52-g2p0
+	    ISP=rkaiq
             ;;
         rk3588|rk3588s)
+	    ISP=rkaiq
             MALI=valhall-g610-g6p0
             ;;
     esac
 
     apt install -fy --allow-downgrades /packages/libmali/libmali-*$MALI*-x11*.deb
+    apt install -fy --allow-downgrades /packages/$ISP/*.deb
 }
 
 
@@ -87,7 +95,7 @@ then
     # Force rootfs synced
     mount -o remount,sync /
 
-    install_mali ${CHIPNAME}
+    install_packages ${CHIPNAME}
     setcap CAP_SYS_ADMIN+ep /usr/bin/gst-launch-1.0
 
     # Cannot open pixbuf loader module file

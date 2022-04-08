@@ -100,8 +100,6 @@ gstreamer1.0-plugins-base-apps qtmultimedia5-examples
 #---------Camera---------
 echo -e "\033[36m Install camera.................... \033[0m"
 \${APT_INSTALL} cheese v4l-utils
-\${APT_INSTALL} /packages/rkisp/*.deb
-\${APT_INSTALL} /packages/rkaiq/*.deb
 \${APT_INSTALL} /packages/libv4l/*.deb
 
 #---------Xserver---------

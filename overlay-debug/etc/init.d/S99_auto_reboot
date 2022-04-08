@@ -1,5 +1,15 @@
 #!/bin/bash
 
+### BEGIN INIT INFO
+# Provides:          reboot
+# Required-Start:
+# Required-Stop:
+# Default-Start:
+# Default-Stop:
+# Short-Description:
+# Description:       Setup reboot platform environment
+### END INIT INFO
+
 case "$1" in
 	start)
 		if [ -e "/oem/rockchip_test/auto_reboot.sh" ]; then
