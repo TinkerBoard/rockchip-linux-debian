@@ -1,3 +1,6 @@
+export GST_GL_API=gles2
+export GST_GL_PLATFORM=egl
+
 export GST_DEBUG_NO_COLOR=1
 
 # Skip vstride aligning, which is not required when using RKVENC.
@@ -45,8 +48,8 @@ export GST_V4L2_USE_LIBV4L2=1
 
 # Try RGA 2D accel in videoconvert, videoscale and videoflip.
 # NOTE: Might not success, and might behave different from the official plugin.
-export GST_VIDEO_CONVERT_USE_RGA=1
-export GST_VIDEO_FLIP_USE_RGA=1
+#export GST_VIDEO_CONVERT_USE_RGA=1
+#export GST_VIDEO_FLIP_USE_RGA=1
 
 # Default rotation for camerabin2:
 # clockwise(90)|rotate-180|counterclockwise(270)|horizontal-flip|vertical-flip
