@@ -179,6 +179,9 @@ source ~/.bashrc
 \${APT_INSTALL} ttf-wqy-zenhei fonts-aenigma
 \${APT_INSTALL} xfonts-intl-chinese
 
+# HACK debian11.3 to fix bug
+\${APT_INSTALL} fontconfig --reinstall
+
 \${APT_INSTALL} xfce4
 ln -sf /usr/bin/startxfce4 /etc/alternatives/x-session-manager
 
