@@ -92,8 +92,8 @@ then
 
     rm -rf /packages
 
-    # The base target does not come with lightdm
-    systemctl restart lightdm.service || true
+    # The base target does not come with gdm3
+    systemctl restart gdm3.service || true
 
     touch /usr/local/first_boot_flag
 fi
