@@ -48,6 +48,7 @@ file
 gconf2
 #gdb
 #gdbserver
+gdm3
 gdisk
 #git
 #gnome
@@ -85,7 +86,7 @@ less
 libgtk-3-dev
 libgtk2.0-dev
 libsox-fmt-all
-lightdm
+#lightdm
 #linaro-artwork
 #linaro-default-settings
 #linaro-overlay-minimal
@@ -156,6 +157,7 @@ sudo
 synaptic
 #sysv-rc-conf
 #thunderbird
+task-gnome-desktop
 trace-cmd
 udev
 unzip
@@ -172,14 +174,14 @@ wpasupplicant
 x11-utils
 x11-xserver-utils
 xdg-user-dirs-gtk
-xfce4
-xfce4-appfinder
-xfce4-appmenu-plugin
-xfce4-diskperf-plugin
-xfce4-mpc-plugin
-xfce4-session
-xfce4-pulseaudio-plugin
-xfce4-power-manager-plugins
+#xfce4
+#xfce4-appfinder
+#xfce4-appmenu-plugin
+#xfce4-diskperf-plugin
+#xfce4-mpc-plugin
+#xfce4-session
+#xfce4-pulseaudio-plugin
+#xfce4-power-manager-plugins
 xinit
 #xmms2-client-cli
 #xmms2-plugin-mad
