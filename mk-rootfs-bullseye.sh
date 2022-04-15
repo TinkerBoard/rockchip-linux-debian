@@ -185,6 +185,9 @@ source ~/.bashrc
 #\${APT_INSTALL} xfce4
 #ln -sf /usr/bin/startxfce4 /etc/alternatives/x-session-manager
 
+# HACK to disable the kernel logo on bootup
+sed -i "/exit 0/i \ echo 3 > /sys/class/graphics/fb0/blank" /etc/rc.local
+
 # mark package to hold
 apt list --installed | grep -v oldstable | cut -d/ -f1 | xargs apt-mark hold
 
