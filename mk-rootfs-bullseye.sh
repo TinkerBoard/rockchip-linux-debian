@@ -140,7 +140,7 @@ echo -e "\033[36m Install pcmanfm.................... \033[0m"
 
 #------------------blueman------------
 echo -e "\033[36m Install blueman.................... \033[0m"
-\${APT_INSTALL} /packages/blueman/*.deb
+#\${APT_INSTALL} /packages/blueman/*.deb
 
 #------------------rkwifibt------------
 echo -e "\033[36m Install rkwifibt.................... \033[0m"
@@ -182,8 +182,8 @@ source ~/.bashrc
 # HACK debian11.3 to fix bug
 \${APT_INSTALL} fontconfig --reinstall
 
-\${APT_INSTALL} xfce4
-ln -sf /usr/bin/startxfce4 /etc/alternatives/x-session-manager
+#\${APT_INSTALL} xfce4
+#ln -sf /usr/bin/startxfce4 /etc/alternatives/x-session-manager
 
 # mark package to hold
 apt list --installed | grep -v oldstable | cut -d/ -f1 | xargs apt-mark hold
