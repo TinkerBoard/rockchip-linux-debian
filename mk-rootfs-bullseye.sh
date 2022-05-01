@@ -211,7 +211,7 @@ then
         cd /usr/lib/arm-linux-gnueabihf/dri/
         cp kms_swrast_dri.so swrast_dri.so rockchip_dri.so /
         rm /usr/lib/arm-linux-gnueabihf/dri/*.so
-        mv /*.so /usr/lib/aarch64-linux-gnu/dri/
+        mv /*.so /usr/lib/arm-linux-gnueabihf/dri/
 elif [ -e "/usr/lib/aarch64-linux-gnu/dri" ];
 then
         cd /usr/lib/aarch64-linux-gnu/dri/
