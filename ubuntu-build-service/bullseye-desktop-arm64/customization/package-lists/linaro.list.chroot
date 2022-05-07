@@ -157,7 +157,7 @@ sudo
 #synaptic
 #sysv-rc-conf
 #thunderbird
-task-gnome-desktop
+task-xfce-desktop
 #trace-cmd
 #udev
 #unzip
@@ -191,7 +191,7 @@ xserver-xorg
 xserver-xorg-input-evdev
 #xserver-xorg-video-fbdev
 xserver-xorg-video-modesetting
-#xscreensaver
+xscreensaver
 #xterm
 #zip
 #lxde-common
