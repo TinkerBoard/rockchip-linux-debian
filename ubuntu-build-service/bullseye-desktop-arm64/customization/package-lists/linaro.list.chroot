@@ -51,10 +51,10 @@ file
 #gdbserver
 #gdm3
 gdisk
-#git
+git
 #gnome
 #gnome-keyring
-#gnome-system-tools
+gnome-system-tools
 #gnupg
 #gpsd
 #gpsd-clients
@@ -83,11 +83,12 @@ iw
 kmod
 less
 #libxatracker2
-#libreoffice
+libreoffice
 libgtk-3-dev
 libgtk2.0-dev
 libsox-fmt-all
 lightdm
+lightdm-gtk-greeter-settings
 #linaro-artwork
 #linaro-default-setting
 #linaro-overlay-minimal
@@ -109,10 +110,11 @@ mawk
 mesa-utils
 #mesa-utils-extra
 #mutrace
+nautilus
 net-tools
 #netcat-openbsd
 network-manager
-#network-manager-gnome
+network-manager-gnome
 network-manager-l2tp
 network-manager-openvpn
 network-manager-pptp
@@ -130,6 +132,7 @@ obconf
 openssh-client
 openssh-server
 parole
+parole-dev
 parted
 pavucontrol
 policykit-1
@@ -157,7 +160,7 @@ sudo
 #supertuxkar
 synaptic
 #sysv-rc-conf
-#thunderbird
+thunderbird
 task-xfce-desktop
 trace-cmd
 udev
@@ -201,4 +204,4 @@ zip
 #lxde-common
 #desktop-base
 systemd-sysv
-#zathura
+zathura
