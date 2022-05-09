@@ -10,6 +10,21 @@
 ### END INIT INFO
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+install_rga() {
+    case $1 in
+        rk3288|rk3399|rk3399pro|rk3328|px30|rk3326|rk3128|rk3036|rk3566|rk3568)
+            RGA=rga
+            ;;
+        rk3588|rk3588s)
+            RGA=rga2
+            ;;
+    esac
+
+    apt install -f /$RGA/*.deb
+    rm -rf /rga*
+}
+
 install_mali() {
     case $1 in
         rk3288)
@@ -88,6 +103,7 @@ then
     mount -o remount,sync /
 
     install_mali ${CHIPNAME}
+    install_rga ${CHIPNAME}
     setcap CAP_SYS_ADMIN+ep /usr/bin/gst-launch-1.0
 
     rm -rf /*.deb

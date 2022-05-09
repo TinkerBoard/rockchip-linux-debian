@@ -193,6 +193,8 @@ source ~/.bashrc
 #sed -i "/exit 0/i \ echo 3 > /sys/class/graphics/fb0/blank" /etc/rc.local
 
 cp /packages/libmali/libmali-*-x11*.deb /
+cp -rf /packages/rga/ /
+cp -rf /packages/rga2/ /
 
 # mark package to hold
 apt list --installed | grep -v oldstable | cut -d/ -f1 | xargs apt-mark hold
