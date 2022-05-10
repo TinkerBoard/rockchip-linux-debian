@@ -83,7 +83,7 @@ iw
 kmod
 less
 #libxatracker2
-libreoffice
+#libreoffice
 libgtk-3-dev
 libgtk2.0-dev
 libsox-fmt-all
@@ -131,8 +131,8 @@ obconf
 #onboard
 openssh-client
 openssh-server
-parole
-parole-dev
+#parole
+#parole-dev
 parted
 pavucontrol
 policykit-1
@@ -160,7 +160,7 @@ sudo
 #supertuxkar
 synaptic
 #sysv-rc-conf
-thunderbird
+#thunderbird
 task-xfce-desktop
 trace-cmd
 udev
