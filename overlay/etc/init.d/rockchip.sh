@@ -20,9 +20,7 @@ install_rga() {
             RGA=rga2
             ;;
     esac
-
     apt-get install -fy --allow-downgrades /$RGA/*.deb
-    rm -rf /rga*
 }
 
 install_mali() {
@@ -105,11 +103,9 @@ then
     install_mali ${CHIPNAME}
     install_rga ${CHIPNAME}
 
-    # mark package to hold
-    apt list --installed | grep -v oldstable | cut -d/ -f1 | xargs apt-mark hold
-
     setcap CAP_SYS_ADMIN+ep /usr/bin/gst-launch-1.0
 
+    rm -rf /rga*
     rm -rf /*.deb
 
     # The base target does not come with lightdm
