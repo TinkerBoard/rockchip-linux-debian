@@ -196,9 +196,6 @@ cp /packages/libmali/libmali-*-x11*.deb /
 cp -rf /packages/rga/ /
 cp -rf /packages/rga2/ /
 
-# mark package to hold
-apt list --installed | grep -v oldstable | cut -d/ -f1 | xargs apt-mark hold
-
 #---------------Custom Script--------------
 systemctl mask systemd-networkd-wait-online.service
 systemctl mask NetworkManager-wait-online.service

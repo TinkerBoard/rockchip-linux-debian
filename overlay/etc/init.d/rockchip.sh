@@ -104,6 +104,10 @@ then
 
     install_mali ${CHIPNAME}
     install_rga ${CHIPNAME}
+
+    # mark package to hold
+    apt list --installed | grep -v oldstable | cut -d/ -f1 | xargs apt-mark hold
+
     setcap CAP_SYS_ADMIN+ep /usr/bin/gst-launch-1.0
 
     rm -rf /*.deb
