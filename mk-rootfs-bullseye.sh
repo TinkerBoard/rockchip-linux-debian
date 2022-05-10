@@ -143,7 +143,12 @@ echo -e "\033[36m Install pcmanfm.................... \033[0m"
 
 #------------------blueman------------
 echo -e "\033[36m Install blueman.................... \033[0m"
-\${APT_INSTALL} /packages/blueman/*.deb
+\${APT_INSTALL} blueman
+echo exit 101 > /usr/sbin/policy-rc.d
+chmod +x /usr/sbin/policy-rc.d
+\${APT_INSTALL} blueman
+rm -f /usr/sbin/policy-rc.d
+sed -i "/exit 0/i \ rm /dev/rfkill" /etc/rc.local
 
 #------------------rkwifibt------------
 echo -e "\033[36m Install rkwifibt.................... \033[0m"
