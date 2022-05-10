@@ -21,7 +21,7 @@ install_rga() {
             ;;
     esac
 
-    apt install -f /$RGA/*.deb
+    apt-get install -fy --allow-downgrades /$RGA/*.deb
     rm -rf /rga*
 }
 
@@ -54,7 +54,7 @@ install_mali() {
             ;;
     esac
 
-    apt install -f /libmali-*$MALI*-x11*.deb
+    apt-get install -fy --allow-downgrades /libmali-*$MALI*-x11*.deb
 }
 
 
