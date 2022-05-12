@@ -38,7 +38,7 @@ export GST_V4L2_PREFERRED_FOURCC=NV12:YU12:NV16:YUY2
 export GST_VIDEO_CONVERT_PREFERRED_FORMAT=NV12:NV16:I420:YUY2
 
 # Using libv4l2 for V4L2
-export GST_V4L2_USE_LIBV4L2=1
+#export GST_V4L2_USE_LIBV4L2=1
 
 # Preferred sinks for playbin3(autoaudiosink/autovideosink) and playbin.
 # export AUTOAUDIOSINK_PREFERRED=alsasink
