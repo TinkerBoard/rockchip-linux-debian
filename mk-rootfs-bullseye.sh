@@ -227,6 +227,7 @@ then
         cp kms_swrast_dri.so swrast_dri.so rockchip_dri.so /
         rm /usr/lib/aarch64-linux-gnu/dri/*.so
         mv /*.so /usr/lib/aarch64-linux-gnu/dri/
+        rm /etc/profile.d/qt.sh
 fi
 cd -
 
