@@ -228,6 +228,7 @@ then
         rm /usr/lib/aarch64-linux-gnu/dri/*.so
         mv /*.so /usr/lib/aarch64-linux-gnu/dri/
         rm /etc/profile.d/qt.sh
+        mv /usr/lib/libpulse.so.0.23.0 /usr/lib/aarch64-linux-gnu/
 fi
 cd -
 
