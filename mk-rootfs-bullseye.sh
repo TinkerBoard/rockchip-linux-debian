@@ -228,8 +228,6 @@ then
         rm /usr/lib/aarch64-linux-gnu/dri/*.so
         mv /*.so /usr/lib/aarch64-linux-gnu/dri/
         rm /etc/profile.d/qt.sh
-        mv /usr/lib/libpulse.so.0.23.0 /usr/lib/aarch64-linux-gnu/
-        ln -sf /usr/lib/aarch64-linux-gnu/pulseaudio/libpulsecommon-14.2.so /usr/lib/libpulsecommon-14.2.so
 fi
 cd -
 
