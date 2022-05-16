@@ -95,7 +95,7 @@ rm /etc/Powermanager -rf
 \${APT_INSTALL} /packages/rga/*.deb
 
 echo -e "\033[36m Setup Video.................... \033[0m"
-\${APT_INSTALL} gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gstreamer1.0-tools gstreamer1.0-alsa \
+\${APT_INSTALL} gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gstreamer1.0-plugins-ugly gstreamer1.0-tools gstreamer1.0-alsa \
 gstreamer1.0-plugins-base-apps qtmultimedia5-examples
 
 \${APT_INSTALL} /packages/mpp/*
