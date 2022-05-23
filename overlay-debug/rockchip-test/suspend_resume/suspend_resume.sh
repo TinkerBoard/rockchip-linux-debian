@@ -28,14 +28,14 @@ random() {
 suspend_resume_by_Key()
 {
     echo "System will suspend, Please resume by key"
-    pm-suspend
+    echo mem > /sys/power/state
 }
 
 auto_suspend_resume()
 {
     while true
     do
-        pm-suspend
+        echo mem > /sys/power/state
         sleep 5
     done
 }
@@ -59,7 +59,7 @@ auto_suspend_resume_rtc()
     echo "sleep for $sus_time second"
     echo 0 > /sys/class/rtc/rtc0/wakealarm
     echo "+${sus_time}" > /sys/class/rtc/rtc0/wakealarm
-    pm-suspend
+    echo mem > /sys/power/state
     wake_time=$(( ( $(random) % $WKAE_INTERVAL ) + $WAKE_MIN ))
     echo "wake for $wake_time second"
     sleep $wake_time
