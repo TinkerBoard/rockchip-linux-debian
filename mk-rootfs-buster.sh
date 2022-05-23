@@ -79,9 +79,12 @@ chmod +x /etc/rc.local
 
 export APT_INSTALL="apt-get install -fy --allow-downgrades"
 
+apt remove -fy firefox-esr chromium*
+
 #---------------power management --------------
 \${APT_INSTALL} pm-utils triggerhappy
-cp /etc/Powermanager/triggerhappy.service  /lib/systemd/system/triggerhappy.service
+#cp /etc/Powermanager/triggerhappy.service  /lib/systemd/system/triggerhappy.service
+rm /etc/Powermanager -rf
 
 #---------------Rga--------------
 \${APT_INSTALL} /packages/rga/*.deb
@@ -129,6 +132,16 @@ sed -i "1aexport LD_PRELOAD=libdrm-cursor.so.1" /usr/bin/X
 echo -e "\033[36m Install pcmanfm.................... \033[0m"
 \${APT_INSTALL} /packages/pcmanfm/*.deb
 
+#------------------blueman------------
+echo -e "\033[36m Install blueman.................... \033[0m"
+\${APT_INSTALL} blueman
+echo exit 101 > /usr/sbin/policy-rc.d
+chmod +x /usr/sbin/policy-rc.d
+\${APT_INSTALL} blueman
+rm -f /usr/sbin/policy-rc.d
+sed -i "/exit 0/i \ rm /dev/rfkill" /etc/rc.local
+A
+
 #------------------rkwifibt------------
 echo -e "\033[36m Install rkwifibt.................... \033[0m"
 \${APT_INSTALL} /packages/rkwifibt/*.deb
@@ -151,16 +164,47 @@ apt install -fy network-manager-gnome --reinstall
 echo -e "\033[36m Install pulseaudio................. \033[0m"
 no|apt-get install -fy --allow-downgrades /packages/pulseaudio/*.deb
 
+cp /packages/libmali/libmali-*-x11*.deb /
+cp -rf /packages/rga/ /
+cp -rf /packages/rga2/ /
+cp -rf /packages/rkisp/*.deb /
+cp -rf /packages/rkaiq/*.deb /
+
 # mark package to hold
 apt list --installed | grep -v oldstable | cut -d/ -f1 | xargs apt-mark hold
+
+# mark rga package to unhold
+apt-mark unhold librga2 librga-dev librga2-dbgsym
 
 #---------------Custom Script--------------
 systemctl mask systemd-networkd-wait-online.service
 systemctl mask NetworkManager-wait-online.service
 rm /lib/systemd/system/wpa_supplicant@.service
 
+#------remove unused packages------------
+apt remove --purge -fy linux-firmware*
+
+#---------------Clean--------------
+if [ -e "/usr/lib/arm-linux-gnueabihf/dri" ] ;
+then
+        cd /usr/lib/arm-linux-gnueabihf/dri/
+        cp kms_swrast_dri.so swrast_dri.so rockchip_dri.so /
+        rm /usr/lib/arm-linux-gnueabihf/dri/*.so
+        mv /*.so /usr/lib/arm-linux-gnueabihf/dri/
+elif [ -e "/usr/lib/aarch64-linux-gnu/dri" ];
+then
+        cd /usr/lib/aarch64-linux-gnu/dri/
+        cp kms_swrast_dri.so swrast_dri.so rockchip_dri.so /
+        rm /usr/lib/aarch64-linux-gnu/dri/*.so
+        mv /*.so /usr/lib/aarch64-linux-gnu/dri/
+        rm /etc/profile.d/qt.sh
+fi
+cd -
+
 #---------------Clean--------------
 rm -rf /var/lib/apt/lists/*
+rm -rf /var/cache/
+rm -rf /packages/
 
 EOF
 
