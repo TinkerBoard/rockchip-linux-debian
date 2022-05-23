@@ -14,7 +14,7 @@ export GST_INSPECT_NO_COLORS=1
 # export GST_MPP_VIDEODEC_DEFAULT_FORMAT=NV12
 
 # Try to use ARM AFBC to get better performance, but not work for all sinks.
-export GST_MPP_VIDEODEC_DEFAULT_ARM_AFBC=1
+#export GST_MPP_VIDEODEC_DEFAULT_ARM_AFBC=1
 
 # Use below env variables to configure kmssink plane ZPOS.
 # export KMSSINK_PLANE_ZPOS=0
