@@ -83,8 +83,7 @@ apt remove -fy firefox-esr chromium*
 
 #---------------power management --------------
 \${APT_INSTALL} pm-utils triggerhappy
-#cp /etc/Powermanager/triggerhappy.service  /lib/systemd/system/triggerhappy.service
-rm /etc/Powermanager -rf
+cp /etc/Powermanager/triggerhappy.service  /lib/systemd/system/triggerhappy.service
 
 #---------------Rga--------------
 \${APT_INSTALL} /packages/rga/*.deb
