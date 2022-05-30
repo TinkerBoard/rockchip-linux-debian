@@ -79,8 +79,6 @@ chmod +x /etc/rc.local
 
 export APT_INSTALL="apt-get install -fy --allow-downgrades"
 
-apt remove -fy firefox-esr chromium*
-
 #---------------power management --------------
 \${APT_INSTALL} pm-utils triggerhappy
 cp /etc/Powermanager/triggerhappy.service  /lib/systemd/system/triggerhappy.service
@@ -162,13 +160,19 @@ apt install -fy network-manager-gnome --reinstall
 
 #------------------pulseaudio---------
 echo -e "\033[36m Install pulseaudio................. \033[0m"
-no|apt-get install -fy --allow-downgrades /packages/pulseaudio/*.deb
+cp /etc/pulse/daemon.conf /
+cp /etc/pulse/default.pa /
+yes|\${APT_INSTALL} /packages/pulseaudio/*.deb
+mv /daemon.conf /default.pa /etc/pulse/
 
 cp /packages/libmali/libmali-*-x11*.deb /
 cp -rf /packages/rga/ /
 cp -rf /packages/rga2/ /
 cp -rf /packages/rkisp/*.deb /
 cp -rf /packages/rkaiq/*.deb /
+
+#------remove unused packages------------
+apt remove --purge -fy linux-firmware*
 
 # mark package to hold
 apt list --installed | grep -v oldstable | cut -d/ -f1 | xargs apt-mark hold
@@ -180,9 +184,6 @@ apt-mark unhold librga2 librga-dev librga2-dbgsym
 systemctl mask systemd-networkd-wait-online.service
 systemctl mask NetworkManager-wait-online.service
 rm /lib/systemd/system/wpa_supplicant@.service
-
-#------remove unused packages------------
-apt remove --purge -fy linux-firmware*
 
 #---------------Clean--------------
 if [ -e "/usr/lib/arm-linux-gnueabihf/dri" ] ;
