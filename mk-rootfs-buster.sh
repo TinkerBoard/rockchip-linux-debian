@@ -80,7 +80,7 @@ chmod +x /etc/rc.local
 export APT_INSTALL="apt-get install -fy --allow-downgrades"
 
 #---------------power management --------------
-\${APT_INSTALL} pm-utils triggerhappy
+\${APT_INSTALL} pm-utils triggerhappy bsdmainutils
 cp /etc/Powermanager/triggerhappy.service  /lib/systemd/system/triggerhappy.service
 
 #---------------Rga--------------
@@ -138,7 +138,6 @@ chmod +x /usr/sbin/policy-rc.d
 \${APT_INSTALL} blueman
 rm -f /usr/sbin/policy-rc.d
 sed -i "/exit 0/i \ rm /dev/rfkill" /etc/rc.local
-A
 
 #------------------rkwifibt------------
 echo -e "\033[36m Install rkwifibt.................... \033[0m"
@@ -150,6 +149,10 @@ if [ "$VERSION" == "debug" ]; then
 echo -e "\033[36m Install glmark2.................... \033[0m"
 \${APT_INSTALL} /packages/glmark2/*.deb
 fi
+
+#------------------rktoolkit------------
+echo -e "\033[36m Install rktoolkit.................... \033[0m"
+\${APT_INSTALL} /packages/rktoolkit/*.deb
 
 echo -e "\033[36m Install synaptic/onboard.................... \033[0m"
 \${APT_INSTALL} synaptic onboard
