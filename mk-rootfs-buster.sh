@@ -147,6 +147,10 @@ echo -e "\033[36m Install glmark2.................... \033[0m"
 \${APT_INSTALL} /packages/glmark2/*.deb
 fi
 
+#------------------rknpu2------------
+echo -e "\033[36m Install rknpu2.................... \033[0m"
+tar xvf /packages/rknpu2/*.tar -C /
+
 #------------------rktoolkit------------
 echo -e "\033[36m Install rktoolkit.................... \033[0m"
 \${APT_INSTALL} /packages/rktoolkit/*.deb
