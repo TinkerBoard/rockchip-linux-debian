@@ -199,7 +199,7 @@ xinit
 #xmms2-plugin-pulse
 #xmms2-plugin-vorbis
 xserver-xorg
-xserver-xorg-input-evdev
+#xserver-xorg-input-evdev
 #xserver-xorg-video-fbdev
 xserver-xorg-video-modesetting
 #xscreensaver
