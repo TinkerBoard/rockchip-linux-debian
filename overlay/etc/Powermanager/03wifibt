@@ -6,10 +6,12 @@
 
 case "$1" in
        hibernate|suspend)
+           hciconfig hci0 down
 	       ifconfig wlan0 down
                ;;
        thaw|resume)
 	       ifconfig wlan0 up
+           hciconfig hci0 up
                ;;
        *) exit $NA
                ;;
