@@ -105,6 +105,11 @@ then
     install_packages ${CHIPNAME}
     setcap CAP_SYS_ADMIN+ep /usr/bin/gst-launch-1.0
 
+    if [ -e "/dev/rfkill" ] ;
+    then
+       rm /dev/rfkill
+    fi
+
     rm -rf /rga*
     rm -rf /*.deb
 

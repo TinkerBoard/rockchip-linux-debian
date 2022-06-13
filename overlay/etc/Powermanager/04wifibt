@@ -6,12 +6,12 @@ echo "!!!!!!!!!!!wifi $1 $2" > /dev/kmsg
 
 case "$1-$2" in
        pre-hibernate|pre-suspend)
-           hciconfig hci0 down
-	       ifconfig wlan0 down
+		hciconfig hci0 down
+		ifconfig wlan0 down
                ;;
        post-hibernate|post-suspend)
-	       ifconfig wlan0 up
-           hciconfig hci0 up
+		ifconfig wlan0 up
+		hciconfig hci0 up
                ;;
        *) exit $NA
                ;;
