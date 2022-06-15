@@ -125,8 +125,8 @@ sed -i "/libdrm-cursor.so/d" /etc/ld.so.preload
 sed -i "1aexport LD_PRELOAD=libdrm-cursor.so.1" /usr/bin/X
 
 #------------------pcmanfm------------
-echo -e "\033[36m Install pcmanfm.................... \033[0m"
-\${APT_INSTALL} /packages/pcmanfm/*.deb
+#echo -e "\033[36m Install pcmanfm.................... \033[0m"
+#\${APT_INSTALL} /packages/pcmanfm/*.deb
 
 #------------------blueman------------
 echo -e "\033[36m Install blueman.................... \033[0m"
