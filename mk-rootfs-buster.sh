@@ -206,13 +206,13 @@ rm /lib/systemd/system/wpa_supplicant@.service
 if [ -e "/usr/lib/arm-linux-gnueabihf/dri" ] ;
 then
         cd /usr/lib/arm-linux-gnueabihf/dri/
-        cp kms_swrast_dri.so swrast_dri.so rockchip_dri.so /
+        cp kms_swrast_dri.so swrast_dri.so /
         rm /usr/lib/arm-linux-gnueabihf/dri/*.so
         mv /*.so /usr/lib/arm-linux-gnueabihf/dri/
 elif [ -e "/usr/lib/aarch64-linux-gnu/dri" ];
 then
         cd /usr/lib/aarch64-linux-gnu/dri/
-        cp kms_swrast_dri.so swrast_dri.so rockchip_dri.so /
+        cp kms_swrast_dri.so swrast_dri.so /
         rm /usr/lib/aarch64-linux-gnu/dri/*.so
         mv /*.so /usr/lib/aarch64-linux-gnu/dri/
         rm /etc/profile.d/qt.sh
