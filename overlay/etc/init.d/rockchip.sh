@@ -10,60 +10,53 @@
 ### END INIT INFO
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-install_mali() {
+install_packages() {
     case $1 in
         rk3288)
-            MALI=midgard-t76x-r18p0-r0p0
-
-            # 3288w
-            cat /sys/devices/platform/*gpu/gpuinfo | grep -q r1p0 && \
-                MALI=midgard-t76x-r18p0-r1p0
-            ;;
+		MALI=midgard-t76x-r18p0-r0p0
+		ISP=rkisp
+		RGA=rga
+		# 3288w
+		cat /sys/devices/platform/*gpu/gpuinfo | grep -q r1p0 && \
+		MALI=midgard-t76x-r18p0-r1p0
+		;;
         rk3399|rk3399pro)
-            MALI=midgard-t86x-r18p0
-            ;;
+		MALI=midgard-t86x-r18p0
+		ISP=rkisp
+		RGA=rga
+		;;
         rk3328)
-            MALI=utgard-450
-            ;;
+		MALI=utgard-450
+		ISP=rkisp
+		RGA=rga
+        ;;
         rk3326|px30)
-            MALI=bifrost-g31-g2p0
-            ;;
+		MALI=bifrost-g31-g2p0
+		ISP=rkisp
+		RGA=rga
+		;;
         rk3128|rk3036)
-            MALI=utgard-400
-            ;;
+		MALI=utgard-400
+		ISP=rkisp
+		RGA=rga
+		;;
         rk3568|rk3566)
-            MALI=bifrost-g52-g2p0
-            ;;
+		MALI=bifrost-g52-g2p0
+		ISP=rkaiq_rk3568
+		RGA=rga
+		;;
+        rk3588|rk3588s)
+		ISP=rkaiq_rk3588
+		MALI=valhall-g610-g6p0
+		RGA=rga2
+		;;
     esac
 
-    apt install -f /packages/libmali/libmali-*$MALI*-x11*.deb
+    apt install -fy --allow-downgrades /libmali-*$MALI*-x11*.deb
+    apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
+    apt install -fy --allow-downgrades /$RGA/*.deb
 }
 
-init_rkwifibt() {
-    case $1 in
-        rk3288)
-	    rk_wifi_init /dev/ttyS0
-            ;;
-        rk3399|rk3399pro)
-	    rk_wifi_init /dev/ttyS0
-            ;;
-        rk3328)
-	    rk_wifi_init /dev/ttyS0
-            ;;
-        rk3326|px30)
-	    rk_wifi_init /dev/ttyS1
-            ;;
-        rk3128|rk3036)
-	    rk_wifi_init /dev/ttyS0
-            ;;
-        rk3566)
-	    rk_wifi_init /dev/ttyS1
-            ;;
-        rk3568)
-	    rk_wifi_init /dev/ttyS8
-            ;;
-    esac
-}
 
 function update_npu_fw() {
     /usr/bin/npu-image.sh
@@ -92,6 +85,8 @@ elif [[ $COMPATIBLE =~ "rk3566" ]]; then
     CHIPNAME="rk3566"
 elif [[ $COMPATIBLE =~ "rk3568" ]]; then
     CHIPNAME="rk3568"
+elif [[ $COMPATIBLE =~ "rk3588" ]]; then
+    CHIPNAME="rk3588"
 else
     CHIPNAME="rk3036"
 fi
@@ -110,17 +105,25 @@ then
     # Resize rootfs
     resize-helper
 
-    install_mali ${CHIPNAME}
+    install_packages ${CHIPNAME}
     setcap CAP_SYS_ADMIN+ep /usr/bin/gst-launch-1.0
+
+    if [ -e "/dev/rfkill" ] ;
+    then
+       rm /dev/rfkill
+    fi
+
+    rm -rf /rga*
+    rm -rf /*.deb
 
     # Cannot open pixbuf loader module file
     if [ -e "/usr/lib/arm-linux-gnueabihf" ] ;
     then
-	/usr/lib/arm-linux-gnueabihf/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders > /usr/lib/arm-linux-gnueabihf/gdk-pixbuf-2.0/2.10.0/loaders.cache
-	update-mime-database /usr/share/mime/
+       /usr/lib/arm-linux-gnueabihf/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders > /usr/lib/arm-linux-gnueabihf/gdk-pixbuf-2.0/2.10.0/loaders.cache
+       update-mime-database /usr/share/mime/
     elif [ -e "/usr/lib/aarch64-linux-gnu" ];
     then
-	/usr/lib/aarch64-linux-gnu/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders > /usr/lib/aarch64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders.cache
+       /usr/lib/aarch64-linux-gnu/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders > /usr/lib/aarch64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders.cache
     fi
 
     rm -rf /packages
@@ -131,14 +134,14 @@ then
     touch /usr/local/first_boot_flag
 fi
 
-# init rkwifibt
-init_rkwifibt ${CHIPNAME}
+# enable rkwifbt service
+#service rkwifibt start
 
 # enable async service
-service async start
+#service async start
 
 # enable adbd service
-service adbd start
+#service adbd start
 
 # set act-led trigger function
 cmdline=$(cat /proc/cmdline)
@@ -188,6 +191,8 @@ then
         mv /etc/Powermanager/01npu /usr/lib/pm-utils/sleep.d/
         mv /etc/Powermanager/02npu /lib/systemd/system-sleep/
     fi
+    mv /etc/Powermanager/03wifibt /usr/lib/pm-utils/sleep.d/
+    mv /etc/Powermanager/04wifibt /lib/systemd/system-sleep/
     mv /etc/Powermanager/triggerhappy /etc/init.d/triggerhappy
 
     rm /etc/Powermanager -rf
