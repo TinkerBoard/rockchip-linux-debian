@@ -84,8 +84,6 @@ chmod +x /etc/rc.local
 
 export APT_INSTALL="apt-get install -fy --allow-downgrades"
 
-apt remove -fy firefox-esr chromium*
-
 #---------------power management --------------
 #\${APT_INSTALL} pm-utils triggerhappy bsdmainutils
 #cp /etc/Powermanager/triggerhappy.service  /lib/systemd/system/triggerhappy.service
@@ -110,8 +108,6 @@ gstreamer1.0-plugins-base-apps qtmultimedia5-examples
 #---------Camera---------
 echo -e "\033[36m Install camera.................... \033[0m"
 \${APT_INSTALL} cheese v4l-utils
-#\${APT_INSTALL} /packages/rkisp/*.deb
-\${APT_INSTALL} /packages/rkaiq/*.deb
 \${APT_INSTALL} /packages/libv4l/*.deb
 
 #---------Xserver---------
@@ -139,10 +135,6 @@ echo -e "\033[36m Install libdrm-cursor.................... \033[0m"
 sed -i "/libdrm-cursor.so/d" /etc/ld.so.preload
 sed -i "1aexport LD_PRELOAD=libdrm-cursor.so.1" /usr/bin/X
 
-#------------------pcmanfm------------
-echo -e "\033[36m Install pcmanfm.................... \033[0m"
-\${APT_INSTALL} /packages/pcmanfm/*.deb
-
 #------------------blueman------------
 echo -e "\033[36m Install blueman.................... \033[0m"
 \${APT_INSTALL} blueman
@@ -150,11 +142,9 @@ echo exit 101 > /usr/sbin/policy-rc.d
 chmod +x /usr/sbin/policy-rc.d
 \${APT_INSTALL} blueman
 rm -f /usr/sbin/policy-rc.d
-sed -i "/exit 0/i \ rm /dev/rfkill" /etc/rc.local
 
 #------------------rkwifibt------------
 echo -e "\033[36m Install rkwifibt.................... \033[0m"
-rm -rf /usr/lib/firmware
 \${APT_INSTALL} /packages/rkwifibt/*.deb
 ln -s /system/etc/firmware /vendor/etc/
 
@@ -164,9 +154,12 @@ echo -e "\033[36m Install glmark2.................... \033[0m"
 \${APT_INSTALL} /packages/glmark2/*.deb
 fi
 
+if [ -e "/usr/lib/aarch64-linux-gnu" ] ;
+then
 #------------------rknpu2------------
 echo -e "\033[36m Install rknpu2.................... \033[0m"
 tar xvf /packages/rknpu2/*.tar -C /
+fi
 
 #------------------rktoolkit------------
 echo -e "\033[36m Install rktoolkit.................... \033[0m"
@@ -202,6 +195,8 @@ source ~/.bashrc
 cp /packages/libmali/libmali-*-x11*.deb /
 cp -rf /packages/rga/ /
 cp -rf /packages/rga2/ /
+cp -rf /packages/rkisp/*.deb /
+cp -rf /packages/rkaiq/*.deb /
 
 # mark package to hold
 apt list --installed | grep -v oldstable | cut -d/ -f1 | xargs apt-mark hold
