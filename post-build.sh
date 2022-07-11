@@ -4,7 +4,6 @@ TARGET_DIR=$1
 shift
 
 RK_LEGACY_PARTITIONS=" \
-    ${RK_OEM_FS_TYPE:+oem:/oem:${RK_OEM_FS_TYPE}}
     ${RK_USERDATA_FS_TYPE:+userdata:/userdata:${RK_USERDATA_FS_TYPE}}
 "
 
