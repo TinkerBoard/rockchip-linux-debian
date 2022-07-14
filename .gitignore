@@ -11,8 +11,8 @@
 #
 rootfs
 binary
-linaro-buster-alip-*.tar.gz
-linaro-buster-arm64.tar.gz
+#linaro-buster-alip-*.tar.gz
+#linaro-buster-arm64.tar.gz
 linaro-rootfs.img
 release
 build
