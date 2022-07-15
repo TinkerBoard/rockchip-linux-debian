@@ -2,76 +2,109 @@
 
 export DISPLAY=${DISPLAY:-:0}
 
-function prepare_env() {
-    # Try to figure out XAUTHORITY and DISPLAY
-    for pid in $(pgrep X 2>/dev/null || \
-        ls /proc|grep -ow "[0-9]*"|sort -rn); do
-        PROC_DIR=/proc/$pid
+HDMI="HDMI-1"
+DP="DP-1"
 
-        # Filter out non-X processes
-        readlink $PROC_DIR/exe|grep -qwE "X$|Xorg$" || continue
+HDMI_SYS="/sys/class/drm/card0-HDMI-A-1"
+DP_SYS="/sys/class/drm/card0-DP-1"
 
-        # Parse auth file and display from cmd args
-        export XAUTHORITY=$(cat $PROC_DIR/cmdline|tr '\0' '\n'| \
-            grep -w "\-auth" -A 1|tail -1)
-        export DISPLAY=$(cat $PROC_DIR/cmdline|tr '\0' '\n'| \
-            grep -w "^:.*" || echo ":0")
+HDMI_XRANDR_CONFIG="/boot/display/hdmi/xrandr.cfg"
+DP_XRANDR_CONFIG="/boot/display/dp/xrandr.cfg"
 
-        logger -t $0 "Found auth: $XAUTHORITY for dpy: $DISPLAY"
-        return
-    done
-}
+HDMI_HOTPLUG_CONFIG="/boot/display/hdmi/hdmi_plug_flag.cfg"
+DP_HOTPLUG_CONFIG="/boot/display/dp/dp_plug_flag.cfg"
 
-function xrandr_wrapper() {
-    xrandr --screen ${SCREEN:-0} $@
-}
 
-if ! xdpyinfo &>/dev/null; then
-    # Try to setup env
-    prepare_env
+HDMI_MODES_NODE="$HDMI_SYS/modes"
+DP_MODES_NODE="$DP_SYS/modes"
 
-    if ! xdpyinfo &>/dev/null; then
-        # Try to switch to an authorized user
-        for XUSER in root $(users);do
-            sudo -u $XUSER xdpyinfo &>/dev/null || continue
+HDMI_MODE_NODE="$HDMI_SYS/mode"
+DP_MODE_NODE="$DP_SYS/mode"
 
-            logger -t $0 "Switch to user: $XUSER"
-            sudo -u $XUSER $0; exit 0
-        done
+hdmi_status=$(cat /sys/class/drm/card0-HDMI-A-1/status)
+dp_status=$(cat /sys/class/drm/card0-DP-1/status)
 
-        logger -t $0 "Unable to contact Xserver!"
-        exit 0
-    fi
+#Save resolution if the external display is disconnected
+#HDMI
+if [ $hdmi_status = "disconnected" ]; then
+	#if [ -f $HDMI_HOTPLUG_CONFIG ]; then
+	#	if [ "$(cat $HDMI_HOTPLUG_CONFIG)" != "Plug_Out" ]; then
+	#		if [ "$(cat $HDMI_MODES_NODE)" != "" ]; then
+	#			HDMI_SAVE_MODE=$(su $user -c xrandr | grep HDMI | awk '{print$3}' | awk -F '+' '{print$1}')
+	#			su $user -c "echo $HDMI_SAVE_MODE" > $HDMI_XRANDR_CONFIG
+	#		fi
+	#	fi
+	#fi
+	sudo -u $user xrandr --output $HDMI --off
+	su $user -c "echo Plug_Out" > $HDMI_HOTPLUG_CONFIG
 fi
 
-TMP=$(mktemp)
+#DP
+if [ $dp_status = "disconnected" ]; then
+	#if [ -f $DP_HOTPLUG_CONFIG ]; then
+	#	if [ "$(cat $DP_HOTPLUG_CONFIG)" != "Plug_Out" ]; then
+	#		if [ "$(cat $DP_MODES_NODE)" != "" ]; then
+	#			DP_SAVE_MODE=$(su $user -c xrandr | grep DP | awk '{print$4}' | awk -F '+' '{print$1}')
+	#			su $user -c "echo $DP_SAVE_MODE" > $DP_XRANDR_CONFIG
+	#		fi
+	#	fi
+	#fi
+	sudo -u $user xrandr --output $DP --off
+	su $user -c "echo Plug_Out" > $DP_HOTPLUG_CONFIG
+fi
 
-SCREENS=$(xdpyinfo|grep screens|cut -d':' -f2)
-for SCREEN in $(seq 0 ${SCREENS:-0}); do
-    # Get monitors and current mode info
-    xrandr_wrapper 2>&1|grep -oE "^.*connected|^.*\*"|tee $TMP
+#Restore external display preview resolution
+#HDMI
+#sudo -u $user xrandr
+if [ $hdmi_status = "connected" ]; then
+	if [ -f $HDMI_HOTPLUG_CONFIG ]; then
+		if [ "$(cat $HDMI_HOTPLUG_CONFIG)" = "Plug_Out" ]; then
+			if [ "$(cat $HDMI_MODES_NODE)" != "" ]; then
+				HDMI_SAVE_MODE=$(su $user -c xrandr | grep HDMI | awk '{print$3}' | awk -F '+' '{print$1}')
+				su $user -c "echo $HDMI_SAVE_MODE" > $HDMI_XRANDR_CONFIG
+			fi
+			if [ -f $HDMI_XRANDR_CONFIG ]; then
+				if grep -q $(cat $HDMI_XRANDR_CONFIG) $HDMI_MODES_NODE; then
+					sudo -u $user xrandr --output $HDMI --mode $(cat $HDMI_XRANDR_CONFIG)
+				else
+					sudo -u $user xrandr --output $HDMI --auto
+				fi
+			else
+				sudo -u $user xrandr --output $HDMI --auto
+			fi
+		else
+			if [ "$(cat $HDMI_MODE_NODE)" = "" ]; then
+				sudo -u $user xrandr --output $HDMI --auto
+			fi
+		fi
+	fi
+	su $user -c "echo Plug_In" > $HDMI_HOTPLUG_CONFIG
+fi
 
-    # Result:
-    # eDP-1 connected
-    #   1536x2048     59.99*
-    # DP-1 disconnected
-    # HDMI-1 connected
-    #   1920x1080     60.00*
-    #
-    # "*" means valid current mode.
-
-    # Make sure every connected monitors been enabled with a valid mode.
-    for MONITOR in $(grep -w connected $TMP|cut -d' ' -f1); do
-        # Find monitors without a valid current mode
-        if ! grep -w $MONITOR $TMP -A 1|grep "\*"; then
-            # Ether disabled or wrongly configured
-            xrandr_wrapper --output $MONITOR --auto
-
-            logger -t $0 "Output $MONITOR enabled."
-        fi
-    done
-done
-
-rm -rf $TMP
+#DP
+if [ $dp_status = "connected" ]; then
+	if [ -f $DP_HOTPLUG_CONFIG ]; then
+		if [ "$(cat $DP_HOTPLUG_CONFIG)" = "Plug_Out" ]; then
+			if [ "$(cat $DP_MODES_NODE)" != "" ]; then
+				DP_SAVE_MODE=$(su $user -c xrandr | grep DP | awk '{print$4}' | awk -F '+' '{print$1}')
+				su $user -c "echo $DP_SAVE_MODE" > $DP_XRANDR_CONFIG
+			fi
+			if [ -f $DP_XRANDR_CONFIG ]; then
+				if grep -q $(cat $DP_XRANDR_CONFIG) $DP_MODES_NODE; then
+					sudo -u $user xrandr --output $DP --mode $(cat $DP_XRANDR_CONFIG)
+				else
+					sudo -u $user xrandr --output $DP --auto
+				fi
+			else
+				sudo -u $user xrandr --output $DP --auto
+			fi
+		else
+			if [ "$(cat $DP_MODE_NODE)" = "" ]; then
+				sudo -u $user xrandr --output $DP --auto
+			fi
+		fi
+	fi
+	su $user -c "echo Plug_In" > $DP_HOTPLUG_CONFIG
+fi
 
 exit 0
