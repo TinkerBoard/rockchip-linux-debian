@@ -100,6 +100,9 @@ export APT_INSTALL="apt-get install -fy --allow-downgrades"
 \${APT_INSTALL} pm-utils triggerhappy
 cp /etc/Powermanager/triggerhappy.service  /lib/systemd/system/triggerhappy.service
 
+#---------------Audio---------------
+chmod 755 /etc/pulse/movesinks.sh
+
 #---------------Rga--------------
 \${APT_INSTALL} /packages/rga/*.deb
 
