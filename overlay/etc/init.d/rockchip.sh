@@ -153,6 +153,8 @@ fi
 # enable adbd service
 #service adbd start
 
+/etc/audio/update_device_description.sh
+
 # set act-led trigger function
 cmdline=$(cat /proc/cmdline)
 storage=`echo $cmdline|awk '{print match($0,"storagemedia=emmc")}'`;
