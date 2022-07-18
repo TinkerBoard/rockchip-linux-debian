@@ -102,6 +102,7 @@ cp /etc/Powermanager/triggerhappy.service  /lib/systemd/system/triggerhappy.serv
 
 #---------------Audio---------------
 chmod 755 /etc/pulse/movesinks.sh
+chmod 755 /usr/lib/pm-utils/sleep.d/02pulseaudio-suspend
 
 #---------------Rga--------------
 \${APT_INSTALL} /packages/rga/*.deb

@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Pulseaudio need suspend/resume.
+
+. "${PM_FUNCTIONS}"
+
+case $1 in
+	suspend)
+		sudo -u linaro PULSE_RUNTIME_PATH=/run/user/1000/pulse pacmd suspend true
+		echo "Audio : pulseaudio suspend"
+	;;
+	resume)
+		echo "Audio : pulseaudio resume"
+		sleep 4.5
+		sudo -u linaro PULSE_RUNTIME_PATH=/run/user/1000/pulse pacmd suspend false
+	;;
+	*) exit $NA
+		;;
+esac
