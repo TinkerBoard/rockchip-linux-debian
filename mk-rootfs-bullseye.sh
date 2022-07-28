@@ -90,7 +90,7 @@ export APT_INSTALL="apt-get install -fy --allow-downgrades"
 rm /etc/Powermanager -rf
 
 #---------------Rga--------------
-\${APT_INSTALL} /packages/rga/*.deb
+\${APT_INSTALL} /packages/rga2/*.deb
 
 echo -e "\033[36m Setup Video.................... \033[0m"
 \${APT_INSTALL} gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gstreamer1.0-plugins-ugly gstreamer1.0-tools gstreamer1.0-alsa \
@@ -193,16 +193,12 @@ source ~/.bashrc
 #sed -i "/exit 0/i \ echo 3 > /sys/class/graphics/fb0/blank" /etc/rc.local
 
 cp /packages/libmali/libmali-*-x11*.deb /
-cp -rf /packages/rga/ /
-cp -rf /packages/rga2/ /
 cp -rf /packages/rkisp/*.deb /
 cp -rf /packages/rkaiq/*.deb /
 
 # mark package to hold
 apt list --installed | grep -v oldstable | cut -d/ -f1 | xargs apt-mark hold
 
-# mark rga package to unhold
-apt-mark unhold librga2 librga-dev librga2-dbgsym
 #---------------Custom Script--------------
 systemctl mask systemd-networkd-wait-online.service
 systemctl mask NetworkManager-wait-online.service
