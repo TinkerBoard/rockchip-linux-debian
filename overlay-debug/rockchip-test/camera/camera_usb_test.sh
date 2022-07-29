@@ -14,6 +14,8 @@ if [[ $COMPATIBLE =~ "rk3588" ]]; then
     gst-launch-1.0 v4l2src device=/dev/video20 ! image/jpeg, width=1280, height=720, framerate=30/1 ! jpegparse ! mppjpegdec ! xvimagesink sync=false
 elif [[ $COMPATIBLE =~ "rk3566" && $COMPATIBLE =~ "rk3568" ]]; then
     gst-launch-1.0 v4l2src device=/dev/video9 ! image/jpeg, width=1280, height=720, framerate=30/1 ! jpegparse ! mppjpegdec ! xvimagesink sync=false
+elif [[ $COMPATIBLE =~ "rk3399" ]]; then
+    gst-launch-1.0 v4l2src device=/dev/video5 ! image/jpeg, width=1280, height=720, framerate=30/1 ! jpegparse ! mppjpegdec ! xvimagesink sync=false
 else
     gst-launch-1.0 v4l2src device=/dev/video10 ! image/jpeg, width=1280, height=720, framerate=30/1 ! jpegparse ! mppjpegdec ! xvimagesink sync=false
 fi
