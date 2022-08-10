@@ -9,7 +9,7 @@ elif [[  "$1" == "rk3328"  ]]; then
 	glmark2-es2 --off-screen
 
 elif [[  "$1" == "rk3399"  ]]; then
-	taskset -c 4-5 glamrk2-es2 --off-screen
+	taskset -c 4-5 glmark2-es2 --off-screen
 
 elif [[  "$1" == "rk3399pro"  ]]; then
 	taskset -c 4-5 glmark2-es2 --off-screen
