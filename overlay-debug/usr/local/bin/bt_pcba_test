@@ -1,11 +1,25 @@
 #!/bin/sh
 
-killall brcm_patchram_plus1
-
 echo 0 > /sys/class/rfkill/rfkill0/state
-sleep 2
+sleep 1
 echo 1 > /sys/class/rfkill/rfkill0/state
-sleep 2
+sleep 1
 
-brcm_patchram_plus1 --bd_addr_rand --enable_hci --no2bytes --use_baudrate_for_download  --tosleep  200000 --baudrate 1500000 --patchram  /system/etc/firmware/"BCM4362A2.hcd" /dev/ttyS8 &
-hciconfig hci0 up
+COMPATIBLE=$(cat /proc/device-tree/compatible)
+
+if [[ $COMPATIBLE =~ "rk3588" && $COMPATIBLE =~ "rk3568" ]]; then
+brcm_patchram_plus1 --enable_hci --no2bytes --use_baudrate_for_download  --tosleep  200000 --baudrate 1500000 --patchram  /system/etc/firmware/ /dev/ttyS8 &
+sleep 1
+elif [[ $COMPATIBLE =~ "rk3566" && $COMPATIBLE =~ "rk3399" ]]; then
+brcm_patchram_plus1 --enable_hci --no2bytes --use_baudrate_for_download  --tosleep  200000 --baudrate 1500000 --patchram  /system/etc/firmware/ /dev/ttyS0 &
+sleep 1
+elif [[ $COMPATIBLE =~ "rk3288" ]]; then
+brcm_patchram_plus1 --enable_hci --no2bytes --use_baudrate_for_download  --tosleep  200000 --baudrate 115200 --patchram  /system/etc/firmware/ /dev/ttyS0 &
+sleep 1
+elif [[ $COMPATIBLE =~ "rk3326" && $COMPATIBLE =~ "px30" ]]; then
+brcm_patchram_plus1 --enable_hci --no2bytes --use_baudrate_for_download  --tosleep  200000 --baudrate 1500000 --patchram  /system/etc/firmware/ /dev/ttyS1 &
+sleep 1
+else
+brcm_patchram_plus1 --enable_hci --no2bytes --use_baudrate_for_download  --tosleep  200000 --baudrate 1500000 --patchram  /system/etc/firmware/ /dev/ttyS0 &
+sleep 1
+fi
