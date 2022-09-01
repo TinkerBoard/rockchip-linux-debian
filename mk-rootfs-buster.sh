@@ -181,6 +181,7 @@ cp /etc/pulse/daemon.conf /
 cp /etc/pulse/default.pa /
 yes|\${APT_INSTALL} /packages/pulseaudio/*.deb
 mv /daemon.conf /default.pa /etc/pulse/
+systemctl enable pulseaudio --global
 
 cp /packages/libmali/libmali-*-x11*.deb /
 cp -rf /packages/rga/ /
