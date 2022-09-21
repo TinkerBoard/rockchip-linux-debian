@@ -39,10 +39,12 @@ install_packages() {
         rk3568|rk3566)
 		MALI=bifrost-g52-g2p0
 		ISP=rkaiq_rk3568
+		tar xvf /rknpu2-rk3568-*.tar -C /
 		;;
         rk3588|rk3588s)
 		ISP=rkaiq_rk3588
 		MALI=valhall-g610-g6p0
+		tar xvf /rknpu2-rk3588-*.tar -C /
 		;;
     esac
 
@@ -80,6 +82,7 @@ elif [[ $COMPATIBLE =~ "rk3568" ]]; then
     CHIPNAME="rk3568"
 elif [[ $COMPATIBLE =~ "rk3588" ]]; then
     CHIPNAME="rk3588"
+
 else
     CHIPNAME="rk3036"
 fi
@@ -105,6 +108,7 @@ then
     fi
 
     rm -rf /*.deb
+    rm -rf /*.tar
 
     # The base target does not come with lightdm
     systemctl restart lightdm.service || true
