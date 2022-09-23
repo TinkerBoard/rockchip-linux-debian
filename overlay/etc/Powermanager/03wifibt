@@ -12,7 +12,7 @@ case "$1" in
        thaw|resume)
 		kilall brcm_patchram_plus1
 		ifconfig wlan0 up
-		bt_pcba_test.sh&
+		bt_pcba_test&
                ;;
        *) exit $NA
                ;;
