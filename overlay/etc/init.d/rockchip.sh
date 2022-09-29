@@ -42,7 +42,7 @@ install_packages() {
 		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
 		;;
         rk3568|rk3566)
-		MALI=bifrost-g52-g6p0
+		MALI=bifrost-g52-g2p0
 		ISP=rkaiq_rk3568
 		tar xvf /rknpu2-rk3568-*.tar -C /
 		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
