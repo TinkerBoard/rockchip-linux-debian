@@ -121,8 +121,7 @@ echo -e "\033[36m Install libdrm-cursor.................... \033[0m"
 \${APT_INSTALL} /packages/libdrm-cursor/*.deb
 
 # Only preload libdrm-cursor for X
-sed -i "/libdrm-cursor.so/d" /etc/ld.so.preload
-sed -i "1aexport LD_PRELOAD=libdrm-cursor.so.1" /usr/bin/X
+sed -i "1aexport LD_PRELOAD=/usr/lib/*/libdrm-cursor.so.1" /usr/bin/X
 
 #------------------pcmanfm------------
 #echo -e "\033[36m Install pcmanfm.................... \033[0m"
