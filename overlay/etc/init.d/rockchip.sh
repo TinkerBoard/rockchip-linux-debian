@@ -125,8 +125,9 @@ then
 
     rm -rf /packages
 
-    # The base target does not come with lightdm
+    # The base target does not come with lightdm/rkaiq_3A
     systemctl restart lightdm.service || true
+    systemctl restart rkaiq_3A.service || true
 
     touch /usr/local/first_boot_flag
 fi
