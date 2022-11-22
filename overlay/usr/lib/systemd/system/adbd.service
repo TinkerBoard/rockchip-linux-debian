@@ -3,7 +3,8 @@ Description=adbd for Debian
 Before=lightdm.service
 
 [Service]
-Type=forking
+Type=oneshot
+RemainAfterExit=yes
 ExecStart=/usr/bin/usbdevice start
 ExecStop=/usr/bin/usbdevice stop
 ExecReload=/usr/bin/usbdevice reload
