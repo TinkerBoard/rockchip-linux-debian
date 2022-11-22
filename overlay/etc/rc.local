@@ -13,7 +13,12 @@
 
 #create HDMI/DP config for xrandr to save hotplug status
 HDMI_HOTPLUG_CONFIG="/boot/display/hdmi/hdmi_plug_flag.cfg"
+HDMI_XRANDR_CONFIG="/boot/display/hdmi/xrandr.cfg"
 DP_HOTPLUG_CONFIG="/boot/display/dp/dp_plug_flag.cfg"
+DP_XRANDR_CONFIG="/boot/display/dp/xrandr.cfg"
+DISPLAY_BOOT_FLAG="/boot/display/display_boot_flag.cfg"
+HDMI_ENABLED_STATUS="/sys/class/drm/card0-HDMI-A-1"
+DP_ENABLED_STATUS="/sys/class/drm/card0-DP-1"
 
 if [ ! -d /boot/display ]; then
     mkdir /boot/display
@@ -30,12 +35,31 @@ if [ -f $HDMI_HOTPLUG_CONFIG ]; then
 	rm -rf $HDMI_HOTPLUG_CONFIG
 fi
 
+if [ -f $HDMI_XRANDR_CONFIG ]; then
+	rm -rf $HDMI_XRANDR_CONFIG
+fi
+
 if [ -f $DP_HOTPLUG_CONFIG ]; then
 	rm -rf $DP_HOTPLUG_CONFIG
 fi
 
+if [ -f $DP_XRANDR_CONFIG ]; then
+	rm -rf $DP_XRANDR_CONFIG
+fi
+
 touch $HDMI_HOTPLUG_CONFIG
 touch $DP_HOTPLUG_CONFIG
+touch $HDMI_XRANDR_CONFIG
+touch $DP_XRANDR_CONFIG
+touch $DISPLAY_BOOT_FLAG
+
+if [ "$(cat $HDMI_ENABLED_STATUS)" != "enabled" ]; then
+	su $user -c "echo 0" > $DISPLAY_BOOT_FLAG
+else if [ "$(cat $DP_ENABLED_STATUS)" != "enabled" ]; then
+	su $user -c "echo 0" > $DISPLAY_BOOT_FLAG
+else
+	su $user -c "echo 1" > $DISPLAY_BOOT_FLAG
+fi
 
 # Generate the SSH keys if non-existent
 
