@@ -179,11 +179,11 @@ echo -e "\033[36m Install rktoolkit.................... \033[0m"
 \${APT_INSTALL} /packages/rktoolkit/*.deb
 
 #------------------pulseaudio---------
-echo -e "\033[36m Install pulseaudio................. \033[0m"
-cp /etc/pulse/daemon.conf /
-cp /etc/pulse/default.pa /
-yes|\${APT_INSTALL} /packages/pulseaudio/*.deb
-mv /daemon.conf /default.pa /etc/pulse/
+#echo -e "\033[36m Install pulseaudio................. \033[0m"
+#cp /etc/pulse/daemon.conf /
+#cp /etc/pulse/default.pa /
+#yes|\${APT_INSTALL} /packages/pulseaudio/*.deb
+#mv /daemon.conf /default.pa /etc/pulse/
 
 cp /packages/libmali/libmali-*-x11*.deb /
 cp -rf /packages/rga/ /
