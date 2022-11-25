@@ -13,10 +13,13 @@ DP_XRANDR_CONFIG="/boot/display/dp/xrandr.cfg"
 
 HDMI_HOTPLUG_CONFIG="/boot/display/hdmi/hdmi_plug_flag.cfg"
 DP_HOTPLUG_CONFIG="/boot/display/dp/dp_plug_flag.cfg"
-DISPLAY_BOOT_FLAG="/boot/display/display_boot_flag.cfg"
+HDMI_BOOT_FLAG="/boot/display/hdmi/hdmi_boot_flag.cfg"
+DP_BOOT_FLAG="/boot/display/dp/dp_boot_flag.cfg"
 
 HDMI_MODES_NODE="$HDMI_SYS/modes"
 DP_MODES_NODE="$DP_SYS/modes"
+HDMI_ENABLED_NODE="$HDMI_SYS/enabled"
+DP_ENABLED_NODE="$DP_SYS/enabled"
 
 HDMI_MODE_NODE="$HDMI_SYS/mode"
 DP_MODE_NODE="$DP_SYS/mode"
@@ -74,10 +77,14 @@ if [ $hdmi_status = "connected" ]; then
 			fi
 		else
 			if [ "$(cat $HDMI_XRANDR_CONFIG)" = "" ]; then
-				if [ "$(cat $DISPLAY_BOOT_FLAG)" = "1" ]; then
-					su $user -c "echo 0" > $DISPLAY_BOOT_FLAG
+				if [ "$(cat $HDMI_BOOT_FLAG)" = "1" ]; then
+					#don't do anything, system will handle it itself when booting with cable
+					su $user -c "echo 0" > $HDMI_BOOT_FLAG
 				else
-					sudo xrandr --output $HDMI --auto
+					if [ "$(cat $HDMI_ENABLED_NODE)" != "enabled" ]; then
+						#if boot without cable, display blank when first time plug in, we need to turn it on
+						sudo xrandr --output $HDMI --auto
+					fi
 				fi
 			fi
 		fi
@@ -104,10 +111,14 @@ if [ $dp_status = "connected" ]; then
 			fi
 		else
 			if [ "$(cat $DP_XRANDR_CONFIG)" = "" ]; then
-				if [ "$(cat $DISPLAY_BOOT_FLAG)" = "1" ]; then
-					su $user -c "echo 0" > $DISPLAY_BOOT_FLAG
+				if [ "$(cat $DP_BOOT_FLAG)" = "1" ]; then
+					#don't do anything, system will handle it itself when booting with cable
+					su $user -c "echo 0" > $DP_BOOT_FLAG
 				else
-					sudo xrandr --output $DP --auto
+					if [ "$(cat $DP_ENABLED_NODE)" != "enabled" ]; then
+						#if boot without cable, display blank when first time plug in, we need to turn it on
+						sudo xrandr --output $DP --auto
+					fi
 				fi
 			fi
 		fi
