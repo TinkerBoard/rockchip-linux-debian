@@ -1,6 +1,6 @@
 [Unit]
 Description=enable ASYNC for Debian Display
-Before=lightdm.service
+Before=rockchip.service
 
 [Service]
 Type=forking
