@@ -46,6 +46,8 @@ sudo cp -rf overlay-firmware/* $TARGET_ROOTFS_DIR/
 # adb, video, camera  test file
 if [ "$VERSION" == "debug" ]; then
 	sudo cp -rf overlay-debug/* $TARGET_ROOTFS_DIR/
+        sudo rm -rf $TARGET_ROOTFS_DIR/home/linaro/Desktop/Test_tool
+        sudo cp -arp overlay-debug/home/linaro/Desktop/Test_tool $TARGET_ROOTFS_DIR/home/linaro/Desktop/
 fi
 ## hack the serial
 sudo cp -f overlay/usr/lib/systemd/system/serial-getty@.service $TARGET_ROOTFS_DIR/usr/lib/systemd/system/serial-getty@.service

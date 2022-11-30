@@ -1,0 +1,287 @@
+#!/bin/bash
+#
+# This script parses data in EEPROM.
+#
+# Author: Wu, Jheng-Jhong (Victor Wu) <goodwater.wu@gmail.com>
+# Date: 20190627
+
+### FUNCTIONS ###
+VERSION=1.0
+
+show_help()
+{
+	echo "Parse data in EEPROM ,VER:$VERSION"
+	echo "Usage: $(basename $0) [options]"
+	echo -e "\th\tshow this help"
+	echo -e "\tnano\tshow nano data"
+	echo -e "\tnx\tshow xavier-nx data"
+	echo -e "\ttx2nx\tshow tx2-nx data"
+}
+
+show_eeprom_format_version()
+{
+	awk '{ print "board id and format version:", "0x" $2 $1; }' <<< $1
+}
+
+show_board_number()
+{
+	awk '{ print "board number:", "0x" $6 $5; }' <<< $1
+}
+
+show_sku()
+{
+	awk '{ print "sku:", "0x" $8 $7; }' <<< $1
+}
+
+show_fab()
+{
+	awk '{ print "fab:", "0x" $9; }' <<< $1
+}
+
+show_rev()
+{
+	awk '{ print "rev:", "0x" $10; }' <<< $1
+}
+
+show_f_sku()
+{
+	awk '{ print "board:", "0x" $6 $5, "sku:", "0x" $8 $7,  "fab:", "0x" $9, "rev:", "0x" $10;}' <<< $1
+}
+
+show_minor_rev()
+{
+	awk '{ print "minor rev:", "0x" $11; }' <<< $1
+}
+
+show_memory_type()
+{
+	awk '{ print "memory type:", "0x" $12; }' <<< $1
+}
+
+show_power_config()
+{
+	awk '{ print "power configuration:", "0x" $13; }' <<< $1
+}
+
+show_misc_config()
+{
+	awk '{ print "miscellaneous configuration:", "0x" $14; }' <<< $1
+}
+
+show_display_config()
+{
+	awk '{ print "display configuration:", "0x" $17; }' <<< $1
+}
+
+show_rework_level()
+{
+	awk '{ print "rework level:", "0x" $18; }' <<< $1
+}
+
+show_product_part_number()
+{
+	printf "product part number: "
+	cut -d' ' -f 21-50 <<< $1 |\
+		awk -v ORS= '{\
+			for (i = 1; i <= NF; i++)\
+				print "\\\x"$i;\
+		}' | xargs echo -e
+}
+
+show_factory_wifi_mac()
+{
+	awk '{ print "factory wifi mac address:", $56 ":" $55 ":" $54 ":" $53 ":" $52 ":" $51; }' <<< $1
+}
+
+show_factory_bt_mac()
+{
+	awk '{ print "factory bt mac address:", $62 ":" $61 ":" $60 ":" $59 ":" $58 ":" $57; }' <<< $1
+}
+
+show_secondary_wifi_mac()
+{
+	awk '{ print "secondary wifi mac address:", $68 ":" $67 ":" $66 ":" $65 ":" $64 ":" $63; }' <<< $1
+}
+
+show_factory_ethernet_mac()
+{
+	awk '{ print "factory gigabit ethernet mac address:", $74 ":" $73 ":" $72 ":" $71 ":" $70 ":" $69; }' <<< $1
+}
+
+show_asset_number()
+{
+	printf "som serial number: "
+	cut -d' ' -f 75-89 <<< $1 |\
+		awk -v ORS= '{\
+			for (i = 1; i <= NF; i++)\
+				print "\\\x"$i;\
+		}' | xargs echo -e
+}
+
+show_camera_interposer()
+{
+	awk '{ print "camera interposer board:", "0x" $91 $90; }' <<< $1
+}
+
+show_block_signature()
+{
+	printf "block signature: "
+	cut -d' ' -f 151-154 <<< $1 |\
+		awk -v ORS= '{\
+			for (i = 1; i <= NF; i++)\
+				print "\\\x"$i;\
+		}' | xargs echo -e
+}
+
+show_customer_section_length()
+{
+	awk '{ print "customer overwritable section length:", "0x" $156 $155; }' <<< $1
+}
+
+show_mac_format()
+{
+	printf "format of mac address data: "
+	cut -d' ' -f 157-158 <<< $1 |\
+		awk -v ORS= '{\
+			for (i = 1; i <= NF; i++)\
+				print "\\\x"$i;\
+		}' | xargs echo -e
+}
+
+show_version()
+{
+	awk '{ print "version:", "0x" $160 $159; }' <<< $1
+}
+
+show_vendor_wifi_mac()
+{
+	awk '{ print "vendor-specified wifi mac address:", $166 ":" $165 ":" $164 ":" $163 ":" $162 ":" $161; }' <<< $1
+}
+
+show_vendor_bt_mac()
+{
+	awk '{ print "vendor-specified bt mac address:", $172 ":" $171 ":" $170 ":" $169 ":" $168 ":" $167; }' <<< $1
+}
+
+show_vendor_ethernet_mac()
+{
+	awk '{ print "vendor-specified gigabit ethernet mac address:", $178 ":" $177 ":" $176 ":" $175 ":" $174 ":" $173; }' <<< $1
+}
+
+show_crc()
+{
+	awk '{ print "crc8:", "0x" $256; }' <<< $1
+}
+
+show_factory_section()
+{
+	echo "------------------------------------------------------------------------"
+	echo "FACTORY DATA SECTION"
+	echo "------------------------------------------------------------------------"
+	show_eeprom_format_version "$@"
+	show_board_number "$@"
+	show_sku "$@"
+	show_fab "$@"
+	show_rev "$@"
+	show_minor_rev "$@"
+	show_memory_type "$@"
+	show_power_config "$@"
+	show_misc_config "$@"
+	show_display_config "$@"
+	show_rework_level "$@"
+	show_product_part_number "$@"
+	show_factory_wifi_mac "$@"
+	show_factory_bt_mac "$@"
+	show_secondary_wifi_mac "$@"
+	show_factory_ethernet_mac "$@"
+	show_asset_number "$@"
+}
+
+show_user_section()
+{
+	echo "------------------------------------------------------------------------"
+	echo "USER DATA SECTION"
+	echo "------------------------------------------------------------------------"
+	show_camera_interposer "$@"
+}
+
+show_customer_overwritable_section()
+{
+	echo "------------------------------------------------------------------------"
+	echo "CUSTOMER OVERWRITABLE SECTION"
+	echo "------------------------------------------------------------------------"
+	show_block_signature "$@"
+	show_customer_section_length "$@"
+	show_mac_format "$@"
+	show_version "$@"
+	show_vendor_wifi_mac "$@"
+	show_vendor_bt_mac "$@"
+	show_vendor_ethernet_mac "$@"
+	show_crc "$@"
+}
+
+### MAIN PROGRAM ###
+if [ "${USER}" != "root" ]; then
+	echo "$(basename $0) requires root privilege"
+	exit 1
+fi
+chipID=`cat /sys/module/tegra_fuse/parameters/tegra_chip_id`
+case "$1" in
+	'h')
+		show_help
+		exit 0;;
+	'nano')
+		data=$(i2cdump -y 2 0x50 2>/dev/null |\
+		awk '{\
+			if (NR > 1) {\
+				for (i = 2; i <= 17; i++)\
+					printf("%s ", $i);\
+			}\
+		}\
+		END { printf("\n"); }');;
+	'nx')
+		data=$(i2cdump -y 0 0x50 2>/dev/null |\
+		awk '{\
+			if (NR > 1) {\
+				for (i = 2; i <= 17; i++)\
+					printf("%s ", $i);\
+			}\
+		}\
+		END { printf("\n"); }');;
+	'tx2nx')
+		data=$(i2cdump -y 7 0x50 2>/dev/null |\
+		awk '{\
+			if (NR > 1) {\
+				for (i = 2; i <= 17; i++)\
+					printf("%s ", $i);\
+			}\
+		}\
+		END { printf("\n"); }');;
+	*)
+		help
+		exit 0
+    ;;
+esac
+
+case "$2" in
+	'serial')
+		show_asset_number "${data}"
+		exit 0
+	;;
+	'sku')
+		show_f_sku "${data}"
+		exit 0
+	;;
+	'som')
+		show_product_part_number "${data}"
+		exit 0
+	;;
+	'ethernet')
+		show_factory_ethernet_mac "${data}"
+		exit 0
+	;;
+esac
+
+show_factory_section "${data}"
+show_user_section "${data}"
+show_customer_overwritable_section "${data}"
