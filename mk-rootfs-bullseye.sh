@@ -239,4 +239,6 @@ rm -rf /packages/
 
 EOF
 
+sudo cp -f overlay/etc/resolv.conf $TARGET_ROOTFS_DIR/etc/
+
 sudo umount $TARGET_ROOTFS_DIR/dev
