@@ -46,6 +46,8 @@ sudo cp -rf overlay/* $TARGET_ROOTFS_DIR/
 
 # overlay-firmware folder
 sudo cp -rf overlay-firmware/* $TARGET_ROOTFS_DIR/
+sudo mkdir -p $TARGET_ROOTFS_DIR/tmp_firmware
+sudo cp -rf overlay-firmware/usr/lib/firmware/* $TARGET_ROOTFS_DIR/tmp_firmware
 
 # overlay-debug folder
 # adb, video, camera  test file
@@ -202,12 +204,13 @@ source ~/.bashrc
 cp /packages/libmali/libmali-*-x11*.deb /
 cp -rf /packages/rkisp/*.deb /
 cp -rf /packages/rkaiq/*.deb /
-cp -rf /usr/lib/firmware/rockchip/ /
+#cp -rf /usr/lib/firmware/rockchip/ /
 
 # reduce 500M size for rootfs
 rm -rf /usr/lib/firmware
 mkdir -p /usr/lib/firmware/
-mv /rockchip /usr/lib/firmware/
+mv /tmp_firmware/* /usr/lib/firmware/
+rm -rf /tmp_firmware
 
 # mark package to hold
 apt list --installed | grep -v oldstable | cut -d/ -f1 | xargs apt-mark hold
