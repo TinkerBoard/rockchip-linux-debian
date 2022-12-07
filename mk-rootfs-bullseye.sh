@@ -133,10 +133,6 @@ echo -e "\033[36m Install libdrm.................... \033[0m"
 echo -e "\033[36m Install libdrm-cursor.................... \033[0m"
 \${APT_INSTALL} /packages/libdrm-cursor/*.deb
 
-# Only preload libdrm-cursor for X
-sed -i "/libdrm-cursor.so/d" /etc/ld.so.preload
-sed -i "1aexport LD_PRELOAD=libdrm-cursor.so.1" /usr/bin/X
-
 #------------------blueman------------
 echo -e "\033[36m Install blueman.................... \033[0m"
 \${APT_INSTALL} blueman
@@ -218,12 +214,16 @@ apt remove --purge -fy linux-firmware*
 #---------------Clean--------------
 if [ -e "/usr/lib/arm-linux-gnueabihf/dri" ] ;
 then
+        # Only preload libdrm-cursor for X
+        sed -i "1aexport LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libdrm-cursor.so.1" /usr/bin/X
         cd /usr/lib/arm-linux-gnueabihf/dri/
         cp kms_swrast_dri.so swrast_dri.so rockchip_dri.so /
         rm /usr/lib/arm-linux-gnueabihf/dri/*.so
         mv /*.so /usr/lib/arm-linux-gnueabihf/dri/
 elif [ -e "/usr/lib/aarch64-linux-gnu/dri" ];
 then
+        # Only preload libdrm-cursor for X
+        sed -i "1aexport LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libdrm-cursor.so.1" /usr/bin/X
         cd /usr/lib/aarch64-linux-gnu/dri/
         cp kms_swrast_dri.so swrast_dri.so rockchip_dri.so /
         rm /usr/lib/aarch64-linux-gnu/dri/*.so
