@@ -126,7 +126,11 @@ then
     rm -rf /packages
 
     # The base target does not come with lightdm/rkaiq_3A
+if [ -e /etc/gdm3/daemon.conf ]; then
+    systemctl restart gdm3.service || true
+elif [ -e /etc/lightdm/lightdm.conf ]; then
     systemctl restart lightdm.service || true
+fi
     systemctl restart rkaiq_3A.service || true
 
     touch /usr/local/first_boot_flag

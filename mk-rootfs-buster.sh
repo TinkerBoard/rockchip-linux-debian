@@ -18,6 +18,8 @@ if [ ! $VERSION ]; then
 	VERSION="release"
 fi
 
+echo -e "\033[36m Building for $VERSION \033[0m"
+
 if [ ! -e linaro-buster-alip-*.tar.gz ]; then
 	echo -e "\033[36m Run mk-base-debian.sh first \033[0m"
 	exit -1
@@ -46,14 +48,16 @@ sudo cp -rf overlay-firmware/* $TARGET_ROOTFS_DIR/
 # adb, video, camera  test file
 if [ "$VERSION" == "debug" ]; then
 	sudo cp -rf overlay-debug/* $TARGET_ROOTFS_DIR/
+	# adb
+	if [[ "$ARCH" == "armhf" && "$VERSION" == "debug" ]]; then
+		sudo cp -f overlay-debug/usr/local/share/adb/adbd-32 $TARGET_ROOTFS_DIR/usr/bin/adbd
+	elif [[ "$ARCH" == "arm64" && "$VERSION" == "debug" ]]; then
+		sudo cp -f overlay-debug/usr/local/share/adb/adbd-64 $TARGET_ROOTFS_DIR/usr/bin/adbd
+	fi
 fi
 
-# adb
-if [[ "$ARCH" == "armhf" && "$VERSION" == "debug" ]]; then
-	sudo cp -f overlay-debug/usr/local/share/adb/adbd-32 $TARGET_ROOTFS_DIR/usr/bin/adbd
-elif [[ "$ARCH" == "arm64" && "$VERSION" == "debug" ]]; then
-	sudo cp -f overlay-debug/usr/local/share/adb/adbd-64 $TARGET_ROOTFS_DIR/usr/bin/adbd
-fi
+## hack the serial
+sudo cp -f overlay/usr/lib/systemd/system/serial-getty@.service $TARGET_ROOTFS_DIR/usr/lib/systemd/system/serial-getty@.service
 
 # bt/wifi firmware
 sudo mkdir -p $TARGET_ROOTFS_DIR/system/lib/modules/
@@ -70,6 +74,9 @@ fi
 sudo mount -o bind /dev $TARGET_ROOTFS_DIR/dev
 
 cat << EOF | sudo chroot $TARGET_ROOTFS_DIR
+
+echo "deb http://mirrors.ustc.edu.cn/debian/ buster-backports main contrib non-free" >> /etc/apt/sources.list
+echo "deb-src http://mirrors.ustc.edu.cn/debian/ buster-backports main contrib non-free" >> /etc/apt/sources.list
 
 apt-get update
 apt-get upgrade -y
