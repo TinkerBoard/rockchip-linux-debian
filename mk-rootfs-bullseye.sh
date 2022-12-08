@@ -141,6 +141,10 @@ chmod +x /usr/sbin/policy-rc.d
 \${APT_INSTALL} blueman
 rm -f /usr/sbin/policy-rc.d
 
+# Change the background for ASUS Tinker Board
+rm -rf /usr/share/images/desktop-base/default
+ln -s /etc/ASUS/ASUS-2017-Tinkerboard-v1-wp-02-1920x1080.jpg /usr/share/images/desktop-base/default
+
 #------------------rkwifibt------------
 echo -e "\033[36m Install rkwifibt.................... \033[0m"
 \${APT_INSTALL} /packages/rkwifibt/*.deb
