@@ -7,7 +7,7 @@ elif [ "$RELEASE" == "buster" ]; then
 elif [ "$RELEASE" == "bullseye" ]; then
 	RELEASE='bullseye'
 else
-    echo -e "\033[36m please input the os type,stretch or buster...... \033[0m"
+    echo -e "\033[36m please input the os type,stretch, buster or bullseye...... \033[0m"
 fi
 
 if [ "$ARCH" == "armhf" ]; then
