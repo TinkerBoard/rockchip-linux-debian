@@ -2,3 +2,4 @@
 binary
 lib_modules
 linaro-rootfs.img
+.lock
