@@ -15,7 +15,12 @@ esac
 echo -e "\033[36m Building for $ARCH \033[0m"
 
 if [ ! $VERSION ]; then
-	VERSION="release"
+	VERSION="debug"
+fi
+
+# Initialized to "eng", however this should be set in build.sh
+if [ ! $VERSION_NUMBER ]; then
+        VERSION_NUMBER="eng"
 fi
 
 if [ ! -e linaro-bullseye-alip-*.tar.gz ]; then
@@ -211,6 +216,12 @@ apt list --installed | grep -v oldstable | cut -d/ -f1 | xargs apt-mark hold
 systemctl mask systemd-networkd-wait-online.service
 systemctl mask NetworkManager-wait-online.service
 rm /lib/systemd/system/wpa_supplicant@.service
+
+#-------ASUS customization start-------
+
+echo $VERSION_NUMBER > /etc/version
+
+#-------ASUS customization end-------
 
 #------remove unused packages------------
 apt remove --purge -fy linux-firmware*
