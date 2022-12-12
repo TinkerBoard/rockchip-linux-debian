@@ -122,6 +122,7 @@ echo -e "\033[36m Setup Video.................... \033[0m"
 echo -e "\033[36m Install camera.................... \033[0m"
 \${APT_INSTALL} cheese v4l-utils
 \${APT_INSTALL} /packages/libv4l/*.deb
+\${APT_INSTALL} /packages/rkisp/*.deb
 cp /packages/rkisp/librkisp.so /usr/lib/
 
 #---------Xserver---------
@@ -188,7 +189,6 @@ echo -e "\033[36m Install rktoolkit.................... \033[0m"
 cp /packages/libmali/libmali-*-x11*.deb /
 cp -rf /packages/rga/ /
 cp -rf /packages/rga2/ /
-cp -rf /packages/rkisp/*.deb /
 cp -rf /packages/rkaiq/*.deb /
 
 #------remove unused packages------------
