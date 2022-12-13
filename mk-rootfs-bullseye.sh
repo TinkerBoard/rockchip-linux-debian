@@ -3,6 +3,10 @@
 # Directory contains the target rootfs
 TARGET_ROOTFS_DIR="binary"
 
+if [ -e $TARGET_ROOTFS_DIR ]; then
+        sudo rm -rf $TARGET_ROOTFS_DIR
+fi
+
 case "${ARCH:-$1}" in
 	arm|arm32|armhf)
 		ARCH=armhf
