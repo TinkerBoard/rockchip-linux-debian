@@ -97,6 +97,7 @@ select_test_item()
 	echo "15. MCU COM RS232 stress test: $DO_MCU_UART_TEST"
 	echo "16. GPS stress test: $DO_GPS_TEST"
 	echo "17. AEM Ethernet test : $DO_AEM_ETHERNET_TEST"
+	echo "18. NPU stres test: $DO_NPU_TEST"
 	read -p "Select test case: " test_item
 }
 
@@ -112,7 +113,7 @@ select_gps_module()
 	echo
 		read -p "Select GPS module: " gps_module_select
 		gps_module=$gps_module_select
-	fi 
+	fi
 	echo "GPS module is $gps_module"
 }
 
@@ -288,6 +289,13 @@ tpu_stress_test()
 	$SCRIPTPATH/test/tpu_stress_test.sh $logfile
 }
 
+npu_stress_test()
+{
+	logfile=$LOG_PATH/npu.txt
+	killall npu_stress_test.sh > /dev/null 2>&1
+	$SCRIPTPATH/test/npu_stress_test.sh $logfile
+}
+
 gps_stress_test(){
 	#logfile=$LOG_PATH/gps.txt
 	killall gpstest > /dev/null 2>&1
@@ -320,7 +328,7 @@ get_device_info()
 		elif [ "$SOC_TYPE" = "tegra" ] || [ "$SOC_TYPE" = "rockchip" ]; then
 			ddr_freq=`sudo cat $CMD_DDR_FREQ`
 			ddr_freq=`expr $ddr_freq / 1000000`
-		fi 			
+		fi
 	fi
 
 	gpu_freq=`sudo cat  $CMD_GPU_FREQ`
@@ -483,7 +491,7 @@ check_all_status()
 	fi
 	if [ "$DO_DDR_TEST" == "Y" ]; then
 		check_status DDR $DDR
-	fi	
+	fi
 	if [ "$DO_eMMC_TEST" == "Y" ]; then
 		check_status EMMC $EMMC
 	fi
@@ -533,6 +541,9 @@ check_all_status()
 	if [ "$DO_AEM_ETHERNET_TEST" == "Y" ]; then
 		check_status AEM_Ethernet $AEM_Ethernet
 	fi
+	if [ "$DO_NPU_TEST" == "Y" ]; then
+		check_status NPU $NPU
+	fi
 #	check_status UART1 $UART1
 #	check_status UART2 $UART2
 }
@@ -568,6 +579,7 @@ kill_test(){
 	killall thermal_logging.sh > /dev/null 2>&1
 	killall check_network.sh > /dev/null 2>&1
 	killall check_aem_network.sh > /dev/null 2>&1
+	killall npu_stress_test.sh > /dev/null 2>&1
 }
 
 check_system_status=false
@@ -655,6 +667,7 @@ MCU_DIO="mcu_dio_stress_test.sh"
 MCU_UART="mcu_uart_stress_test.sh"
 TPU="/test/tpu_stress_test.sh"
 GPS="../GPS_test/gpstest"
+NPU="npu_stress_test.sh"
 
 if [ "$DO_THERMAL_LOGGING" == "Y" ]; then
 	thermal_logging > /dev/null 2>&1 &
@@ -720,12 +733,15 @@ case $test_item in
 	15)	info_view MCU UART loopback
 		mcu_uart_stress_test
 		;;
-	16)	info_view GPS 
+	16)	info_view GPS
 		gps_stress_test
 		;;
 	17)
 		info_view AEM_Ethernet
 		aem_network_stress_test
+		;;
+	18)	info_view NPU
+		npu_stress_test
 		;;
 	*)
 		check_system_status=true
@@ -780,6 +796,9 @@ case $test_item in
 		fi
 		if [ "$DO_AEM_ETHERNET_TEST" == "Y" ]; then
 			aem_network_stress_test > /dev/null 2>&1 &
+		fi
+		if [ "$DO_NPU_TEST" == "Y" ]; then
+			npu_stress_test > /dev/null 2>&1 &
 		fi
 		;;
 esac
@@ -862,5 +881,5 @@ while true; do
         #echo "PASS" > $top_path/logs/burn_in_result.txt
         exit 0
     fi
-	
+
 done
