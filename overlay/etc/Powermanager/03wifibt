@@ -6,13 +6,20 @@
 
 case "$1" in
        hibernate|suspend)
-		hciconfig hci0 down
-		ifconfig wlan0 down
+		if [ ! -z "$hci" ]; then
+			hciconfig hci0 down
+		fi
+		if [ ! -z "$wlan" ]; then
+			ifconfig wlp1s0 down
+		fi
                ;;
        thaw|resume)
-		kilall brcm_patchram_plus1
-		ifconfig wlan0 up
-		bt_pcba_test&
+		if [ ! -z "$wlan" ]; then
+			ifconfig wlp1s0 up
+		fi
+		if [ ! -z "$hci" ]; then
+			hciconfig hci0 up
+		fi
                ;;
        *) exit $NA
                ;;
