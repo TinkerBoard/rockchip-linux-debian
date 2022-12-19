@@ -4,6 +4,9 @@
 
 . "${PM_FUNCTIONS}"
 
+wlan=$(ifconfig | grep wlp1s0)
+hci=$(hciconfig | grep hci)
+
 case "$1" in
        hibernate|suspend)
 		if [ ! -z "$hci" ]; then
