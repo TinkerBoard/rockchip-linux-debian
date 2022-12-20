@@ -243,6 +243,12 @@ echo $VERSION_NUMBER > /etc/version
 
 #-------ASUS customization end-------
 
+#-------Tinker board 3: rknn-toolkit_lite2-------
+# change owner and permission for install rknn toolkit lite2 script
+chown -R linaro:linaro /usr/local/share/debian11_rknn_toolkit_lite2
+chmod a+x /usr/local/share/debian11_rknn_toolkit_lite2/debian11_install_rknn_toolkit_lite2.sh
+#-------Tinker board 3: rknn-toolkit_lite2-------
+
 #------remove unused packages------------
 apt remove --purge -fy linux-firmware*
 
