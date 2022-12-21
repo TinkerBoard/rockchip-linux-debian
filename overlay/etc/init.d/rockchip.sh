@@ -20,42 +20,48 @@ install_packages() {
 		cat /sys/devices/platform/*gpu/gpuinfo | grep -q r1p0 && \
 		MALI=midgard-t76x-r18p0-r1p0
 		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
+		[ -e /usr/lib/arm-linux-gnueabihf/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
         rk3399|rk3399pro)
 		MALI=midgard-t86x-r18p0
 		ISP=rkisp
 		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
         rk3328)
 		MALI=utgard-450
 		ISP=rkisp
 		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
         rk3326|px30)
 		MALI=bifrost-g31-g2p0
 		ISP=rkisp
 		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
         rk3128|rk3036)
 		MALI=utgard-400
 		ISP=rkisp
 		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
+		[ -e /usr/lib/arm-linux-gnueabihf/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
         rk3568|rk3566)
 		MALI=bifrost-g52-g2p0
 		ISP=rkaiq_rk3568
-		tar xvf /rknpu2-rk3568-*.tar -C /
 		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && tar xvf /rknpu2-rk3568-*.tar -C /
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
         rk3588|rk3588s)
 		ISP=rkaiq_rk3588
 		MALI=valhall-g610-g6p0
-		tar xvf /rknpu2-rk3588-*.tar -C /
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && tar xvf /rknpu2-rk3588-*.tar -C /
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
     esac
 
     apt install -fy --allow-downgrades /libmali-*$MALI*-x11*.deb
-    apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 }
 
 
