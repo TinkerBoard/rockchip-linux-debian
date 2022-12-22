@@ -32,7 +32,7 @@ init_rkwifibt() {
 	    rk_wifi_init /dev/ttyS1
             ;;
         rk3568)
-	    rk_wifi_init /dev/ttyS8
+
             ;;
         rk3588|rk3588s)
 	    rk_wifi_init /dev/ttyS8
