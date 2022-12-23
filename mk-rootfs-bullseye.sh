@@ -245,9 +245,16 @@ rm /lib/systemd/system/wpa_supplicant@.service
 
 echo $VERSION_NUMBER > /etc/version
 
+chmod a+x /etc/init.d/mountboot.sh
+systemctl enable mountboot.service
+
 #-------ASUS customization end-------
 
 #-------Tinker board 3: rknn-toolkit_lite2-------
+if [ "$VERSION" == "debug" ]; then
+        chown -R linaro:linaro /home/linaro/Desktop
+fi
+
 # change owner and permission for install rknn toolkit lite2 script
 chown -R linaro:linaro /usr/local/share/debian11_rknn_toolkit_lite2
 chmod a+x /usr/local/share/debian11_rknn_toolkit_lite2/debian11_install_rknn_toolkit_lite2.sh
