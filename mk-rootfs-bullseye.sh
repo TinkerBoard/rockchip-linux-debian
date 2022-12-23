@@ -130,6 +130,10 @@ echo -e "\033[36m Install camera.................... \033[0m"
 \${APT_INSTALL} cheese v4l-utils
 \${APT_INSTALL} /packages/libv4l/*.deb
 
+#---------Network----------
+apt-get install -y ethtool
+apt-get install -y iperf3
+
 #---------Xserver---------
 echo -e "\033[36m Install Xserver.................... \033[0m"
 \${APT_INSTALL} /packages/xserver/*.deb
