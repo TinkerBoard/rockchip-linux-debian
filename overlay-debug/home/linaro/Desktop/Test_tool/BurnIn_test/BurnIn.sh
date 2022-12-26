@@ -88,16 +88,19 @@ select_test_item()
 	echo " 6. External Storage stress test: $DO_EXTERNALSTORAGE_TEST"
 	echo " 7. Ethernet stress test: $DO_ETHERNET_TEST"
 	echo " 8. Wi-Fi stress test: $DO_WIFI_TEST"
-	echo " 9. UART loopback stress test: $DO_UART_TEST"
-	echo "10. UART1/UART2 RS232 stress test: $DO_UART_to_UART_TEST"
-	echo "11. TPU stres test: $DO_TPU_TEST"
-	echo "12. CAN bus stress test: $DO_CAN_TEST"
-	echo "13. Audio stress test: $DO_AUDIO_TEST"
-	echo "14. MCU DIO stress test: $DO_MCU_DIO_TEST"
-	echo "15. MCU COM RS232 stress test: $DO_MCU_UART_TEST"
-	echo "16. GPS stress test: $DO_GPS_TEST"
-	echo "17. AEM Ethernet test : $DO_AEM_ETHERNET_TEST"
-	echo "18. NPU stres test: $DO_NPU_TEST"
+	if [ $SOC_TYPE == "rockchip" ]; then
+		echo " 9. NPU stres test: $DO_NPU_TEST"
+	else
+                echo " 9. UART loopback stress test: $DO_UART_TEST"
+                echo "10. UART1/UART2 RS232 stress test: $DO_UART_to_UART_TEST"
+                echo "11. TPU stres test: $DO_TPU_TEST"
+                echo "12. CAN bus stress test: $DO_CAN_TEST"
+                echo "13. Audio stress test: $DO_AUDIO_TEST"
+                echo "14. MCU DIO stress test: $DO_MCU_DIO_TEST"
+                echo "15. MCU COM RS232 stress test: $DO_MCU_UART_TEST"
+                echo "16. GPS stress test: $DO_GPS_TEST"
+                echo "17. AEM Ethernet test : $DO_AEM_ETHERNET_TEST"
+	fi
 	read -p "Select test case: " test_item
 }
 
@@ -202,8 +205,13 @@ network_stress_test()
 	killall check_network.sh > /dev/null 2>&1
 	killall iperf3 > /dev/null 2>&1
 	$SCRIPTPATH/test/$SOC_TYPE/network_stress_test.sh $logfile &
-	sleep 10
-    $SCRIPTPATH/test/check_network.sh $logfile &
+	if [ "$SOC_TYPE" == "rockchip" ]; then
+		sleep 5
+		$SCRIPTPATH/test/$SOC_TYPE/check_network.sh $logfile &
+	else
+                sleep 10
+                $SCRIPTPATH/test/check_network.sh $logfile &
+	fi
 }
 
 aem_network_stress_test()
@@ -220,7 +228,7 @@ wifi_stress_test()
 {
 	logfile=$LOG_PATH/wifi.txt
 	killall wifi_stress_test.sh > /dev/null 2>&1
-	$SCRIPTPATH/test/wifi_stress_test.sh $SCRIPTPATH $logfile
+	$SCRIPTPATH/test/wifi_stress_test.sh $SCRIPTPATH $logfile $SOC_TYPE
 }
 
 uart_stress_test()
@@ -455,8 +463,12 @@ check_wifi_setting()
 initial_setting()
 {
 	if [[ "$DO_WIFI_TEST" == "Y" ]]; then
-		checkwaln0=` ifconfig | grep wlan0`
-		if [[ $checkwaln0 ]]; then
+		if [ "$SOC_TYPE" == "rockchip" ]; then
+			checkwlan0=` ifconfig | grep wlp1s0`
+		else
+			checkwlan0=` ifconfig | grep wlan0`
+		fi
+		if [[ $checkwlan0 ]]; then
    			check_wifi_setting
 		fi
 	fi
@@ -710,8 +722,13 @@ case $test_item in
 		wifi_stress_test
 		;;
 	9)
-		info_view UART loopback
-		uart_stress_test ui
+		if [ $SOC_TYPE == "rockchip" ]; then
+			info_view NPU
+                	npu_stress_test
+		else
+			info_view UART loopback
+			uart_stress_test ui
+		fi
 		;;
 	10)
 		info_view SoC UART loopback
@@ -739,9 +756,6 @@ case $test_item in
 	17)
 		info_view AEM_Ethernet
 		aem_network_stress_test
-		;;
-	18)	info_view NPU
-		npu_stress_test
 		;;
 	*)
 		check_system_status=true
@@ -819,8 +833,8 @@ while true; do
 	log "$(date +'%Y/%m/%d/%H:%M:%S')"
 	log "CPU Usage      = $cpu_usage"
 	log "GPU Usage      = $gpu_usage"
-	log "CPU temp       = $cpu_temp"
-	log "GPU temp       = $gpu_temp"
+	log "CPU temp       = $cpu_temp 'C"
+	log "GPU temp       = $gpu_temp 'C"
 	log "CPU freq       = $cpu_freq GHz"
 	log "GPU freq       = $gpu_freq MHz"
 	log "DDR freq       = $ddr_freq MHz"
@@ -831,36 +845,33 @@ while true; do
 	log "============================================"
 	log ""
 
-	# if detect log with usb died , will recover network stress test
-        #usblan=`lsusb | grep 0bda:8153`
-	#echo "usblan: $usblan"
-	#if [ -z "$usblan" ]; then
-	#if dmesg -T | grep "usb 2-2.4: USB disconnect" > /dev/null
-	if dmesg -T | grep "xhci: HC died" > /dev/null
-       		then
-		#log "detect firmware hang"
-		log "detect usb controller hang"
-		ip -all netns delete
-		killall iperf3 > /dev/null 2>&1
-		killall check_network.sh > /dev/null 2>&1
-		killall check_aem_network.sh > /dev/null 2>&1
-		killall network_stress_test.sh > /dev/null 2>&1
-		if [ "$DO_AEM_ETHERNET_TEST" == "Y" ]; then
-			killall aem_network_stress_test.sh > /dev/null 2>&1
+	if [ "$SOC_TYPE" == "imx8" ]; then
+		if dmesg -T | grep "xhci: HC died" > /dev/null
+       			then
+			#log "detect firmware hang"
+			log "detect usb controller hang"
+			ip -all netns delete
+			killall iperf3 > /dev/null 2>&1
+			killall check_network.sh > /dev/null 2>&1
+			killall check_aem_network.sh > /dev/null 2>&1
+			killall network_stress_test.sh > /dev/null 2>&1
+			if [ "$DO_AEM_ETHERNET_TEST" == "Y" ]; then
+				killall aem_network_stress_test.sh > /dev/null 2>&1
+			fi
+			killall gps_test.sh > /dev/null 2>&1
+			sleep 60
+			log "restart network stress test"
+			network_stress_test > /dev/null 2>&1 &
+			if [ "$DO_AEM_ETHERNET_TEST" == "Y" ]; then
+				aem_network_stress_test > /dev/null 2>&1 &
+			fi
+			sleep 10
+			dmesg -C
+			log "restart network stress test done"
+		else
+			#log "not detect firmware hang"
+			log "not detect usb controller hang"
 		fi
-		killall gps_test.sh > /dev/null 2>&1
-		sleep 60
-		log "restart network stress test"
-		network_stress_test > /dev/null 2>&1 &
-		if [ "$DO_AEM_ETHERNET_TEST" == "Y" ]; then
-			aem_network_stress_test > /dev/null 2>&1 &
-		fi
-		sleep 10
-		dmesg -C
-		log "restart network stress test done"
-	else
-		#log "not detect firmware hang"
-		log "not detect usb controller hang"
 	fi
 
 	read -t 9 -p "Press 'q' for exit or Do nothing for keep testing: " RESP

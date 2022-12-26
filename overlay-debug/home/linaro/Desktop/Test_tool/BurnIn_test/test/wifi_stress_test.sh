@@ -1,6 +1,16 @@
 #!/bin/bash
+SOC_TYPE=$3
 logfile=$2
-wifi_gw=$(route -n | grep wlan0 | grep UG | awk {'printf $2'})
+if [ $SOC_TYPE == "rockchip" ]; then
+	wlan_interface=wlp1s0
+else
+	wlan_intreface=wlan0
+fi
+
+echo "wifi_interface: $wlan_interface"
+
+wifi_gw=$(route -n | grep $wlan_interface | grep UG | awk {'printf $2'})
+
 
 sleep 5
 pass_cnt=0
