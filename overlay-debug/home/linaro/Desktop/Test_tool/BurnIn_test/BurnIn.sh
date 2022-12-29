@@ -90,6 +90,7 @@ select_test_item()
 	echo " 8. Wi-Fi stress test: $DO_WIFI_TEST"
 	if [ $SOC_TYPE == "rockchip" ]; then
 		echo " 9. NPU stres test: $DO_NPU_TEST"
+		echo "10. COM1/COM2 RS232 stress test: $DO_UART_to_UART_TEST"
 	else
                 echo " 9. UART loopback stress test: $DO_UART_TEST"
                 echo "10. UART1/UART2 RS232 stress test: $DO_UART_to_UART_TEST"
@@ -256,7 +257,7 @@ uart_to_uart_stress_test()
 	killall serial-test > /dev/null 2>&1
 	ex_gpio -c 1 $COM_TEST_TYPE > /dev/null 2>&1
 	ex_gpio -c 2 $COM_TEST_TYPE > /dev/null 2>&1
-	$SCRIPTPATH/test/serial-test_loop.sh $COM_1 $COM_2 $SCRIPTPATH $logfile
+	$SCRIPTPATH/test/serial-test_loop.sh $COM_1 $COM_2 $SCRIPTPATH $logfile $SOC_TYPE
 }
 
 can_stress_test()

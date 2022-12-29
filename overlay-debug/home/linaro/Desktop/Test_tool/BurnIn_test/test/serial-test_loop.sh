@@ -2,7 +2,7 @@
 com1to2=0
 com2to1=0
 logfile=$4
-
+SOC_TYPE=$5
 err_cnt=0
 
 if [[ -z "$1" || -z "$2" ]]; then
@@ -11,9 +11,15 @@ if [[ -z "$1" || -z "$2" ]]; then
 fi
 while [ 1 != 2 ]
 do
-	com1to2=`/home/asus/Desktop/Test_tool/BurnIn_test/test/serial-test -p $1 $2 -1`
-	sleep 1
-	com2to1=`/home/asus/Desktop/Test_tool/BurnIn_test/test/serial-test -p $1 $2 -2`
+	if [ $SOC_TYPE == "rockchip" ]; then
+		com1to2=`/home/linaro/Desktop/Test_tool/BurnIn_test/test/serial-test -p $1 $2 -1`
+		sleep 1
+		com2to1=`/home/linaro/Desktop/Test_tool/BurnIn_test/test/serial-test -p $1 $2 -2`
+	else
+		com1to2=`/home/asus/Desktop/Test_tool/BurnIn_test/test/serial-test -p $1 $2 -1`
+		sleep 1
+		com2to1=`/home/asus/Desktop/Test_tool/BurnIn_test/test/serial-test -p $1 $2 -2`	
+	fi
 	if [ "$com1to2" == "PASS" -a "$com2to1" == "PASS" ]
 	then
 		echo "PASS" | tee -a $logfile
