@@ -257,6 +257,8 @@ systemctl enable mountboot.service
 #-------Tinker board 3: rknn-toolkit_lite2-------
 if [ "$VERSION" == "debug" ]; then
         chown -R linaro:linaro /home/linaro/Desktop
+	# double click can to execuate the shell script file
+	sed -i -e 's/x-shellscript=vim.desktop/x-shellscript=debian-uxterm.desktop/g' /usr/share/applications/mimeinfo.cache
 fi
 
 # change owner and permission for install rknn toolkit lite2 script
