@@ -133,8 +133,8 @@ obconf
 #onboard
 openssh-client
 openssh-server
-parole
-parole-dev
+#parole
+#parole-dev
 parted
 pavucontrol
 policykit-1
