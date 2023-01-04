@@ -1,10 +1,9 @@
 ## BurnIn Test Tool SOP##
-1. sudo Burnin.sh $PRODUCT ,ex: PE1000N-XAVIER
+1. sudo Burnin.sh $PRODUCT ,ex: TINKERBOARD_3
 2. Enter test case number, and start test
 
-Log will print to terminal directly, also save to test tool folder.
-file name: $Time_$CASE.txt
-ex. 20190529_1130_cpu.txt¡B20190529_1140_BurnIn.txt......
+Log will print to terminal directly, also save to /var/log/burnin_test and a link folder /home/linaro/Desktop/burnin_test
+ex. cpu.txt,BurnIn.txt......
 
 
 
@@ -14,4 +13,4 @@ ex. 20190529_1130_cpu.txt¡B20190529_1140_BurnIn.txt......
    - sudo ./configure
    - sudo make
    - sudo make install   
-   - replace files by overlay 
+   - replace files by overlay

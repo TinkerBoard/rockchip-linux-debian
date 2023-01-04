@@ -1,18 +1,14 @@
 ## System Test Tool SOP##
 
 1. Shutdown test
-	sudo Desktop/Test_tool/System_test.sh PE1000N 1
-	sudo Desktop/Test_tool/System_test.sh PE1000N-AEM 1
+	sudo Desktop/Test_tool/System_test.sh TINKERBOARD_3 1
 2. Reboot test 
-	sudo Desktop/Test_tool/System_test.sh PE1000N 2
-	sudo Desktop/Test_tool/System_test.sh PE1000N-AEM 2
+	sudo Desktop/Test_tool/System_test.sh TINKERBOARD_3 2
 3. Suspend/Resume test
-	sudo Desktop/Test_tool/System_test.sh PE1000N 3
-	sudo Desktop/Test_tool/System_test.sh PE1000N-AEM 3
+	sudo Desktop/Test_tool/System_test.sh TINKERBOARD_3 3
 
 If want to stop Shutdown and Reboot test
-	sudo Desktop/Test_tool/System_test.sh PE1000N 4
-	sudo Desktop/Test_tool/System_test.sh PE1000N-AEM 4
+	sudo Desktop/Test_tool/System_test.sh TINKERBOARD_3 4
 
 
-Log: /var/log/system_test
+Log: /var/log/

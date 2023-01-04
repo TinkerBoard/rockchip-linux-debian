@@ -469,8 +469,10 @@ initial_setting()
 		else
 			checkwlan0=` ifconfig | grep wlan0`
 		fi
-		if [[ $checkwlan0 ]]; then
-   			check_wifi_setting
+		if [ "$SOC_TYPE" == "tegra" ]; then
+			if [[ $checkwlan0 ]]; then
+   				check_wifi_setting
+			fi
 		fi
 	fi
 	if [[ "$DO_SSD_CHECK" == "Y" ]]; then
@@ -514,9 +516,11 @@ check_all_status()
 	if [ "$DO_EXTERNALSTORAGE_TEST" == "Y" ]; then
 		check_ext_storage_status
 	fi
+
 	if [ "$DO_ETHERNET_TEST" == "Y" ]; then
 		check_status Ethernet $Ethernet
 	fi
+
 	if [ "$DO_WIFI_TEST" == "Y" ]; then
 		check_wifi
 	fi
@@ -632,6 +636,12 @@ else
 	test_time=864000
 fi
 
+boardinfo=$(cat /proc/boardinfo)
+if [ "$boardinfo" == "Tinker Board 3 - SKU3" ] || [ "$boardinfo" == "Sanden - SKU1" ]; then
+	DO_ETHERNET_TEST=N
+	echo "Only one Ethernet port"
+fi
+
 if [ ! -z "$3" ]; then
 	test_item=$3
 else
@@ -652,6 +662,7 @@ sn=$5
 sudo chmod 755 $SCRIPTPATH/test/*.sh
 
 sudo rm -r /var/log/burnin_test/*
+sudo rm -rf /home/linaro/Desktop/burnin_test
 start_time="$(date +'%Y%m%d_%H%M')"
 if [ ! -z "$sn" ]; then
    LOG_NAME=$sn"_"$start_time
@@ -660,9 +671,11 @@ else
 fi
 LOG_PATH=/var/log/burnin_test/$LOG_NAME
 mkdir -p $LOG_PATH
+sudo ln -s /var/log/burnin_test /home/linaro/Desktop/burnin_test
 start_time="$(date +'%Y/%m/%d/%H:%M:%S')"
 start_sec=$(date +%s)
 log "SN = $sn"
+
 
 CPU="/test/stressapptest -s 864000 --pause_delay 3600 --pause_duration 1 -W --stop_on_errors"
 GPU="glmark2 --benchmark refract --run-forever --off-screen"
@@ -681,6 +694,8 @@ MCU_UART="mcu_uart_stress_test.sh"
 TPU="/test/tpu_stress_test.sh"
 GPS="../GPS_test/gpstest"
 NPU="npu_stress_test.sh"
+
+
 
 if [ "$DO_THERMAL_LOGGING" == "Y" ]; then
 	thermal_logging > /dev/null 2>&1 &
@@ -881,17 +896,18 @@ while true; do
 		sleep 1
 		exit
 	fi
-
-    if [ $diff -ge $test_time ]; then
-        check_all_status
-		log "Time is up"
-		log "PASS"
-        sudo tar zcvf /home/asus/burn_in_log.tar.gz /var/log
-        sleep 10
-        sudo shutdown now
-        kill_test
-        #echo "PASS" > $top_path/logs/burn_in_result.txt
-        exit 0
-    fi
+	if [ "$SOC_TYPE" = "tegra" ] || [ "$SOC_TYPE" = "imx8" ]; then
+                if [ $diff -ge $test_time ]; then
+                        check_all_status
+                        log "Time is up"
+                        log "PASS"
+                        sudo tar zcvf /home/asus/burn_in_log.tar.gz /var/log
+                        sleep 10
+                        sudo shutdown now
+                        kill_test
+                        #echo "PASS" > $top_path/logs/burn_in_result.txt
+                        exit 0
+                fi
+        fi
 
 done

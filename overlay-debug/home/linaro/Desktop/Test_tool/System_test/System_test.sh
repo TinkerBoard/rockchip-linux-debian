@@ -120,6 +120,10 @@ case $test_item in
 		info_view Suspend
 		times=0
 		while true; do
+			fail_file="/home/linaro/Desktop/Fail_suspend_resume.txt"
+			if [ -f fail_file ]; then
+				sudo rm -rf $fail_file
+			fi
 			log "trigger suspend"
 			if [ "$SOC_TYPE" == "tegra" ]; then 
 				# Set the rtc 1 to wakeup system
@@ -148,6 +152,8 @@ case $test_item in
 						sudo tar -cvf /home/asus/Desktop/$LOGFILE /var/log
 					fi
 					sleep 1
+					touch $fail_file
+					echo "scan_io.sh" >> $fail_file
 					exit
 				fi				
 			fi
@@ -166,6 +172,8 @@ case $test_item in
 					sudo tar -cvf /home/asus/Desktop/$LOGFILE /var/log
 				fi	
 				sleep 1
+				touch $fail_file
+				echo "check_io.sh" >> $fail_file
 				exit
 			fi
 		done
@@ -177,11 +185,11 @@ case $test_item in
 		sudo bash -c "$SCRIPT $PROJECT 5"
 		sleep 5
 		LOGFILE="${MODEL}_Reboot_Shutdown.tar"
-		if [ "$SOC_TYPE" == "rockchip" ]; then 
-			sudo tar cvf /home/linaro/Desktop/$LOGFILE /var/log
-		else
-			sudo tar cvf /home/$USER/Desktop/$LOGFILE /var/log
-		fi
+#		if [ "$SOC_TYPE" == "rockchip" ]; then 
+#			sudo tar cvf /home/linaro/Desktop/$LOGFILE /var/log
+#		else
+#			sudo tar cvf /home/$USER/Desktop/$LOGFILE /var/log
+#		fi
 		sleep 1
 		sudo systemctl reboot
 		;;
