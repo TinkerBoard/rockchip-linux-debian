@@ -1,0 +1,7 @@
+ACTION=="bind", SUBSYSTEM=="usb", DRIVERS=="usb", ENV{DEVTYPE}=="usb_device", GOTO="asus_modem_bind_start"
+GOTO="asus_modem_bind_end"
+
+LABEL="asus_modem_bind_start"
+ATTRS{idVendor}=="2c7c", RUN+="/etc/modem/mm_cli start"
+
+LABEL="asus_modem_bind_end"

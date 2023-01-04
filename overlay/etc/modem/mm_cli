@@ -1,0 +1,33 @@
+#!/usr/bin/bash
+# VERSION=1.3_20230104
+UTILS=/etc/modem/utils.sh
+TAG="mm_cli"
+
+log() {
+    echo ${1}
+    logger -t ${TAG} ${1}
+}
+
+case $1 in
+start)
+	mmcli -G INFO
+	source $UTILS
+	wait_until_modem_available
+	while [ "$SIM_DET" == "" ]
+	do
+		SIM_DET=$(send_at_command +QSIMDET?| awk -F ": " '{print $2}')
+	done
+	log "SIMDET=$SIM_DET"
+	if [ "$SIM_DET" != "1,0" ]
+	then
+		log "Reset SIMDET and reboot module..."
+		send_at_command "+QSIMDET=1,0"
+		send_at_command "+CFUN=1,1"
+	fi
+	exit 0
+	;;
+*)
+    echo "Usage: mm_cli [COMMAND]"
+    exit 1
+    ;;
+esac

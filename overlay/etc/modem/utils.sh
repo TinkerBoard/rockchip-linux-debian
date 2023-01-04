@@ -1,0 +1,45 @@
+#!/usr/bin/bash
+AT_CMD_TEMP=/etc/modem/at_cmd_tmp
+
+send_at_command() {
+	if [ -z "$1" ]
+	then
+		echo "ERROR no command"
+		return 1
+	fi
+
+	# For sending command via mmcli, it needs to remove the "AT" header
+	if [[ "${1^^}" =~ "AT" ]]
+	then
+		CMD=$(echo ${1^^}| awk -F "AT" '{print $2}')
+	else
+		CMD=$1
+	fi
+
+	# Send command and save result into $AT_CMD_TEMP
+	mmcli -m any -a --command="$CMD"\
+	       	| tr '\r' ' '\
+		| tr -d '\n'\
+		>> $AT_CMD_TEMP
+
+	# Read result
+	RET=$(tail -1 $AT_CMD_TEMP)
+	echo "" >> $AT_CMD_TEMP
+
+	if [[ "$RET" =~ "error" ]]
+	then
+		echo "ERROR command failed"
+		return 1
+	else
+		echo $RET| sed -rn "s/^response: +'([^']+)'.*/\1/p"
+		return 0
+	fi
+}
+
+wait_until_modem_available() {
+	while ! mmcli -L
+	do
+		sleep 1
+	done
+	sleep 3
+}
