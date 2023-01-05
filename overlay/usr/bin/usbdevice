@@ -20,7 +20,7 @@ usb_get_started()
 }
 
 CONFIGFS_DIR=/sys/kernel/config
-USB_GROUP=rockchip
+USB_GROUP=asus
 USB_STRINGS_ATTR=strings/0x409
 USB_GADGET_DIR=$CONFIGFS_DIR/usb_gadget/$USB_GROUP
 USB_GADGET_STRINGS_DIR=$USB_GADGET_DIR/$USB_STRINGS_ATTR
@@ -440,7 +440,7 @@ usb_init()
 	SERIAL=$(grep Serial /proc/cpuinfo | cut -d':' -f2)
 	echo ${SERIAL:-0123456789ABCDEF} > $USB_GADGET_STRINGS_DIR/serialnumber
 	echo $USB_GROUP  > $USB_GADGET_STRINGS_DIR/manufacturer
-	echo "rk3xxx"  > $USB_GADGET_STRINGS_DIR/product
+	echo "Tinker Board 3"  > $USB_GADGET_STRINGS_DIR/product
 
 	mkdir -p $USB_CONFIGS_DIR
 	echo 500 > $USB_CONFIGS_DIR/MaxPower
