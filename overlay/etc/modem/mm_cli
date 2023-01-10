@@ -12,6 +12,7 @@ case $1 in
 start)
 	mmcli -G INFO
 	source $UTILS
+	clear_modem_logs
 	wait_until_modem_available
 	while [ "$SIM_DET" == "" ]
 	do

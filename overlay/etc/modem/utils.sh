@@ -9,22 +9,18 @@ send_at_command() {
 	fi
 
 	# For sending command via mmcli, it needs to remove the "AT" header
-	if [[ "${1^^}" =~ "AT" ]]
+	if [[ "${1^^}" == "AT"* ]]
 	then
-		CMD=$(echo ${1^^}| awk -F "AT" '{print $2}')
+		CMD=$(echo ${1^^}| sed 's/AT//')
 	else
 		CMD=$1
 	fi
 
 	# Send command and save result into $AT_CMD_TEMP
-	mmcli -m any -a --command="$CMD"\
+	RET=$(mmcli -m any -a --command="$CMD"\
 	       	| tr '\r' ' '\
-		| tr -d '\n'\
-		>> $AT_CMD_TEMP
-
-	# Read result
-	RET=$(tail -1 $AT_CMD_TEMP)
-	echo "" >> $AT_CMD_TEMP
+		| tr -d '\n')
+	echo "$RET" >> $AT_CMD_TEMP
 
 	if [[ "$RET" =~ "error" ]]
 	then
@@ -42,4 +38,8 @@ wait_until_modem_available() {
 		sleep 1
 	done
 	sleep 3
+}
+
+clear_modem_logs() {
+	echo "" > $AT_CMD_TEMP
 }
