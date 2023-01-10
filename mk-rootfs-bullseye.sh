@@ -27,6 +27,8 @@ if [ ! $VERSION_NUMBER ]; then
         VERSION_NUMBER="eng"
 fi
 
+echo -e "\033[36m Building for $VERSION \033[0m"
+
 if [ ! -e linaro-bullseye-alip-*.tar.gz ]; then
 	echo "\033[36m Run mk-base-debian.sh first \033[0m"
 	exit -1
@@ -59,16 +61,16 @@ if [ "$VERSION" == "debug" ]; then
 	sudo cp -rf overlay-debug/* $TARGET_ROOTFS_DIR/
         sudo rm -rf $TARGET_ROOTFS_DIR/home/linaro/Desktop/Test_tool
         sudo cp -arp overlay-debug/home/linaro/Desktop/Test_tool $TARGET_ROOTFS_DIR/home/linaro/Desktop/
+	# adb
+	if [[ "$ARCH" == "armhf" && "$VERSION" == "debug" ]]; then
+		sudo cp -f overlay-debug/usr/local/share/adb/adbd-32 $TARGET_ROOTFS_DIR/usr/bin/adbd
+	elif [[ "$ARCH" == "arm64" && "$VERSION" == "debug" ]]; then
+		sudo cp -f overlay-debug/usr/local/share/adb/adbd-64 $TARGET_ROOTFS_DIR/usr/bin/adbd
+	fi
 fi
+
 ## hack the serial
 sudo cp -f overlay/usr/lib/systemd/system/serial-getty@.service $TARGET_ROOTFS_DIR/usr/lib/systemd/system/serial-getty@.service
-
-# adb
-if [[ "$ARCH" == "armhf" && "$VERSION" == "debug" ]]; then
-	sudo cp -f overlay-debug/usr/local/share/adb/adbd-32 $TARGET_ROOTFS_DIR/usr/bin/adbd
-elif [[ "$ARCH" == "arm64" && "$VERSION" == "debug" ]]; then
-	sudo cp -f overlay-debug/usr/local/share/adb/adbd-64 $TARGET_ROOTFS_DIR/usr/bin/adbd
-fi
 
 # bt/wifi firmware
 sudo mkdir -p $TARGET_ROOTFS_DIR/system/lib/modules/
@@ -96,6 +98,9 @@ sudo cp -rf lib_modules/lib/modules $TARGET_ROOTFS_DIR/lib/
 sudo mount -o bind /dev $TARGET_ROOTFS_DIR/dev
 
 cat << EOF | sudo chroot $TARGET_ROOTFS_DIR
+
+echo "deb http://mirrors.ustc.edu.cn/debian/ bullseye-backports main contrib non-free" >> /etc/apt/sources.list
+echo "deb-src http://mirrors.ustc.edu.cn/debian/ bullseye-backports main contrib non-free" >> /etc/apt/sources.list
 
 apt-get update
 apt-get upgrade -y
@@ -162,6 +167,10 @@ echo exit 101 > /usr/sbin/policy-rc.d
 chmod +x /usr/sbin/policy-rc.d
 \${APT_INSTALL} blueman
 rm -f /usr/sbin/policy-rc.d
+
+#------------------blueman------------
+echo -e "\033[36m Install blueman.................... \033[0m"
+\${APT_INSTALL} /packages/blueman/*.deb
 
 # Change the background for ASUS Tinker Board
 rm -rf /usr/share/images/desktop-base/default

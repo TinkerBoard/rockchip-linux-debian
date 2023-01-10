@@ -31,13 +31,13 @@ Building a desktop debian system by ubuntu-build-service from linaro.
 
 ### Building overlay with rockchip audio/video hardware accelerated
 
-Building with overlay with rockchip debian rootfs:
+- Building with overlay with rockchip debian rootfs:
 
 ```
 	RELEASE=bullseye ARCH=armhf ./mk-rootfs.sh
 ```
 
-Building with overlay with rockchip debug debian rootfs:
+- Building with overlay with rockchip debug debian rootfs:
 
 ```
 	VERSION=debug ARCH=armhf ./mk-rootfs-bullseye.sh
@@ -55,23 +55,29 @@ Creating the ext4 image(linaro-rootfs.img):
 
 ## Usage for 64bit Debian 11 (Bullseye-64)
 
+### Building debian system from linaro
+
 Building a base debian system by ubuntu-build-service from linaro.
 
 ```
 	RELEASE=bullseye TARGET=desktop ARCH=arm64 ./mk-base-debian.sh
 ```
 
-Building the rk-debian rootfs:
+### Building overlay with rockchip audio/video hardware accelerated
+
+- Building the rk-debian rootfs
 
 ```
 	RELEASE=bullseye ARCH=arm64 ./mk-rootfs.sh
 ```
 
-Building the rk-debain rootfs with debug:
+- Building the rk-debain rootfs with debug
 
 ```
 	VERSION=debug ARCH=arm64 ./mk-rootfs-bullseye.sh
 ```
+
+### Creating roofs image
 
 Creating the ext4 image(linaro-rootfs.img):
 

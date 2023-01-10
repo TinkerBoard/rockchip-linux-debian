@@ -9,6 +9,6 @@ Type=forking
 ExecStart=/etc/init.d/rkwifibt.sh
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=network-online.target
 #end
 
