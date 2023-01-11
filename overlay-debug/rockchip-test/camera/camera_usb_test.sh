@@ -12,6 +12,8 @@ echo "Start UVC Camera M-JPEG Preview!"
 COMPATIBLE=$(cat /proc/device-tree/compatible)
 if [[ $COMPATIBLE =~ "rk3588" ]]; then
     gst-launch-1.0 v4l2src device=/dev/video20 ! image/jpeg, width=1280, height=720, framerate=30/1 ! jpegparse ! mppjpegdec ! xvimagesink sync=false
+elif [[ $COMPATIBLE =~ "rk3562" ]]; then
+    gst-launch-1.0 v4l2src device=/dev/video9 ! image/jpeg, width=1280, height=720, framerate=30/1 ! jpegparse ! mppjpegdec ! xvimagesink sync=false
 elif [[ $COMPATIBLE =~ "rk3566" && $COMPATIBLE =~ "rk3568" ]]; then
     gst-launch-1.0 v4l2src device=/dev/video9 ! image/jpeg, width=1280, height=720, framerate=30/1 ! jpegparse ! mppjpegdec ! xvimagesink sync=false
 elif [[ $COMPATIBLE =~ "rk3399" ]]; then

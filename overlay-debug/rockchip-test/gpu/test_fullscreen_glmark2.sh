@@ -14,6 +14,9 @@ elif [[  "$1" == "rk3399"  ]]; then
 elif [[  "$1" == "rk3399pro"  ]]; then
 	taskset -c 4-5 glmark2-es2 --fullscreen --visual-config='a=0:buf=24' --annotate
 
+elif [[  "$1" == "rk3562" ]]; then
+	glmark2-es2 --fullscreen --visual-config='a=0:buf=24' --annotate
+
 elif [[  "$1" == "rk3566" || "$1" == "rk3568"  ]]; then
 	glmark2-es2 --fullscreen --visual-config='a=0:buf=24' --annotate
 
@@ -48,6 +51,8 @@ elif [[ $(expr $COMPATIBLE : ".*rk3399") -ne 0 ]]; then
     CHIPNAME="rk3399"
 elif [[ $(expr $COMPATIBLE : ".*rk3399pro") -ne 0 ]]; then
     CHIPNAME="rk3399pro"
+elif [[ $(expr $COMPATIBLE : ".*rk3562") -ne 0 ]]; then
+    CHIPNAME="rk3562"
 elif [[ $(expr $COMPATIBLE : ".*rk3566") -ne 0 ]]; then
     CHIPNAME="rk3566"
 elif [[ $(expr $COMPATIBLE : ".*rk3568") -ne 0 ]]; then

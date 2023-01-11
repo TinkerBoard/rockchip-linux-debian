@@ -46,11 +46,9 @@ install_packages() {
 		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
 		[ -e /usr/lib/arm-linux-gnueabihf/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
-        rk3568|rk3566)
+        rk3568|rk3566|rk3562)
 		MALI=bifrost-g52-g2p0
 		ISP=rkaiq_rk3568
-		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
-		sed -i "s/glamor/exa/g" /etc/X11/xorg.conf.d/20-modesetting.conf
 		[ -e /usr/lib/aarch64-linux-gnu/ ] && tar xvf /rknpu2-rk3568-*.tar -C /
 		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
@@ -89,6 +87,8 @@ elif [[ $COMPATIBLE =~ "px30" ]]; then
     CHIPNAME="px30"
 elif [[ $COMPATIBLE =~ "rk3128" ]]; then
     CHIPNAME="rk3128"
+elif [[ $COMPATIBLE =~ "rk3562" ]]; then
+    CHIPNAME="rk3562"
 elif [[ $COMPATIBLE =~ "rk3566" ]]; then
     CHIPNAME="rk3566"
 elif [[ $COMPATIBLE =~ "rk3568" ]]; then

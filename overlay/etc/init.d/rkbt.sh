@@ -28,6 +28,9 @@ init_rkwifibt() {
         rk3128|rk3036)
 	    /usr/bin/bt_pcba_test&
             ;;
+        rk3562)
+	    /usr/bin/bt_pcba_test&
+            ;;
         rk3566)
 	    /usr/bin/bt_pcba_test&
             ;;
@@ -57,6 +60,8 @@ elif [[ $COMPATIBLE =~ "px30" ]]; then
     CHIPNAME="px30"
 elif [[ $COMPATIBLE =~ "rk3128" ]]; then
     CHIPNAME="rk3128"
+elif [[ $COMPATIBLE =~ "rk3562" ]]; then
+    CHIPNAME="rk3562"
 elif [[ $COMPATIBLE =~ "rk3566" ]]; then
     CHIPNAME="rk3566"
 elif [[ $COMPATIBLE =~ "rk3568" ]]; then
