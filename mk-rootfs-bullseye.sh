@@ -228,7 +228,7 @@ source ~/.bashrc
 #ln -sf /usr/bin/startxfce4 /etc/alternatives/x-session-manager
 
 #---------------Install thunar-volman and auto mount storage start--------------
-\${APT_INSTALL} thunar-volman
+\${APT_INSTALL} thunar-volman gvfs gvfs-backends
 cp /etc/ASUS/thunar-volman.xml /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/thunar-volman.xml
 
 #---------------Install thunar-volman and auto mount storage end--------------
