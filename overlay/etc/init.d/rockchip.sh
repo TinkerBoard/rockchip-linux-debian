@@ -19,36 +19,48 @@ install_packages() {
 		# 3288w
 		cat /sys/devices/platform/*gpu/gpuinfo | grep -q r1p0 && \
 		MALI=midgard-t76x-r18p0-r1p0
+		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
+		[ -e /usr/lib/arm-linux-gnueabihf/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
         rk3399|rk3399pro)
 		MALI=midgard-t86x-r18p0
 		ISP=rkisp
 		RGA=rga
+		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
         rk3328)
 		MALI=utgard-450
 		ISP=rkisp
 		RGA=rga
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
         ;;
         rk3326|px30)
 		MALI=bifrost-g31-g2p0
 		ISP=rkisp
 		RGA=rga
+		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
         rk3128|rk3036)
 		MALI=utgard-400
 		ISP=rkisp
 		RGA=rga
+		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
+		[ -e /usr/lib/arm-linux-gnueabihf/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
         rk3568|rk3566)
 		MALI=bifrost-g52-g2p0
 		ISP=rkaiq_rk3568
 		RGA=rga
+		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
         rk3588|rk3588s)
 		ISP=rkaiq_rk3588
 		MALI=valhall-g610-g6p0
 		RGA=rga2
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
     esac
 
@@ -132,8 +144,13 @@ then
 
     rm -rf /packages
 
-    # The base target does not come with lightdm
+    # The base target does not come with lightdm/rkaiq_3A
+if [ -e /etc/gdm3/daemon.conf ]; then
+    systemctl restart gdm3.service || true
+elif [ -e /etc/lightdm/lightdm.conf ]; then
     systemctl restart lightdm.service || true
+fi
+    systemctl restart rkaiq_3A.service || true
 
     touch /usr/local/first_boot_flag
 

@@ -10,8 +10,9 @@ case "$1-$2" in
 		ifconfig wlan0 down
                ;;
        post-hibernate|post-suspend)
+		kilall brcm_patchram_plus1
 		ifconfig wlan0 up
-		hciconfig hci0 up
+		bt_pcba_test&
                ;;
        *) exit $NA
                ;;

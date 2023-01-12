@@ -31,13 +31,13 @@ Building a desktop debian system by ubuntu-build-service from linaro.
 
 ### Building overlay with rockchip audio/video hardware accelerated
 
-Building with overlay with rockchip debian rootfs:
+- Building with overlay with rockchip debian rootfs:
 
 ```
 	RELEASE=buster ARCH=armhf ./mk-rootfs.sh
 ```
 
-Building with overlay with rockchip debug debian rootfs:
+- Building with overlay with rockchip debug debian rootfs:
 
 ```
 	VERSION=debug ARCH=armhf ./mk-rootfs-buster.sh
@@ -55,23 +55,29 @@ Creating the ext4 image(linaro-rootfs.img):
 
 ## Usage for 64bit Debian 10 (Buster-64)
 
+### Building debian system from linaro
+
 Building a base debian system by ubuntu-build-service from linaro.
 
 ```
 	RELEASE=buster TARGET=desktop ARCH=arm64 ./mk-base-debian.sh
 ```
 
-Building the rk-debian rootfs:
+### Building overlay with rockchip audio/video hardware accelerated
+
+- Building the rk-debian rootfs
 
 ```
 	RELEASE=buster ARCH=arm64 ./mk-rootfs.sh
 ```
 
-Building the rk-debain rootfs with debug:
+- Building the rk-debain rootfs with debug
 
 ```
 	VERSION=debug ARCH=arm64 ./mk-rootfs-buster.sh
 ```
+
+### Creating roofs image
 
 Creating the ext4 image(linaro-rootfs.img):
 

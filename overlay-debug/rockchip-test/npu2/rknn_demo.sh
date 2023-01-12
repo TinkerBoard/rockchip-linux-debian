@@ -5,8 +5,8 @@
 COMPATIBLE=$(cat /proc/device-tree/compatible)
 
 if [[ $COMPATIBLE =~ "rk3588" ]]; then
-###mipi camera is /dev/video8, can change for tests
-rknn_camera -d /dev/video8 -m /rockchip-test/npu2/model/RK3588/vgg16_max_pool_fp16.rknn
+###mipi camera is /dev/video11, can change for tests
+rknn_camera -d /dev/video11 -m /rockchip-test/npu2/model/RK3588/vgg16_max_pool_fp16.rknn
 else
 rknn_camera -d /dev/video1 -m /rockchip-test/npu2/model/RK356X/mobilenet_v1.rknn
 fi

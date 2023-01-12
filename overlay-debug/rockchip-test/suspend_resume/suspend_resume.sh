@@ -35,7 +35,7 @@ auto_suspend_resume()
 {
     while true
     do
-	pm-suspend
+        pm-suspend
         sleep 5
     done
 }

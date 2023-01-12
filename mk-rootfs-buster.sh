@@ -22,6 +22,8 @@ if [ ! $VERSION ]; then
 	VERSION="release"
 fi
 
+echo -e "\033[36m Building for $VERSION \033[0m"
+
 if [ ! -e linaro-buster-alip-$ARCH.tar.gz ]; then
 	echo -e "\033[36m Run mk-base-debian.sh first \033[0m"
 	exit -1
@@ -50,6 +52,12 @@ sudo cp -rf overlay-firmware/* $TARGET_ROOTFS_DIR/
 # adb, video, camera  test file
 if [ "$VERSION" == "debug" ]; then
 	sudo cp -rf overlay-debug/* $TARGET_ROOTFS_DIR/
+	# adb
+	if [[ "$ARCH" == "armhf" && "$VERSION" == "debug" ]]; then
+		sudo cp -f overlay-debug/usr/local/share/adb/adbd-32 $TARGET_ROOTFS_DIR/usr/bin/adbd
+	elif [[ "$ARCH" == "arm64" && "$VERSION" == "debug" ]]; then
+		sudo cp -f overlay-debug/usr/local/share/adb/adbd-64 $TARGET_ROOTFS_DIR/usr/bin/adbd
+	fi
 fi
 
 # gpio library
@@ -69,6 +77,9 @@ elif [ "$ARCH" == "arm64" ]; then
 	sudo cp -f overlay-debug/usr/local/share/adb/adbd-64 $TARGET_ROOTFS_DIR/usr/bin/adbd
 fi
 
+## hack the serial
+sudo cp -f overlay/usr/lib/systemd/system/serial-getty@.service $TARGET_ROOTFS_DIR/usr/lib/systemd/system/serial-getty@.service
+
 # bt/wifi firmware
 sudo mkdir -p $TARGET_ROOTFS_DIR/system/lib/modules/
 sudo mkdir -p $TARGET_ROOTFS_DIR/vendor/etc
@@ -87,6 +98,9 @@ fi
 sudo mount -o bind /dev $TARGET_ROOTFS_DIR/dev
 
 cat << EOF | sudo chroot $TARGET_ROOTFS_DIR
+
+echo "deb http://mirrors.ustc.edu.cn/debian/ buster-backports main contrib non-free" >> /etc/apt/sources.list
+echo "deb-src http://mirrors.ustc.edu.cn/debian/ buster-backports main contrib non-free" >> /etc/apt/sources.list
 
 apt-get update
 apt-get upgrade -y
@@ -144,10 +158,6 @@ echo -e "\033[36m Install libdrm.................... \033[0m"
 echo -e "\033[36m Install libdrm-cursor.................... \033[0m"
 \${APT_INSTALL} /packages/libdrm-cursor/*.deb
 
-# Only preload libdrm-cursor for X
-sed -i "/libdrm-cursor.so/d" /etc/ld.so.preload
-sed -i "1aexport LD_PRELOAD=libdrm-cursor.so.1" /usr/bin/X
-
 #------------------pcmanfm------------
 #echo -e "\033[36m Install pcmanfm.................... \033[0m"
 #\${APT_INSTALL} /packages/pcmanfm/*.deb
@@ -185,6 +195,7 @@ echo -e "\033[36m Install rktoolkit.................... \033[0m"
 #cp /etc/pulse/default.pa /
 #yes|\${APT_INSTALL} /packages/pulseaudio/*.deb
 #mv /daemon.conf /default.pa /etc/pulse/
+systemctl enable pulseaudio --global
 
 cp /packages/libmali/libmali-*-x11*.deb /
 cp -rf /packages/rga/ /
@@ -272,12 +283,16 @@ update-alternatives --auto x-terminal-emulator
 #---------------Clean--------------
 if [ -e "/usr/lib/arm-linux-gnueabihf/dri" ] ;
 then
+        # Only preload libdrm-cursor for X
+        sed -i "1aexport LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libdrm-cursor.so.1" /usr/bin/X
         cd /usr/lib/arm-linux-gnueabihf/dri/
         cp kms_swrast_dri.so swrast_dri.so /
         rm /usr/lib/arm-linux-gnueabihf/dri/*.so
         mv /*.so /usr/lib/arm-linux-gnueabihf/dri/
 elif [ -e "/usr/lib/aarch64-linux-gnu/dri" ];
 then
+        # Only preload libdrm-cursor for X
+        sed -i "1aexport LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libdrm-cursor.so.1" /usr/bin/X
         cd /usr/lib/aarch64-linux-gnu/dri/
         cp kms_swrast_dri.so swrast_dri.so /
         rm /usr/lib/aarch64-linux-gnu/dri/*.so
