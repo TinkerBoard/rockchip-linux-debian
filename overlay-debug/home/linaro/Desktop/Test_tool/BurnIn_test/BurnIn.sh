@@ -144,6 +144,7 @@ cpu_freq_stress_test()
 {
 	logfile=$LOG_PATH/cpu.txt
 	time=2592000 # 30 days = 60 * 60 * 24 * 30
+	killall cpu_freq_stress_test.sh > /dev/null 2>&1
 	killall stressapptest > /dev/null 2>&1
 	sudo bash $SCRIPTPATH/test/cpu_freq_stress_test.sh $SCRIPTPATH $time $logfile > /dev/null 2>&1 &
 }
@@ -566,6 +567,7 @@ check_all_status()
 }
 
 kill_test(){
+	killall cpu_freq_stress_test.sh > /dev/null 2>&1
 	killall stressapptest > /dev/null 2>&1
 	if [ $SOC_TYPE == "imx8" ]; then
 		killall glmark2-es2-wayland > /dev/null 2>&1

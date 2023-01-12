@@ -93,7 +93,7 @@ case $test_item in
 		sleep 5
 		#echo 1 | sudo tee /proc/sys/kernel/sysrq
 		#echo o | sudo tee /proc/sysrq-trigger
-		sudo systemctl poweroff
+		sudo systemctl poweroff -f
 		;;
 	2)
 		info_view Reboot
