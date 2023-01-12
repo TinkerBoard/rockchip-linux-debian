@@ -50,7 +50,6 @@ install_packages() {
 		MALI=bifrost-g52-g2p0
 		ISP=rkaiq_rk3568
 		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
-		sed -i "s/glamor/exa/g" /etc/X11/xorg.conf.d/20-modesetting.conf
 		[ -e /usr/lib/aarch64-linux-gnu/ ] && tar xvf /rknpu2-rk3568-*.tar -C /
 		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
