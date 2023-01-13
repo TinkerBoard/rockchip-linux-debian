@@ -65,7 +65,7 @@ install_packages() {
     esac
 
     apt install -fy --allow-downgrades /libmali-*$MALI*-x11*.deb
-    #apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
+    apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
     apt install -fy --allow-downgrades /$RGA/*.deb
 }
 
