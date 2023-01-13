@@ -60,6 +60,9 @@ if [ "$VERSION" == "debug" ]; then
 	fi
 fi
 
+## hack the serial
+sudo cp -f overlay/usr/lib/systemd/system/serial-getty@.service $TARGET_ROOTFS_DIR/usr/lib/systemd/system/serial-getty@.service
+
 # gpio library
 sudo rm -rf $TARGET_ROOTFS_DIR/usr/local/share/gpio_lib_c_rk3399
 sudo rm -rf $TARGET_ROOTFS_DIR/usr/local/share/gpio_lib_python_rk3399
@@ -70,19 +73,9 @@ sudo cp -rf overlay-debug/usr/local/share/gpio_lib_python_rk3399 $TARGET_ROOTFS_
 sudo rm -rf $TARGET_ROOTFS_DIR/usr/local/share/mraa
 sudo cp -rf overlay-debug/usr/local/share/mraa $TARGET_ROOTFS_DIR/usr/local/share/mraa
 
-# adb
-if [ "$ARCH" == "armhf" ]; then
-	sudo cp -f overlay-debug/usr/local/share/adb/adbd-32 $TARGET_ROOTFS_DIR/usr/bin/adbd
-elif [ "$ARCH" == "arm64" ]; then
-	sudo cp -f overlay-debug/usr/local/share/adb/adbd-64 $TARGET_ROOTFS_DIR/usr/bin/adbd
-fi
-
-## hack the serial
-sudo cp -f overlay/usr/lib/systemd/system/serial-getty@.service $TARGET_ROOTFS_DIR/usr/lib/systemd/system/serial-getty@.service
-
 # bt/wifi firmware
-sudo mkdir -p $TARGET_ROOTFS_DIR/system/lib/modules/
-sudo mkdir -p $TARGET_ROOTFS_DIR/vendor/etc
+#sudo mkdir -p $TARGET_ROOTFS_DIR/system/lib/modules/
+#sudo mkdir -p $TARGET_ROOTFS_DIR/vendor/etc
 #sudo find ../kernel/drivers/net/wireless/rockchip_wlan/*  -name "*.ko" | \
 #    xargs -n1 -i sudo cp {} $TARGET_ROOTFS_DIR/system/lib/modules/
 
@@ -133,8 +126,6 @@ echo -e "\033[36m Setup Video.................... \033[0m"
 echo -e "\033[36m Install camera.................... \033[0m"
 \${APT_INSTALL} cheese v4l-utils
 \${APT_INSTALL} /packages/libv4l/*.deb
-\${APT_INSTALL} /packages/rkisp/*.deb
-cp /packages/rkisp/librkisp.so /usr/lib/
 
 #---------Xserver---------
 echo -e "\033[36m Install Xserver.................... \033[0m"
@@ -168,9 +159,9 @@ chmod +x /usr/sbin/policy-rc.d
 rm -f /usr/sbin/policy-rc.d
 
 #------------------rkwifibt------------
-echo -e "\033[36m Install rkwifibt.................... \033[0m"
-\${APT_INSTALL} /packages/rkwifibt/*.deb
-ln -sf /system/etc/firmware /vendor/etc/
+#echo -e "\033[36m Install rkwifibt.................... \033[0m"
+#\${APT_INSTALL} /packages/rkwifibt/*.deb
+#ln -sf /system/etc/firmware /vendor/etc/
 
 if [ "$VERSION" == "debug" ]; then
 #------------------glmark2------------
@@ -197,6 +188,7 @@ systemctl enable pulseaudio --global
 cp /packages/libmali/libmali-*-x11*.deb /
 cp -rf /packages/rga/ /
 cp -rf /packages/rga2/ /
+cp -rf /packages/rkisp/*.deb /
 cp -rf /packages/rkaiq/*.deb /
 
 #------remove unused packages------------
@@ -219,10 +211,6 @@ update-alternatives --set iptables /usr/sbin/iptables-legacy
 update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
 
 echo $VERSION_NUMBER-$VERSION > /etc/version
-
-#-------- Florence Virtual Keyboard --------
-apt-get install -y at-spi2-core
-apt-get install -y florence
 
 #---------------tinker-power-management--------------
 cd /usr/local/share/tinker-power-management
