@@ -18,8 +18,8 @@ DP_HOTPLUG_CONFIG="/boot/display/dp/dp_plug_flag.cfg"
 DP_XRANDR_CONFIG="/boot/display/dp/xrandr.cfg"
 HDMI_BOOT_FLAG="/boot/display/hdmi/hdmi_boot_flag.cfg"
 DP_BOOT_FLAG="/boot/display/dp/dp_boot_flag.cfg"
-HDMI_ENABLED_STATUS="/sys/class/drm/card0-HDMI-A-1"
-DP_ENABLED_STATUS="/sys/class/drm/card0-DP-1"
+HDMI_ENABLED_STATUS="/sys/class/drm/card0-HDMI-A-1/enabled"
+DP_ENABLED_STATUS="/sys/class/drm/card0-DP-1/enabled"
 
 if [ ! -d /boot/display ]; then
     mkdir /boot/display
@@ -61,7 +61,7 @@ else
 	su $user -c "echo 1" > $HDMI_BOOT_FLAG
 fi
 
-else if [ "$(cat $DP_ENABLED_STATUS)" != "enabled" ]; then
+if [ "$(cat $DP_ENABLED_STATUS)" != "enabled" ]; then
 	su $user -c "echo 0" > $DP_BOOT_FLAG
 else
 	su $user -c "echo 1" > $DP_BOOT_FLAG
