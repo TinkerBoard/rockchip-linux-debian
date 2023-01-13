@@ -32,7 +32,7 @@ init_rkwifibt() {
 	    /usr/bin/bt_pcba_test&
             ;;
         rk3568)
-	    /usr/bin/bt_pcba_test&
+
             ;;
         rk3588|rk3588s)
 	    /usr/bin/bt_pcba_test&
