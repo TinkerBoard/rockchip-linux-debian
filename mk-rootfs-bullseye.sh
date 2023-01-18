@@ -264,11 +264,16 @@ systemctl enable mountboot.service
 
 #-------ASUS customization end-------
 
+# Change default Terminal emulator to xfce4-terminal
+\${APT_INSTALL} xfce4-terminal
+sudo update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator /usr/bin/xfce4-terminal 40
+update-alternatives --auto x-terminal-emulator
+
 #-------Tinker board 3: rknn-toolkit_lite2-------
 if [ "$VERSION" == "debug" ]; then
         chown -R linaro:linaro /home/linaro/Desktop
 	# double click can to execuate the shell script file
-	sed -i -e 's/x-shellscript=vim.desktop/x-shellscript=debian-uxterm.desktop/g' /usr/share/applications/mimeinfo.cache
+	sed -i -e 's/x-shellscript=vim.desktop/x-shellscript=xfce4-terminal-emulator.desktop/g' /usr/share/applications/mimeinfo.cache
 fi
 
 # change owner and permission for install rknn toolkit lite2 script
