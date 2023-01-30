@@ -4,7 +4,7 @@
 
 . "${PM_FUNCTIONS}"
 
-wlan=$(ifconfig | grep wlp1s0)
+#wlan=$(ifconfig | grep wlp1s0)
 hci=$(hciconfig | grep hci)
 
 case "$1" in
@@ -12,14 +12,14 @@ case "$1" in
 		if [ ! -z "$hci" ]; then
 			hciconfig hci0 down
 		fi
-		if [ ! -z "$wlan" ]; then
-			ifconfig wlp1s0 down
-		fi
+		#if [ ! -z "$wlan" ]; then
+		#	ifconfig wlp1s0 down
+		#fi
                ;;
        thaw|resume)
-		if [ ! -z "$wlan" ]; then
-			ifconfig wlp1s0 up
-		fi
+		#if [ ! -z "$wlan" ]; then
+		#	ifconfig wlp1s0 up
+		#fi
 		if [ ! -z "$hci" ]; then
 			hciconfig hci0 up
 		fi

@@ -157,8 +157,8 @@ fi
 # support power management
 if [ -e "/usr/sbin/pm-suspend" -a -e /etc/Powermanager ] ;
 then
-    mv /etc/Powermanager/power-key.sh /usr/bin/
-    mv /etc/Powermanager/power-key.conf /etc/triggerhappy/triggers.d/
+    #mv /etc/Powermanager/power-key.sh /usr/bin/
+    #mv /etc/Powermanager/power-key.conf /etc/triggerhappy/triggers.d/
     if [[ "$CHIPNAME" == "rk3399pro" ]];
     then
         mv /etc/Powermanager/01npu /usr/lib/pm-utils/sleep.d/
@@ -166,10 +166,10 @@ then
     fi
     mv /etc/Powermanager/03wifibt /usr/lib/pm-utils/sleep.d/
     mv /etc/Powermanager/04wifibt /lib/systemd/system-sleep/
-    mv /etc/Powermanager/triggerhappy /etc/init.d/triggerhappy
+    #mv /etc/Powermanager/triggerhappy /etc/init.d/triggerhappy
 
     rm /etc/Powermanager -rf
-    service triggerhappy restart
+    #service triggerhappy restart
 fi
 
 # Create dummy video node for chromium V4L2 VDA/VEA with rkmpp plugin

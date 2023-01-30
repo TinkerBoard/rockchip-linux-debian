@@ -4,7 +4,7 @@
 
 echo "!!!!!!!!!!!wifi $1 $2" > /dev/kmsg
 
-wlan=$(ifconfig | grep wlp1s0)
+#wlan=$(ifconfig | grep wlp1s0)
 hci=$(hciconfig | grep hci)
 
 case "$1-$2" in
@@ -12,14 +12,14 @@ case "$1-$2" in
                 if [ ! -z "$hci" ]; then
                         hciconfig hci0 down
                 fi
-                if [ ! -z "$wlan" ]; then
-                        ifconfig wlp1s0 down
-                fi
+                #if [ ! -z "$wlan" ]; then
+                #        ifconfig wlp1s0 down
+                #fi
 	       ;;
        post-hibernate|post-suspend)
-                if [ ! -z "$wlan" ]; then
-                        ifconfig wlp1s0 up
-                fi
+                #if [ ! -z "$wlan" ]; then
+                #        ifconfig wlp1s0 up
+                #fi
                 if [ ! -z "$hci" ]; then
                         hciconfig hci0 up
                 fi
