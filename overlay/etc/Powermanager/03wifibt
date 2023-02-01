@@ -4,6 +4,8 @@
 
 . "${PM_FUNCTIONS}"
 
+echo "!!! wifibt $1 $2 !!!" > /dev/kmsg
+
 #wlan=$(ifconfig | grep wlp1s0)
 hci=$(hciconfig | grep hci)
 

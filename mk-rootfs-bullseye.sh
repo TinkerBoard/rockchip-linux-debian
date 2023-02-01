@@ -111,7 +111,7 @@ chmod +x /etc/rc.local
 export APT_INSTALL="apt-get install -fy --allow-downgrades"
 
 #---------------power management --------------
-\${APT_INSTALL} pm-utils triggerhappy bsdmainutils
+\${APT_INSTALL} pm-utils bsdmainutils
 #cp /etc/Powermanager/triggerhappy.service  /lib/systemd/system/triggerhappy.service
 
 #---------------audio--------------
@@ -283,6 +283,9 @@ fi
 chown -R linaro:linaro /usr/local/share/debian11_rknn_toolkit_lite2
 chmod a+x /usr/local/share/debian11_rknn_toolkit_lite2/debian11_install_rknn_toolkit_lite2.sh
 #-------Tinker board 3: rknn-toolkit_lite2-------
+
+# Change systemd-suspend.service method to pm-suspend
+cp /etc/Powermanager/systemd-suspend.service  /lib/systemd/system/systemd-suspend.service
 
 #------remove unused packages------------
 apt remove --purge -fy linux-firmware*

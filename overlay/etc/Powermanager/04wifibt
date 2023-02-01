@@ -2,7 +2,7 @@
 
 # Log some extra information at the beginning of a suspend/resume cycle.
 
-echo "!!!!!!!!!!!wifi $1 $2" > /dev/kmsg
+echo "!!! wifibt $1 $2 !!!" > /dev/kmsg
 
 #wlan=$(ifconfig | grep wlp1s0)
 hci=$(hciconfig | grep hci)
