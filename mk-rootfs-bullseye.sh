@@ -114,6 +114,9 @@ export APT_INSTALL="apt-get install -fy --allow-downgrades"
 \${APT_INSTALL} pm-utils triggerhappy bsdmainutils
 #cp /etc/Powermanager/triggerhappy.service  /lib/systemd/system/triggerhappy.service
 
+#---------------audio--------------
+chmod 755 /usr/lib/pm-utils/sleep.d/02pulseaudio-resume
+
 #---------------Rga--------------
 \${APT_INSTALL} /packages/rga2/*.deb
 

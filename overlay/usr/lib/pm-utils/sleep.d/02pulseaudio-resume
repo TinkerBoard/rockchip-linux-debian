@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Need kill/restart Pulseaudio when system resume from suspend.
+
+. "${PM_FUNCTIONS}"
+
+case $1 in
+	thaw|resume)
+		kill -9 $(pidof pulseaudio)
+	;;
+	*) exit $NA
+		;;
+esac
+
