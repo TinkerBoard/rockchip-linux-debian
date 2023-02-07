@@ -69,6 +69,25 @@ if [ "$VERSION" == "debug" ]; then
 	fi
 fi
 
+# overlay-debug and overlay-factory folder
+# adb, video, camera  test file
+if [ "$VERSION" == "factory" ]; then
+        sudo cp -rf overlay-debug/* $TARGET_ROOTFS_DIR/
+        sudo rm -rf $TARGET_ROOTFS_DIR/home/linaro/Desktop/Test_tool
+        sudo cp -arp overlay-debug/home/linaro/Desktop/Test_tool $TARGET_ROOTFS_DIR/home/linaro/Desktop/
+
+        sudo cp -rf overlay-factory/* $TARGET_ROOTFS_DIR/
+        sudo rm -rf $TARGET_ROOTFS_DIR/home/linaro/Desktop/factory_tools
+        sudo cp -arp overlay-factory/home/linaro/Desktop/factory_tools $TARGET_ROOTFS_DIR/home/linaro/Desktop/
+        # adb
+        if [[ "$ARCH" == "armhf" && "$VERSION" == "factory" ]]; then
+                sudo cp -f overlay-debug/usr/local/share/adb/adbd-32 $TARGET_ROOTFS_DIR/usr/bin/adbd
+        elif [[ "$ARCH" == "arm64" && "$VERSION" == "factory" ]]; then
+                sudo cp -f overlay-debug/usr/local/share/adb/adbd-64 $TARGET_ROOTFS_DIR/usr/bin/adbd
+        fi
+fi
+
+
 ## hack the serial
 sudo cp -f overlay/usr/lib/systemd/system/serial-getty@.service $TARGET_ROOTFS_DIR/usr/lib/systemd/system/serial-getty@.service
 
@@ -189,7 +208,7 @@ echo -e "\033[36m Install modemmanager................ \033[0m"
 \${APT_INSTALL} /packages/modemmanager/*.deb
 sed -i 's/\/usr\/sbin\/ModemManager/\/usr\/sbin\/ModemManager --debug/' /lib/systemd/system/ModemManager.service
 
-if [ "$VERSION" == "debug" ]; then
+if [ "$VERSION" == "debug" ] || [ "$VERSION" == "factory" ]; then
 #------------------glmark2------------
 echo -e "\033[36m Install glmark2.................... \033[0m"
 \${APT_INSTALL} /packages/glmark2/*.deb
@@ -273,7 +292,7 @@ sudo update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emula
 update-alternatives --auto x-terminal-emulator
 
 #-------Tinker board 3: rknn-toolkit_lite2-------
-if [ "$VERSION" == "debug" ]; then
+if [ "$VERSION" == "debug" ] || [ "$VERSION" == "factory" ]; then
         chown -R linaro:linaro /home/linaro/Desktop
 	# double click can to execuate the shell script file
 	sed -i -e 's/x-shellscript=vim.desktop/x-shellscript=xfce4-terminal-emulator.desktop/g' /usr/share/applications/mimeinfo.cache
