@@ -18,10 +18,13 @@ SCRIPTPATH=`dirname $SCRIPT`
 info_view
 
 echo "Start Write Test"
-sudo dd if=/dev/zero of=$test_path/tmpfile bs=256M count=2 conv=fdatasync
+sync
+echo 3 | sudo tee /proc/sys/vm/drop_caches
+sudo dd if=/dev/zero of=$test_path/tmpfile bs=256M count=15 conv=fdatasync
 
 echo "Start Read Test"
+sync
 echo 3 | sudo tee /proc/sys/vm/drop_caches
-sudo dd if=$test_path/tmpfile of=/dev/null bs=256M count=2
+sudo dd if=$test_path/tmpfile of=/dev/null bs=256M count=15
 sudo rm $test_path/tmpfile
 
