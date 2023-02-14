@@ -7,7 +7,7 @@ pass_cnt=0
 err_cnt=0
 rm_err_cnt=0
 fifoStr="01234567890abcdefghijklmnopqrstuvwxyz!@#$%^&*()"
-auto_mount=0
+auto_mount=1
 
 log()
 {
@@ -16,6 +16,10 @@ log()
 
 get_mount_point()
 {
+	if [ -e "/dev/"$udev"1" ]; then
+		udev=$udev"1"
+	fi
+
 	#Check external storage mounut or not
 	mount_point=$(cat /proc/mounts | grep $udev | awk '{print $2}')
 	mount_point=$(echo $mount_point | awk '{print $1}')

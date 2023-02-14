@@ -192,7 +192,8 @@ ext_storage_stress_test()
 		do
 			logfile=$LOG_PATH/${i}.txt
 			if [ $1 == "ui" ]; then
-				xterm -fg lightgray -bg black -e "$SCRIPTPATH/test/ext_storage_stress_test.sh $i $logfile" &
+				#xterm -fg lightgray -bg black -e "$SCRIPTPATH/test/ext_storage_stress_test.sh $i $logfile" &
+				$SCRIPTPATH/test/ext_storage_stress_test.sh $i $logfile
 			else
 				$SCRIPTPATH/test/ext_storage_stress_test.sh $i $logfile > /dev/null 2>&1 &
 			fi
