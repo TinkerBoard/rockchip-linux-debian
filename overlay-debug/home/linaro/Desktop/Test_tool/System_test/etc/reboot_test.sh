@@ -20,7 +20,7 @@ SOM=$(cat /sys/module/tegra_fuse/parameters/tegra_chip_id)
 SOC_TYPE=`cat /etc/soc_type.txt`
 echo "SOM id: $SOM"
 bChange=0
-sleep_time=40
+sleep_time=60
 
 log()
 {
