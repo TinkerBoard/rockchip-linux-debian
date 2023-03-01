@@ -284,6 +284,11 @@ echo $VERSION_NUMBER > /etc/version
 chmod a+x /etc/init.d/mountboot.sh
 systemctl enable mountboot.service
 
+if [ "$VERSION" == "factory" ]; then
+	cp /etc/Ethernet/static-eth.service  /usr/lib/systemd/system/static-eth.service
+	systemctl enable static-eth.service
+fi
+
 #-------ASUS customization end-------
 
 # Change default Terminal emulator to xfce4-terminal

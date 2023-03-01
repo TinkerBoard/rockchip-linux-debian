@@ -1,0 +1,11 @@
+[Unit]
+Description=Set Ethernet to Static IP
+After=NetworkManager.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/static-eth.sh
+
+[Install]
+WantedBy=multi-user.target
