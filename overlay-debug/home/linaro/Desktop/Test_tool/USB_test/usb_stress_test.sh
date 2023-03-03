@@ -11,7 +11,7 @@ u3port=$2
 for((i=1; i<=60000; i++))
 do
 	echo "Test "$i
-	sudo ./UsbTool_arm64 /tdc -hc $u2port -lc $u2port -fc $u2port -sc $u3port
+	sudo UsbTool /tdc -hc $u2port -lc $u2port -fc $u2port -sc $u3port -nu30s 0 -d3f 0 -ccst 1
 
 if [ "$?" == "0" ]; then
 	echo "Pass"
