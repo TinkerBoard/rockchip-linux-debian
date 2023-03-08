@@ -146,6 +146,27 @@ fi
 
 fi
 
+# set cpu governor and frequence
+CPU_GOVERNOR=$(cat /boot/config.txt | grep 'cpu_governor' | cut -d '=' -f2)
+A55_MINFREQ=$(cat /boot/config.txt | grep 'a55_minfreq' | cut -d '=' -f2)
+A55_MAXFREQ=$(cat /boot/config.txt | grep 'a55_maxfreq' | cut -d '=' -f2)
+
+GPU_GOVERNOR=$(cat /boot/config.txt | grep 'gpu_governor' | cut -d '=' -f2)
+G52_MINFREQ=$(cat /boot/config.txt | grep 'g52_minfreq' | cut -d '=' -f2)
+G52_MAXFREQ=$(cat /boot/config.txt | grep 'g52_maxfreq' | cut -d '=' -f2)
+
+if [ $CPU_GOVERNOR ] && [ $A55_MINFREQ -gt 0 ] && [ $A55_MAXFREQ -gt 0 ]; then
+    sudo su -c "echo $CPU_GOVERNOR > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor"
+    sudo su -c "echo $A55_MINFREQ > /sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq"
+    sudo su -c "echo $A55_MAXFREQ > /sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq"
+fi
+
+if [ $GPU_GOVERNOR ] && [ $G52_MINFREQ -gt 0 ] && [ $G52_MAXFREQ -gt 0 ]; then
+    sudo su -c "echo $GPU_GOVERNOR > /sys/class/devfreq/fde60000.gpu/governor"
+    sudo su -c "echo $G52_MINFREQ > /sys/class/devfreq/fde60000.gpu/min_freq"
+    sudo su -c "echo $G52_MAXFREQ > /sys/class/devfreq/fde60000.gpu/max_freq"
+fi
+
 # enable rkwifbt service
 #service rkwifibt start
 

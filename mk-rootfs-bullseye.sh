@@ -332,6 +332,14 @@ cp /etc/Powermanager/systemd-suspend.service  /lib/systemd/system/systemd-suspen
 #-------Tinker board 3: build-essential for development tools------
 apt-get install -y build-essential
 
+#---------------ncurses library--------------
+\${APT_INSTALL} libncurses5-dev libncursesw5-dev
+# For tinker-power-management build
+cd /usr/local/share/tinker-power-management
+gcc tinker-power-management.c -o tinker-power-management -lncursesw
+mv tinker-power-management /usr/bin
+cd /
+
 #------remove unused packages------------
 apt remove --purge -fy linux-firmware*
 
