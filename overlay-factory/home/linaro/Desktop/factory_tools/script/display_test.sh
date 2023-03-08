@@ -25,6 +25,9 @@ Blizzard_Image_Path="/home/blizzard/script/Image/$picture"
 #Tinker_3_Video_Path="/home/linaro/Desktop/factory_tools/files/Video/$video"
 Tinker_3_Image_Path="/home/linaro/Desktop/factory_tools/files/Image/$picture"
 
+#EDID patch for HDMI
+EDID_PATH="/sys/class/drm/card0-HDMI-A-1/edid"
+
 function Remove_TestResult()
 {
     if [ -f $ResultFile ]; then
@@ -291,6 +294,19 @@ function Tinker_3_HDMI()
 	fi
 }
 
+function check_edid()
+{
+	EDID_CONTEXT=$(cat "$EDID_PATH" | hexdump | sed -n "1, 1p" | awk '{print $3}')
+	if [ $EDID_CONTEXT ]; then
+		if [ $EDID_CONTEXT = "ffff" ]; then
+			echo -e "get EDID success" | tee -a $ResultFile
+		fi
+	else
+		echo -e "Error, get EDID fail !!" | tee -a $ResultFile
+		END
+	fi
+}
+
 Remove_TestResult
 
 if [ "$1" == "1" ];then
@@ -299,6 +315,7 @@ if [ "$1" == "1" ];then
 		Pre_Tinker_Board_DSI
 	elif [ "$2" == "HDMI" ];then
 		echo -e "Run previous Tinker Board HDMI Test" | tee -a $ResultFile
+		check_edid
 		Pre_Tinker_Board_HDMI
 	else
 		echo -e "Error parameter, parameter two only can set DSI or HDMI !!" | tee -a $ResultFile
@@ -310,6 +327,7 @@ elif [ "$1" == "2" ];then
 		Tinker_Board_DSI
 	elif [ "$2" == "HDMI" ];then
 		echo -e "Run Tinker Board HDMI Test" | tee -a $ResultFile
+		check_edid
 		Tinker_Board_HDMI
 	else
 		echo -e "Error parameter, parameter two only can set DSI or HDMI !!" | tee -a $ResultFile
@@ -321,6 +339,7 @@ elif [ "$1" == "3" ];then
 		Tinker_EdgeR_DSI
 	elif [ "$2" == "HDMI" ];then
 		echo -e "Run Tinker Edge R HDMI Test" | tee -a $ResultFile
+		check_edid
 		Tinker_EdgeR_HDMI
 	else
 		echo -e "Error parameter, parameter two only can set DSI or HDMI !!" | tee -a $ResultFile
@@ -332,6 +351,7 @@ elif [ "$1" == "4" ];then
 		Tinker_II_DSI
 	elif [ "$2" == "HDMI" ];then
 		echo -e "Run Tinker II HDMI Test" | tee -a $ResultFile
+		check_edid
 		Tinker_II_HDMI
 	else
 		echo -e "Error parameter, parameter two only can set DSI or HDMI !!" | tee -a $ResultFile
@@ -343,6 +363,7 @@ elif [ "$1" == "5" ];then
 		Tinker_EdgeT_DSI
 	elif [ "$2" == "HDMI" ];then
 		echo -e "Run Tinker Edge T HDMI Test" | tee -a $ResultFile
+		check_edid
 		Tinker_EdgeT_HDMI
 	else
 		echo -e "Error parameter, parameter two only can set DSI or HDMI !!" | tee -a $ResultFile
@@ -354,6 +375,7 @@ elif [ "$1" == "6" ];then
 		PE100A_DSI
 	elif [ "$2" == "HDMI" ];then
 		echo -e "Run PE100A HDMI Test" | tee -a $ResultFile
+		check_edid
 		PE100A_HDMI
 	else
 		echo -e "Error parameter, parameter two only can set DSI or HDMI !!" | tee -a $ResultFile
@@ -365,6 +387,7 @@ elif [ "$1" == "7" ];then
 		PV100A_DSI
 	elif [ "$2" == "HDMI" ];then
 		echo -e "Run PV100A HDMI Test" | tee -a $ResultFile
+		check_edid
 		PV100A_HDMI
 	else
 		echo -e "Error parameter, parameter two only can set DSI or HDMI !!" | tee -a $ResultFile
@@ -377,6 +400,7 @@ elif [ "$1" == "8" ];then
 		Blizzard_LVDS
 	elif [ "$2" == "HDMI" ];then
 		echo -e "Run Blizzard HDMI Test" | tee -a $ResultFile
+		check_edid
 		Blizzard_HDMI
 	else
 		echo -e "Error parameter, parameter two only can set LVDS or HDMI !!" | tee -a $ResultFile
@@ -389,6 +413,7 @@ elif [ "$1" == "9" ];then
 		Tinker_3_LVDS
 	elif [ "$2" == "HDMI" ];then
 		echo -e "Run Tinker3 HDMI Test" | tee -a $ResultFile
+		check_edid
 		Tinker_3_HDMI
 	elif [ "$2" == "EDP" ];then
 		echo -e "Run Tinker3 EDP Test" | tee -a $ResultFile
