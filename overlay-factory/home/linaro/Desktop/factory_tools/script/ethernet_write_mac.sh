@@ -21,6 +21,14 @@ function Ethernet_Write_MAC()
 		return 1
 	fi
 
+	echo "42" > /sys/class/gpio/unexport
+	sleep 0.2
+	sudo echo "42" > /sys/class/gpio/export
+	sleep 0.2
+	sudo echo "out" > /sys/class/gpio/gpio42/direction
+	sudo echo "0" > /sys/class/gpio/gpio42/value
+	sleep 0.1
+
 	eeprom_address=$flag
 
 	for ((i=0;i<12;i=i+2))
