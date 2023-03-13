@@ -136,6 +136,9 @@ export APT_INSTALL="apt-get install -fy --allow-downgrades"
 #---------------audio--------------
 chmod 755 /usr/lib/pm-utils/sleep.d/02pulseaudio-resume
 
+#---------------ethernet---------------
+chmod 755 /etc/network/ethernet_wol.sh
+
 #---------------Rga--------------
 \${APT_INSTALL} /packages/rga2/*.deb
 
