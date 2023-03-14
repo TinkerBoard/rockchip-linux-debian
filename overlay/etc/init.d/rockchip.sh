@@ -105,10 +105,6 @@ fi
 COMPATIBLE=${COMPATIBLE#rockchip,}
 BOARDNAME=${COMPATIBLE%%rockchip,*}
 
-#create HDMI/DP config for xrandr to save hotplug status
-HDMI_HOTPLUG_CONFIG="/boot/display/hdmi/hdmi_plug_flag.cfg"
-DP_HOTPLUG_CONFIG="/boot/display/dp/dp_plug_flag.cfg"
-
 # first boot configure
 if [ ! -e "/usr/local/first_boot_flag" ] ;
 then
@@ -154,11 +150,6 @@ fi
 
     touch /usr/local/first_boot_flag
 
-    mkdir /boot/display
-    mkdir /boot/display/hdmi
-    mkdir /boot/display/dp
-    touch $HDMI_HOTPLUG_CONFIG
-    touch $DP_HOTPLUG_CONFIG
 fi
 
 # enable rkwifbt service
