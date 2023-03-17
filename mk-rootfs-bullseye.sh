@@ -217,6 +217,12 @@ echo -e "\033[36m Install glmark2.................... \033[0m"
 \${APT_INSTALL} /packages/glmark2/*.deb
 fi
 
+if [ "$VERSION" == "factory" ]; then
+#------------------mtd-utils------------
+echo -e "\033[36m Install mtd-utils.................... \033[0m"
+\${APT_INSTALL} mtd-utils
+fi
+
 if [ -e "/usr/lib/aarch64-linux-gnu" ] ;
 then
 #------------------rknpu2------------
