@@ -91,6 +91,7 @@ select_test_item()
 	if [ $SOC_TYPE == "rockchip" ]; then
 		echo " 9. NPU stres test: $DO_NPU_TEST"
 		echo "10. COM1/COM2 RS232 stress test: $DO_UART_to_UART_TEST"
+		echo "11. RTC stress test: $DO_RTC_TEST"
 	else
                 echo " 9. UART loopback stress test: $DO_UART_TEST"
                 echo "10. UART1/UART2 RS232 stress test: $DO_UART_to_UART_TEST"
@@ -305,6 +306,13 @@ npu_stress_test()
 	logfile=$LOG_PATH/npu.txt
 	killall npu_stress_test.sh > /dev/null 2>&1
 	$SCRIPTPATH/test/npu_stress_test.sh $logfile
+}
+
+rtc_stress_test()
+{
+	logfile=$LOG_PATH/rtc.txt
+	killall rtc_stress_test.sh > /dev/null 2>&1
+	$SCRIPTPATH/test/rtc_stress_test.sh $logfile
 }
 
 gps_stress_test(){
@@ -563,6 +571,10 @@ check_all_status()
 	if [ "$DO_NPU_TEST" == "Y" ]; then
 		check_status NPU $NPU
 	fi
+
+	if [ "$DO_RTC_TEST" == "Y" ]; then
+		check_status RTC $RTC
+	fi
 #	check_status UART1 $UART1
 #	check_status UART2 $UART2
 }
@@ -697,7 +709,7 @@ MCU_UART="mcu_uart_stress_test.sh"
 TPU="/test/tpu_stress_test.sh"
 GPS="../GPS_test/gpstest"
 NPU="npu_stress_test.sh"
-
+RTC="/test/rtc_stress_test.sh"
 
 
 if [ "$DO_THERMAL_LOGGING" == "Y" ]; then
@@ -754,8 +766,14 @@ case $test_item in
 		uart_to_uart_stress_test
 #		uart_stress_test ui
 		;;
-	11)	info_view TPU
-		tpu_stress_test
+	11)
+                if [ $SOC_TYPE == "rockchip" ]; then
+			info_view RTC
+                        rtc_stress_test
+		else
+                        info_view TPU
+                        tpu_stress_test
+		fi
 		;;
 	12)	info_view CAN bus loopback
 		can_stress_test
@@ -832,6 +850,9 @@ case $test_item in
 		fi
 		if [ "$DO_NPU_TEST" == "Y" ]; then
 			npu_stress_test > /dev/null 2>&1 &
+		fi
+		if [ "$DO_RTC_TEST" == "Y" ]; then
+			rtc_stress_test > /dev/null 2>&1 &
 		fi
 		;;
 esac
