@@ -68,6 +68,11 @@ for SCREEN in $(seq 0 ${SCREENS:-0}); do
             xrandr_wrapper --output $MONITOR --auto
 
             logger -t $0 "Output $MONITOR enabled."
+        else
+            export MONITOR_POS=$(xfconf-query -c displays -p /Default/$MONITOR/Position/X)x0
+            xrandr_wrapper --output $MONITOR --pos $MONITOR_POS
+
+            logger -t $0 "Output $MONITOR enabled pos $MONITOR_POS."
         fi
     done
 done
