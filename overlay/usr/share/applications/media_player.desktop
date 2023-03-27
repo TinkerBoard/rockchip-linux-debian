@@ -1,7 +1,7 @@
 [Desktop Entry]
 Categories=Qt;KDE;AudioVideo;Player;Video;
 Comment=A gstreamer base player
-Exec=env QT_GSTREAMER_WIDGET_VIDEOSINK=rkximagesink /usr/lib/aarch64-linux-gnu/qt5/examples/multimediawidgets/player/player --geometry 960x640+0+0
+Exec=env QT_GSTREAMER_WIDGET_VIDEOSINK=kmssink /usr/lib/aarch64-linux-gnu/qt5/examples/multimediawidgets/player/player --geometry 960x640+0+0
 GenericName=Media Player
 Icon=
 Name=Media Player
