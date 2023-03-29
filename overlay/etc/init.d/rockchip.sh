@@ -46,12 +46,17 @@ install_packages() {
 		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
 		[ -e /usr/lib/arm-linux-gnueabihf/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
-        rk3568|rk3566|rk3562)
+        rk3568|rk3566)
 		MALI=bifrost-g52-g13p0
 		ISP=rkaiq_rk3568
 		[ -e /usr/lib/aarch64-linux-gnu/ ] && tar xvf /rknpu2-rk3568-*.tar -C /
 		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
+        rk3562)
+		MALI=bifrost-g52-g13p0
+		ISP=rkaiq_rk3562
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && tar xvf /rknpu2-rk3568-*.tar -C /
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
         rk3588|rk3588s)
 		ISP=rkaiq_rk3588
 		MALI=valhall-g610-g13p0
