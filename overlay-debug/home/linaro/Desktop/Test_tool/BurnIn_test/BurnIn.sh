@@ -93,6 +93,7 @@ select_test_item()
 		echo "10. COM1/COM2 RS232 stress test: $DO_UART_to_UART_TEST"
 		echo "11. RTC stress test: $DO_RTC_TEST"
 		echo "12. EEPROM stress test: $DO_EEPROM_TEST"
+		echo "13. MODEM stress test: $DO_MODEM_TEST"
 	else
                 echo " 9. UART loopback stress test: $DO_UART_TEST"
                 echo "10. UART1/UART2 RS232 stress test: $DO_UART_to_UART_TEST"
@@ -321,6 +322,12 @@ eeprom_stress_test()
 	logfile=$LOG_PATH/eeprom.txt
 	killall eeprom_stress_test.sh > /dev/null 2>&1
 	$SCRIPTPATH/test/eeprom_stress_test.sh $logfile
+}
+modem_stress_test()
+{
+	logfile=$LOG_PATH/modem.txt
+	killall modem_stress_test.sh > /dev/null 2>&1
+	$SCRIPTPATH/test/modem_stress_test.sh $logfile
 }
 
 gps_stress_test(){
@@ -587,6 +594,10 @@ check_all_status()
 	if [ "$DO_EEPROM_TEST" == "Y" ]; then
 		check_status EEPROM $EEPROM
 	fi
+
+	if [ "$DO_MODEM_TEST" == "Y" ]; then
+		check_status MODEM $MODEM
+	fi
 #	check_status UART1 $UART1
 #	check_status UART2 $UART2
 }
@@ -723,6 +734,7 @@ GPS="../GPS_test/gpstest"
 NPU="npu_stress_test.sh"
 RTC="/test/rtc_stress_test.sh"
 EEPROM="/test/eeprom_stress_test.sh"
+MODEM="/test/modem_stress_test.sh"
 
 if [ "$DO_THERMAL_LOGGING" == "Y" ]; then
 	thermal_logging > /dev/null 2>&1 &
@@ -796,8 +808,14 @@ case $test_item in
                         can_stress_test
 		fi
 		;;
-	13)	info_view Audio recored/playback
-		audio_stress_test -a
+	13)
+                if [ $SOC_TYPE == "rockchip" ]; then
+			info_view MODEM
+                        modem_stress_test
+		else
+                        info_view Audio recored/playback
+                        audio_stress_test -a
+		fi
 		;;
 	14)	info_view MCU DIO
 		mcu_dio_stress_test
@@ -874,6 +892,9 @@ case $test_item in
 		fi
 		if [ "$DO_EEPROM_TEST" == "Y" ]; then
 			eeprom_stress_test > /dev/null 2>&1 &
+		fi
+		if [ "$DO_MODEM_TEST" == "Y" ]; then
+			modem_stress_test > /dev/null 2>&1 &
 		fi
 		;;
 esac
