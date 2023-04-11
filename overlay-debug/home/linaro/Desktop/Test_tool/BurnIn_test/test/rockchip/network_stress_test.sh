@@ -20,7 +20,7 @@ ip netns delete ns_client
 sleep 1
 
 echo ""
-if [ "$boardinfo" == "Tinker Board 3 - SKU1" ] || [ "$boardinfo" == "Tinker Board 3 - SKU2" ]
+if [ "$boardinfo" == "Tinker Board 3N - SKU1" ] || [ "$boardinfo" == "Tinker Board 3 - SKU2" ]
 then
 	nslist=$(ip netns list)
 	if [ "$nslist" == "" ]

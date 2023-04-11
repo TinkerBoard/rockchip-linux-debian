@@ -675,7 +675,7 @@ else
 fi
 
 boardinfo=$(cat /proc/boardinfo)
-if [ "$boardinfo" == "Tinker Board 3 - SKU3" ] || [ "$boardinfo" == "Sanden - SKU1" ]; then
+if [ "$boardinfo" == "Tinker Board 3N - SKU3" ] || [ "$boardinfo" == "Sanden - SKU1" ]; then
 	DO_ETHERNET_TEST=N
 	echo "Only one Ethernet port"
 fi
