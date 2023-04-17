@@ -6,17 +6,6 @@ shift
 FSTAB="${TARGET_DIR}/etc/fstab"
 OS_RELEASE="${TARGET_DIR}/etc/os-release"
 
-RK_LEGACY_PARTITIONS=" \
-    ${RK_OEM_FS_TYPE:+oem:/oem:${RK_OEM_FS_TYPE}}
-    ${RK_USERDATA_FS_TYPE:+userdata:/userdata:${RK_USERDATA_FS_TYPE}}
-"
-
-# <dev>:<mount point>:<fs type>:<mount flags>:<source dir>:<image size(M|K|auto)>:[options]
-# for example:
-# RK_EXTRA_PARTITIONS="oem:/oem:ext2:defaults:oem_normal:256M:fixed
-# userdata:/userdata:vfat:errors=remount-ro:userdata_empty:auto"
-RK_EXTRA_PARTITIONS=${RK_EXTRA_PARTITIONS:-${RK_LEGACY_PARTITIONS}}
-
 function fixup_root()
 {
     echo "Fixing up rootfs type: $1"
@@ -100,15 +89,7 @@ function fixup_fstab()
 {
     echo "Fixing up /etc/fstab..."
 
-    case "${RK_ROOTFS_TYPE}" in
-        ext[234])
-            fixup_root ${RK_ROOTFS_TYPE}
-            ;;
-        *)
-            fixup_root auto
-            ;;
-    esac
-
+    fixup_root auto
     fixup_basic_part proc /proc
     fixup_basic_part devtmpfs /dev
     fixup_basic_part devpts /dev/pts mode=0620,ptmxmode=0666,gid=5
@@ -116,15 +97,6 @@ function fixup_fstab()
     fixup_basic_part sysfs /sys
     fixup_basic_part debugfs /sys/kernel/debug
     fixup_basic_part pstore /sys/fs/pstore
-
-    if echo $TARGET_DIR | grep -qE "_recovery/target/*$"; then
-        fixup_device_part "/dev/sda1:/mnt/udisk:auto:defaults::"
-        fixup_device_part "/dev/mmcblk1p1:/mnt/sdcard:auto:defaults::"
-    fi
-
-    for part in ${RK_EXTRA_PARTITIONS//@/ }; do
-        fixup_device_part $part
-    done
 }
 
 function add_build_info()
@@ -136,25 +108,9 @@ function add_build_info()
         "$OS_RELEASE"
 }
 
-function add_dirs_and_links()
-{
-    echo "Adding dirs and links..."
-
-    cd "$TARGET_DIR"
-
-    rm -rf mnt/* udisk sdcard data
-    mkdir -p mnt/sdcard mnt/udisk
-    ln -sf udisk mnt/usb_storage
-    ln -sf sdcard mnt/external_sd
-    ln -sf mnt/udisk udisk
-    ln -sf mnt/sdcard sdcard
-    ln -sf userdata data
-}
-
 echo "Executing $(basename $0)..."
 
 add_build_info $@
 [ -f "$FSTAB" ] && fixup_fstab
-add_dirs_and_links
 
 exit 0
