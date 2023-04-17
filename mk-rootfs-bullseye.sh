@@ -36,18 +36,18 @@ sudo tar -xpf linaro-bullseye-alip-*.tar.gz
 
 # packages folder
 sudo mkdir -p $TARGET_ROOTFS_DIR/packages
-sudo cp -rf packages/$ARCH/* $TARGET_ROOTFS_DIR/packages
+sudo cp -rpf packages/$ARCH/* $TARGET_ROOTFS_DIR/packages
 
 # overlay folder
-sudo cp -rf overlay/* $TARGET_ROOTFS_DIR/
+sudo cp -rpf overlay/* $TARGET_ROOTFS_DIR/
 
 # overlay-firmware folder
-sudo cp -rf overlay-firmware/* $TARGET_ROOTFS_DIR/
+sudo cp -rpf overlay-firmware/* $TARGET_ROOTFS_DIR/
 
 # overlay-debug folder
 # adb, video, camera  test file
 if [ "$VERSION" == "debug" ]; then
-	sudo cp -rf overlay-debug/* $TARGET_ROOTFS_DIR/
+	sudo cp -rpf overlay-debug/* $TARGET_ROOTFS_DIR/
 	# adb
 	if [[ "$ARCH" == "armhf" && "$VERSION" == "debug" ]]; then
 		sudo cp -f overlay-debug/usr/local/share/adb/adbd-32 $TARGET_ROOTFS_DIR/usr/bin/adbd
@@ -57,7 +57,7 @@ if [ "$VERSION" == "debug" ]; then
 fi
 
 ## hack the serial
-sudo cp -f overlay/usr/lib/systemd/system/serial-getty@.service $TARGET_ROOTFS_DIR/usr/lib/systemd/system/serial-getty@.service
+sudo cp -fp overlay/usr/lib/systemd/system/serial-getty@.service $TARGET_ROOTFS_DIR/usr/lib/systemd/system/serial-getty@.service
 
 # bt/wifi firmware
 sudo mkdir -p $TARGET_ROOTFS_DIR/system/lib/modules/
