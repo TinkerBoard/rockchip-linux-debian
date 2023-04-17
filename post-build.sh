@@ -25,8 +25,26 @@ function fixup_root()
     sed -i "s#\([[:space:]]/[[:space:]]\+\)\w\+#\1${FS_TYPE}#" "$FSTAB"
 }
 
+del_part()
+{
+        echo "Deleting partition: $1 $2"
+
+        SRC="$1"
+        MOUNTPOINT="$2"
+
+        # Remove old entries with same mountpoint
+        sed -i "/[[:space:]]${MOUNTPOINT//\//\\\/}[[:space:]]/d" "$FSTAB"
+
+        if [ "$SRC" != tmpfs ]; then
+                # Remove old entries with same source
+                sed -i "/^${SRC//\//\\\/}[[:space:]]/d" "$FSTAB"
+        fi
+}
+
 function fixup_part()
 {
+    del_part $@
+
     echo "Fixing up partition: ${@//: }"
 
     SRC="$1"
@@ -34,14 +52,6 @@ function fixup_part()
     FS_TYPE="$3"
     MOUNT_OPTS="$4"
     PASS="$5"
-
-    # Remove old entries with same mountpoint
-    sed -i "/[[:space:]]${MOUNT//\//\\\/}[[:space:]]/d" "$FSTAB"
-
-    if [ "$SRC" != tmpfs ]; then
-        # Remove old entries with same source
-        sed -i "/^${SRC//\//\\\/}[[:space:]]/d" "$FSTAB"
-    fi
 
     # Append new entry
     echo -e "${SRC}\t${MOUNT}\t${FS_TYPE}\t${MOUNT_OPTS}\t0 $PASS" >> "$FSTAB"
@@ -80,7 +90,7 @@ function fixup_device_part()
     echo $DEV | grep -qE "^/" || DEV="LABEL=$DEV"
 
     MOUNT="$(partition_arg "$*" 2 "/${DEV##*[/=]}")"
-    FS_TYPE="$(partition_arg "$*" 3 ext2)"
+    FS_TYPE="$(partition_arg "$*" 3 ext4)"
     MOUNT_OPTS="$(partition_arg "$*" 4 defaults)"
 
     fixup_part "$DEV" "$MOUNT" "$FS_TYPE" "$MOUNT_OPTS" 2
