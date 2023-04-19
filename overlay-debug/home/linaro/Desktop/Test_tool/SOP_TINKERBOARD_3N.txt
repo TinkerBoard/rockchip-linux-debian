@@ -1,0 +1,20 @@
+## BurnIn Test Tool SOP for TINKERBOARD_3N##
+1. ./BurnIn_TINKERBOARD_3N.sh
+2. Enter test case number, and start test
+
+
+## System Test Tool SOP for TINKERBOARD_3N##
+
+1. Shutdown test
+        ./System_test_TINKERBOARD_3N_shutdown.sh
+2. Reboot test
+        ./System_test_TINKERBOARD_3N_reboot.sh
+3. Suspend/Resume test
+        ./System_test_TINKERBOARD_3N_suspend.sh
+
+If want to stop Shutdown and Reboot test
+        ./System_test_TINKERBOARD_3N_stop.sh
+
+If want to select by menu
+        ./System_test_TINKERBOARD_3N.sh
+

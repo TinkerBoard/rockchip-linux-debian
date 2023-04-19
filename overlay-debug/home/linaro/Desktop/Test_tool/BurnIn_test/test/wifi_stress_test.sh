@@ -9,24 +9,35 @@ fi
 
 echo "wifi_interface: $wlan_interface"
 
-wifi_gw=$(route -n | grep $wlan_interface | grep UG | awk {'printf $2'})
+log()
+{
+        echo "$(date +'%Y%m%d_%H.%M.%S') $@" | tee -a $logfile
+}
+#wifi_gw=$(route -n | grep $wlan_interface | grep UG | awk {'printf $2'})
 
-
-sleep 5
+sleep 3
 pass_cnt=0
-err_cnt=0
+fail_cnt=0
 while [ 1 != 2 ]
 do
-	if ping -c 1 $wifi_gw &> /dev/null
-	then
-		status="pass"
-		((pass_cnt+=1))
+	wlan=$(ifconfig | grep $wlan_interface)
+
+        if [ ! -z "$wlan" ]; then
+                ((pass_cnt+=1))
+                log "pass_cnt=$pass_cnt"
+		fail_cnt=0
+
 	else
-		status="fail"
-		((err_cnt+=1))
-	fi
+                echo "$wlan_interface not exist" | tee -a $logfile
+                ((fail_cnt+=1))
+                log "$wlan_interface not exist"
+                log "fail_cnt=$fail_cnt"
+        fi
 
-	echo "$(date +'%Y%m%d_%H%M'): last ping $status , pass_cnt=$pass_cnt, err_cnt=$err_cnt" | tee -a $logfile
+        if [ "$fail_cnt" -ge 6  ]; then
+                log "wifi pass_cnt = $pass_cnt fail_cnt $fail_cnt "
+                exit
+        fi
 
-	sleep 1
+	sleep 2
 done

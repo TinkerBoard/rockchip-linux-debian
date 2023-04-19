@@ -90,10 +90,11 @@ select_test_item()
 	echo " 8. Wi-Fi stress test: $DO_WIFI_TEST"
 	if [ $SOC_TYPE == "rockchip" ]; then
 		echo " 9. NPU stres test: $DO_NPU_TEST"
-		echo "10. COM1/COM2 RS232 stress test: $DO_UART_to_UART_TEST"
+		echo "10. COM1/COM2/COM3 RS232 stress test: $DO_UART_TEST"
 		echo "11. RTC stress test: $DO_RTC_TEST"
 		echo "12. EEPROM stress test: $DO_EEPROM_TEST"
 		echo "13. MODEM stress test: $DO_MODEM_TEST"
+		echo "14. Bluetooth stress test: $DO_BT_TEST"
 	else
                 echo " 9. UART loopback stress test: $DO_UART_TEST"
                 echo "10. UART1/UART2 RS232 stress test: $DO_UART_to_UART_TEST"
@@ -237,21 +238,34 @@ wifi_stress_test()
 	$SCRIPTPATH/test/wifi_stress_test.sh $SCRIPTPATH $logfile $SOC_TYPE
 }
 
+bluetooth_stress_test()
+{
+        logfile=$LOG_PATH/bluetooth.txt
+        killall bluetooth_stress_test.sh > /dev/null 2>&1
+        $SCRIPTPATH/test/bluetooth_stress_test.sh $SCRIPTPATH $logfile $SOC_TYPE
+}
+
 uart_stress_test()
 {
 	logfile1=$LOG_PATH/uart1.txt
 	logfile2=$LOG_PATH/uart2.txt
+	logfile3=$LOG_PATH/uart3.txt
 	killall uart1_stress_test.sh > /dev/null 2>&1
 	killall uart2_stress_test.sh > /dev/null 2>&1
+	killall uart3_stress_test.sh > /dev/null 2>&1
 	killall linux-serial-test > /dev/null 2>&1
 	sleep 1
 	if [ $1 == "ui" ]; then
-		xterm -fg lightgray -bg black -e "$SCRIPTPATH/test/uart2_stress_test.sh $logfile2" &
+		#xterm -fg lightgray -bg black -e "$SCRIPTPATH/test/uart2_stress_test.sh $logfile2" &
+		/usr/bin/xfce4-terminal --command "$SCRIPTPATH/test/uart3_stress_test.sh $COM_3 $logfile3" --hold &
+		sleep 1
+		/usr/bin/xfce4-terminal --command "$SCRIPTPATH/test/uart2_stress_test.sh $COM_2 $logfile2" --hold &
 		sleep 1
 		$SCRIPTPATH/test/uart1_stress_test.sh $COM_1 $logfile1
 	else
 		$SCRIPTPATH/test/uart1_stress_test.sh $COM_1 $logfile1 > /dev/null 2>&1 &
 		$SCRIPTPATH/test/uart2_stress_test.sh $COM_2 $logfile2 > /dev/null 2>&1 &
+		$SCRIPTPATH/test/uart3_stress_test.sh $COM_3 $logfile3 > /dev/null 2>&1 &
 	fi
 }
 
@@ -547,11 +561,23 @@ check_all_status()
 	fi
 
 	if [ "$DO_WIFI_TEST" == "Y" ]; then
-		check_wifi
+		check_status WIFI $WIFI
 	fi
+
+        if [ "$DO_BT_TEST" == "Y" ]; then
+                check_status BLUETOOTH $BLUETOOTH
+        fi
+
 	if [ "$DO_UART_TEST" == "Y" ]; then
-		check_status UART1 $UART1
-		check_status UART2 $UART2
+		if [ $SOC_TYPE == "rockchip" ]; then
+			check_status COM1 $UART1
+			check_status COM2 $UART2
+			check_status COM3 $UART3
+		else
+                        check_status UART1 $UART1
+                        check_status UART2 $UART2
+                        check_status UART3 $UART3
+		fi
 	fi
 	if [ "$DO_UART_to_UART_TEST" == "Y" ]; then
 		check_status UARTtoUART $UART_1TO2
@@ -620,8 +646,10 @@ kill_test(){
 	killall aem_network_stress_test.sh > /dev/null 2>&1
 	killall iperf3 > /dev/null 2>&1
 	killall wifi_stress_test.sh > /dev/null 2>&1
+	killall bluetooth_stress_test.sh > /dev/null 2>&1
 	killall uart1_stress_test.sh > /dev/null 2>&1
 	killall uart2_stress_test.sh > /dev/null 2>&1
+	killall uart3_stress_test.sh > /dev/null 2>&1
 	killall linux-serial-test > /dev/null 2>&1
 	killall tpu_stress_test.sh > /dev/null 2>&1
 	killall serial-test_loop.sh > /dev/null 2>&1
@@ -725,6 +753,7 @@ AEM_Ethernet="/test/$SOC_TYPE/aem_network_stress_test.sh"
 UART_1TO2="/test/serial-test_loop.sh"
 UART1="/test/uart1_stress_test.sh"
 UART2="/test/uart2_stress_test.sh"
+UART3="/test/uart3_stress_test.sh"
 CAN="/test/can_loopback.sh"
 AUDIO="AudioTest.sh"
 MCU_DIO="mcu_dio_stress_test.sh"
@@ -735,6 +764,8 @@ NPU="npu_stress_test.sh"
 RTC="/test/rtc_stress_test.sh"
 EEPROM="/test/eeprom_stress_test.sh"
 MODEM="/test/modem_stress_test.sh"
+BLUETOOTH="/test/bluetooth_stress_test.sh"
+WIFI="/test/wifi_stress_test.sh"
 
 if [ "$DO_THERMAL_LOGGING" == "Y" ]; then
 	thermal_logging > /dev/null 2>&1 &
@@ -786,8 +817,8 @@ case $test_item in
 		fi
 		;;
 	10)
-		info_view SoC UART loopback
-		uart_to_uart_stress_test
+		info_view COMPORT
+		uart_stress_test ui
 #		uart_stress_test ui
 		;;
 	11)
@@ -817,12 +848,19 @@ case $test_item in
                         audio_stress_test -a
 		fi
 		;;
-	14)	info_view MCU DIO
-		mcu_dio_stress_test
-		;;
-	15)	info_view MCU UART loopback
-		mcu_uart_stress_test
-		;;
+	14)	
+                if [ $SOC_TYPE == "rockchip" ]; then
+                        info_view BLUETOOTH
+                        bluetooth_stress_test
+                else
+                        info_view MCU DIO
+                        mcu_dio_stress_test
+                fi
+                ;;
+	15)	
+                info_view MCU UART loopback
+                mcu_uart_stress_test
+                ;;		
 	16)	info_view GPS
 		gps_stress_test
 		;;
@@ -857,6 +895,9 @@ case $test_item in
 		if [ "$DO_WIFI_TEST" == "Y" ]; then
 			wifi_stress_test > /dev/null 2>&1 &
 		fi
+                if [ "$DO_BT_TEST" == "Y" ]; then
+                        bluetooth_stress_test > /dev/null 2>&1 &
+                fi
 		if [ "$DO_UART_TEST" == "Y" ]; then
 		    uart_stress_test bk
 		fi

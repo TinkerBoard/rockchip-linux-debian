@@ -4,7 +4,7 @@ SCRIPT=`realpath $0`
 SCRIPTPATH=`dirname $SCRIPT`
 port=$1
 logfile=$2
-echo "Start COM2 loopback test" | tee -a $logfile
+echo "Start COM3 loopback test" | tee -a $logfile
 while [ 1 != 2 ]
 do
 	$SCRIPTPATH/linux-serial-test -s -e -p $port 115200 | tee -a $logfile.tmp
