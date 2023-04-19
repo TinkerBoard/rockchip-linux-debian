@@ -198,7 +198,7 @@ ext_storage_stress_test()
 			logfile=$LOG_PATH/${i}.txt
 			if [ $1 == "ui" ]; then
 				#xterm -fg lightgray -bg black -e "$SCRIPTPATH/test/ext_storage_stress_test.sh $i $logfile" &
-				$SCRIPTPATH/test/ext_storage_stress_test.sh $i $logfile
+				/usr/bin/xfce4-terminal --command "$SCRIPTPATH/test/ext_storage_stress_test.sh $i $logfile" --hold &
 			else
 				$SCRIPTPATH/test/ext_storage_stress_test.sh $i $logfile > /dev/null 2>&1 &
 			fi
@@ -676,6 +676,7 @@ kill_test(){
 	killall npu_stress_test.sh > /dev/null 2>&1
 	killall lt9211_i2c_test.sh > /dev/null 2>&1
 	killall eeprom_stress_test.sh > /dev/null 2>&1
+	killall rtc_stress_test.sh > /dev/null 2>&1
 }
 
 check_system_status=false
