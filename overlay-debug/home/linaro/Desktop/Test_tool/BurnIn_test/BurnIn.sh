@@ -95,6 +95,7 @@ select_test_item()
 		echo "12. EEPROM stress test: $DO_EEPROM_TEST"
 		echo "13. MODEM stress test: $DO_MODEM_TEST"
 		echo "14. Bluetooth stress test: $DO_BT_TEST"
+		echo "15. LT9211 stress test: $DO_LT9211_TEST"
 	else
                 echo " 9. UART loopback stress test: $DO_UART_TEST"
                 echo "10. UART1/UART2 RS232 stress test: $DO_UART_to_UART_TEST"
@@ -345,9 +346,16 @@ modem_stress_test()
 }
 
 gps_stress_test(){
-	#logfile=$LOG_PATH/gps.txt
-	killall gpstest > /dev/null 2>&1
-	sudo gnome-terminal --geometry 80x45+1200+500 --title="GPS" -e "$SCRIPTPATH/../GPS_test/gpstest /dev/ttyUSB1 quectel info" > /dev/null 2>&1 &
+    #logfile=$LOG_PATH/gps.txt
+    killall gpstest > /dev/null 2>&1
+    sudo gnome-terminal --geometry 80x45+1200+500 --title="GPS" -e "$SCRIPTPATH/../GPS_test/gpstest /dev/ttyUSB1 quectel info" > /dev/null 2>&1 &
+}
+
+lt9211_stress_test()
+{
+	logfile=$LOG_PATH/lt9211.txt
+	killall lt9211_i2c_test.sh > /dev/null 2>&1
+	$SCRIPTPATH/test/lt9211_i2c_test.sh $logfile
 }
 
 thermal_logging()
@@ -624,6 +632,9 @@ check_all_status()
 	if [ "$DO_MODEM_TEST" == "Y" ]; then
 		check_status MODEM $MODEM
 	fi
+	if [ "$DO_LT9211_TEST" == "Y" ]; then
+		check_status LT9211 $LT9211
+	fi
 #	check_status UART1 $UART1
 #	check_status UART2 $UART2
 }
@@ -663,6 +674,8 @@ kill_test(){
 	killall check_network.sh > /dev/null 2>&1
 	killall check_aem_network.sh > /dev/null 2>&1
 	killall npu_stress_test.sh > /dev/null 2>&1
+	killall lt9211_i2c_test.sh > /dev/null 2>&1
+	killall eeprom_stress_test.sh > /dev/null 2>&1
 }
 
 check_system_status=false
@@ -766,6 +779,7 @@ EEPROM="/test/eeprom_stress_test.sh"
 MODEM="/test/modem_stress_test.sh"
 BLUETOOTH="/test/bluetooth_stress_test.sh"
 WIFI="/test/wifi_stress_test.sh"
+LT9211="/test/lt9211_i2c_test.sh"
 
 if [ "$DO_THERMAL_LOGGING" == "Y" ]; then
 	thermal_logging > /dev/null 2>&1 &
@@ -857,9 +871,14 @@ case $test_item in
                         mcu_dio_stress_test
                 fi
                 ;;
-	15)	
-                info_view MCU UART loopback
-                mcu_uart_stress_test
+	15)
+                if [ $SOC_TYPE == "rockchip" ]; then
+                    info_view LT9211
+                    lt9211_stress_test
+                else
+					info_view MCU UART loopback
+					mcu_uart_stress_test
+                fi
                 ;;		
 	16)	info_view GPS
 		gps_stress_test
@@ -936,6 +955,9 @@ case $test_item in
 		fi
 		if [ "$DO_MODEM_TEST" == "Y" ]; then
 			modem_stress_test > /dev/null 2>&1 &
+		fi
+		if [ "$DO_LT9211_TEST" == "Y" ]; then
+			lt9211_stress_test > /dev/null 2>&1 &
 		fi
 		;;
 esac
