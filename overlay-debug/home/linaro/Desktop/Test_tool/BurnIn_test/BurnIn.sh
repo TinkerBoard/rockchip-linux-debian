@@ -43,15 +43,17 @@ declare -A disk_type
 return_ext_disk_dev() {
 	for i in `ls /sys/block/ | grep sd`
 	do
-		if [ `realpath /sys/block/$i | grep 38100000` ]; then
+		if [ `realpath /sys/block/$i | grep fcc00000` ]; then
 			disk_type[$i]=USB-C
-		elif [ `realpath /sys/block/$i | grep 38200000` ]; then
+		elif [ `realpath /sys/block/$i | grep fd800000` ]; then
+                        disk_type[$i]=USB-A
+		elif [ `realpath /sys/block/$i | grep fd000000` ]; then
 			disk_type[$i]=USB-A
 			if [ `cat /sys/block/$i/removable` == 0 ];then
 				disk_type[$i]=MSATA
 			fi
 		else
-			disk_type[$i]=PCIE
+			disk_type[$i]=USB
 		fi
 	done
 
@@ -151,7 +153,7 @@ cpu_freq_stress_test()
 	time=2592000 # 30 days = 60 * 60 * 24 * 30
 	killall cpu_freq_stress_test.sh > /dev/null 2>&1
 	killall stressapptest > /dev/null 2>&1
-	sudo bash $SCRIPTPATH/test/cpu_freq_stress_test.sh $SCRIPTPATH $time $logfile > /dev/null 2>&1 &
+	$SCRIPTPATH/test/cpu_freq_stress_test.sh $SCRIPTPATH $time $logfile > /dev/null 2>&1 &
 }
 
 gpu_test()
