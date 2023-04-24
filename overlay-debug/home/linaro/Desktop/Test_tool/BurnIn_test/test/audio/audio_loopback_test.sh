@@ -35,7 +35,8 @@ do
     /home/linaro/Desktop/Test_tool/audio_test.sh 0 0 /home/linaro/Desktop/Test_tool/Audio/1kHz_Sinewave_mono_30s.wav &
     sleep 1
     #echo "$(date +'%Y%m%d_%H%M%S'), audio_loopback_test record" >> $LOGFILE
-    FILENAME=/var/log/burnin_test/record_$(date +'%Y%m%d_%H%M%S').wav
+    mkdir -p ${LOGFILE%/*}/audio
+    FILENAME=${LOGFILE%/*}/audio/record_$(date +'%Y%m%d_%H%M%S').wav
     #echo "audio loopback save record file with timestamp"
     /home/linaro/Desktop/Test_tool/audio_test.sh 1 8 $FILENAME
 
