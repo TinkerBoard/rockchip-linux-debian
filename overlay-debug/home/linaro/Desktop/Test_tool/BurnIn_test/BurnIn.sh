@@ -46,7 +46,7 @@ return_ext_disk_dev() {
 		if [ `realpath /sys/block/$i | grep fcc00000` ]; then
 			disk_type[$i]=USB-C
 		elif [ `realpath /sys/block/$i | grep fd800000` ]; then
-                        disk_type[$i]=USB-A
+                        disk_type[$i]=USB-NOHUB
 		elif [ `realpath /sys/block/$i | grep fd000000` ]; then
 			disk_type[$i]=USB-A
 			if [ `cat /sys/block/$i/removable` == 0 ];then
@@ -98,6 +98,9 @@ select_test_item()
 		echo "13. MODEM stress test: $DO_MODEM_TEST"
 		echo "14. Bluetooth stress test: $DO_BT_TEST"
 		echo "15. LT9211 stress test: $DO_LT9211_TEST"
+		echo "16. LED enable test: $DO_LED_TEST"
+		echo "17. USB HUB check test: $DO_USBHUB_CHECK"
+		echo "18. USB CC logic stress test: $DO_USBCC_TEST"
 	else
                 echo " 9. UART loopback stress test: $DO_UART_TEST"
                 echo "10. UART1/UART2 RS232 stress test: $DO_UART_to_UART_TEST"
@@ -246,6 +249,19 @@ bluetooth_stress_test()
         logfile=$LOG_PATH/bluetooth.txt
         killall bluetooth_stress_test.sh > /dev/null 2>&1
         $SCRIPTPATH/test/bluetooth_stress_test.sh $SCRIPTPATH $logfile $SOC_TYPE
+}
+
+led_test()
+{
+        killall led_test.sh > /dev/null 2>&1
+        $SCRIPTPATH/test/rockchip/led_test.sh 1 1
+}
+
+usbcc_stress_test()
+{
+        logfile=$LOG_PATH/usbcc.txt
+        killall cc_i2c_stress_test.sh > /dev/null 2>&1
+        $SCRIPTPATH/test/cc_i2c_stress_test.sh $logfile
 }
 
 uart_stress_test()
@@ -510,6 +526,13 @@ check_wifi_setting()
 	fi
 }
 
+check_usbhub()
+{
+        logfile=$LOG_PATH/usbhub.txt
+        killall check_usb_hub.sh > /dev/null 2>&1
+        $SCRIPTPATH/test/check_usb_hub.sh $logfile
+}
+
 initial_setting()
 {
 	if [[ "$DO_WIFI_TEST" == "Y" ]]; then
@@ -637,6 +660,13 @@ check_all_status()
 	if [ "$DO_LT9211_TEST" == "Y" ]; then
 		check_status LT9211 $LT9211
 	fi
+        if [ "$DO_USBHUB_CHECK" == "Y" ]; then
+                check_status USBHUB $USBHUB
+        fi
+        if [ "$DO_USBCC_TEST" == "Y" ]; then
+                check_status USBCC $USBCC
+        fi
+
 #	check_status UART1 $UART1
 #	check_status UART2 $UART2
 }
@@ -679,6 +709,10 @@ kill_test(){
 	killall lt9211_i2c_test.sh > /dev/null 2>&1
 	killall eeprom_stress_test.sh > /dev/null 2>&1
 	killall rtc_stress_test.sh > /dev/null 2>&1
+	killall led_test.sh > /dev/null 2>&1
+	killall check_usb_hub.sh > /dev/null 2>&1
+	killall cc_i2c_stress_test.sh > /dev/null 2>&1
+
 }
 
 check_system_status=false
@@ -783,6 +817,8 @@ MODEM="/test/modem_stress_test.sh"
 BLUETOOTH="/test/bluetooth_stress_test.sh"
 WIFI="/test/wifi_stress_test.sh"
 LT9211="/test/lt9211_i2c_test.sh"
+USBCC="/test/cc_i2c_stress_test.sh"
+USBHUB="/test/check_usb_hub.sh"
 
 if [ "$DO_THERMAL_LOGGING" == "Y" ]; then
 	thermal_logging > /dev/null 2>&1 &
@@ -876,19 +912,34 @@ case $test_item in
                 ;;
 	15)
                 if [ $SOC_TYPE == "rockchip" ]; then
-                    info_view LT9211
-                    lt9211_stress_test
+                        info_view LT9211
+                        lt9211_stress_test
                 else
-					info_view MCU UART loopback
-					mcu_uart_stress_test
+                        info_view MCU UART loopback
+                        mcu_uart_stress_test
                 fi
                 ;;		
-	16)	info_view GPS
-		gps_stress_test
-		;;
+	16)
+                if [ $SOC_TYPE == "rockchip" ]; then
+                        info_view LED
+                        led_test
+                else
+			info_view GPS
+			gps_stress_test
+                fi
+                ;;	
 	17)
-		info_view AEM_Ethernet
-		aem_network_stress_test
+                if [ $SOC_TYPE == "rockchip" ]; then
+                        info_view USBHUB 
+                        check_usbhub
+                else
+                        info_view AEM_Ethernet
+                        aem_network_stress_test
+                fi
+                ;;
+        18)
+                info_view USBCC
+                usbcc_stress_test
 		;;
 	*)
 		check_system_status=true
@@ -962,7 +1013,16 @@ case $test_item in
 		if [ "$DO_LT9211_TEST" == "Y" ]; then
 			lt9211_stress_test > /dev/null 2>&1 &
 		fi
-		;;
+                if [ "$DO_LED_TEST" == "Y" ]; then
+                        led_test > /dev/null 2>&1 &
+                fi
+                if [ "$DO_USBHUB_CHECK" == "Y" ]; then
+                        check_usbhub > /dev/null 2>&1 &
+                fi
+                if [ "$DO_USBCC_TEST" == "Y" ]; then
+                        usbcc_stress_test > /dev/null 2>&1 &
+                fi
+                ;;
 esac
 
 sleep 2
