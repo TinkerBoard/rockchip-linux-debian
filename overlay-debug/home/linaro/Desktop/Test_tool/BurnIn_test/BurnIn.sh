@@ -101,6 +101,7 @@ select_test_item()
 		echo "16. LED enable test: $DO_LED_TEST"
 		echo "17. USB HUB check test: $DO_USBHUB_CHECK"
 		echo "18. USB CC logic stress test: $DO_USBCC_TEST"
+		echo "19. Audio loopback stress test:: $DO_AUDIO_TEST"
 	else
                 echo " 9. UART loopback stress test: $DO_UART_TEST"
                 echo "10. UART1/UART2 RS232 stress test: $DO_UART_to_UART_TEST"
@@ -307,10 +308,10 @@ can_stress_test()
 
 audio_stress_test()
 {
-	killall AudioTest.sh > /dev/null 2>&1
-	while true; do
-		$SCRIPTPATH/../Audio_test/AudioTest.sh 2 1 10 $1
-	done
+	logfile=$LOG_PATH/audio.txt
+	killall audio_loopback_test.sh > /dev/null 2>&1
+	killall audio_test.sh > /dev/null 2>&1
+	$SCRIPTPATH/test/audio/audio_loopback_test.sh $logfile
 }
 
 mcu_dio_stress_test()
@@ -712,6 +713,9 @@ kill_test(){
 	killall led_test.sh > /dev/null 2>&1
 	killall check_usb_hub.sh > /dev/null 2>&1
 	killall cc_i2c_stress_test.sh > /dev/null 2>&1
+        killall modem_stress_test.sh > /dev/null 2>&1
+        killall audio_loopback_test.sh > /dev/null 2>&1
+        killall audio_test.sh > /dev/null 2>&1
 
 }
 
@@ -805,7 +809,6 @@ UART1="/test/uart1_stress_test.sh"
 UART2="/test/uart2_stress_test.sh"
 UART3="/test/uart3_stress_test.sh"
 CAN="/test/can_loopback.sh"
-AUDIO="AudioTest.sh"
 MCU_DIO="mcu_dio_stress_test.sh"
 MCU_UART="mcu_uart_stress_test.sh"
 TPU="/test/tpu_stress_test.sh"
@@ -819,6 +822,7 @@ WIFI="/test/wifi_stress_test.sh"
 LT9211="/test/lt9211_i2c_test.sh"
 USBCC="/test/cc_i2c_stress_test.sh"
 USBHUB="/test/check_usb_hub.sh"
+AUDIO="/test/audio/audio_loopback_test.sh"
 
 if [ "$DO_THERMAL_LOGGING" == "Y" ]; then
 	thermal_logging > /dev/null 2>&1 &
@@ -941,6 +945,10 @@ case $test_item in
                 info_view USBCC
                 usbcc_stress_test
 		;;
+        19)
+                info_view AUDIOLOOPBACK
+                audio_stress_test
+                ;;
 	*)
 		check_system_status=true
 		info_view BurnIn
@@ -984,7 +992,7 @@ case $test_item in
 			can_stress_test > /dev/null 2>&1 &
 		fi
 		if [ "$DO_AUDIO_TEST" == "Y" ]; then
-			audio_stress_test -a  > /dev/null 2>&1 &
+			audio_stress_test  > /dev/null 2>&1 &
 		fi
 		if [ "$DO_MCU_DIO_TEST" == "Y" ]; then
 			mcu_dio_stress_test > /dev/null 2>&1 &
