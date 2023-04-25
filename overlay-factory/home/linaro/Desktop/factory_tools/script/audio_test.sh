@@ -43,14 +43,14 @@ function audio_test_record() {
         then
             echo "Now record file is $REC_FILENAME_B"
             #echo "$(date +'%Y%m%d_%H%M%S'), Record B start:" >> $LOGFILE
-            arecord -Dplughw:$rk809_card_num -f S16_LE -r 48000 -c 1 -d $REC_TIME $REC_FILENAME_B
+            arecord -Dhw:$rk809_card_num -f S16_LE -r 48000 -c 2 -d $REC_TIME $REC_FILENAME_B
             #echo "$(date +'%Y%m%d_%H%M%S'), Record B done, start rm record_A.wav:" >> $LOGFILE
             rm -rf $REC_FILENAME_A
             #echo "$(date +'%Y%m%d_%H%M%S'), remove record_A.wav done:" >> $LOGFILE
         else
             echo "Now record file is $REC_FILENAME_A"
             #echo "$(date +'%Y%m%d_%H%M%S'), Record A start:" >> $LOGFILE
-            arecord -Dplughw:$rk809_card_num -f S16_LE -r 48000 -c 1 -d $REC_TIME $REC_FILENAME_A
+            arecord -Dhw:$rk809_card_num -f S16_LE -r 48000 -c 2 -d $REC_TIME $REC_FILENAME_A
             #echo "$(date +'%Y%m%d_%H%M%S'), Record B done, start rm record_A.wav:" >> $LOGFILE
             rm -rf $REC_FILENAME_B
             #echo "$(date +'%Y%m%d_%H%M%S'), remove record_B.wav done:" >> $LOGFILE
@@ -59,7 +59,7 @@ function audio_test_record() {
         REC_FILENAME="$2"
         echo "Now record file is $REC_FILENAME"
         #echo "$(date +'%Y%m%d_%H%M%S'), Record start:" >> $LOGFILE
-        arecord -Dplughw:$rk809_card_num -f S16_LE -r 48000 -c 1 -d $REC_TIME $REC_FILENAME
+        arecord -Dhw:$rk809_card_num -f S16_LE -r 48000 -c 2 -d $REC_TIME $REC_FILENAME
        # echo "$(date +'%Y%m%d_%H%M%S'), Record done" >> $LOGFILE
     fi
 
@@ -136,7 +136,7 @@ function audio_test_playback_repeat() {
 function audio_test_loopback() {
     echo "Start audio loopback ..."
     while [ $? -eq 0 ] ; do
-        arecord -Dplughw:$rk809_card_num -f S16_LE -r 48000 -c 1 | aplay -Dplughw:$rk809_card_num -f S16_LE -r 48000 -c 1
+        arecord -Dhw:$rk809_card_num -f S16_LE -r 48000 -c 2 | aplay -Dplughw:$rk809_card_num -f S16_LE -r 48000 -c 1
     done
     if [[ $? -ne 0 ]]
     then
@@ -157,7 +157,7 @@ function audio_test_rec_n_play() {
     REC_TIME="$2"
 
     echo "Now record file is $REC_FILENAME"
-    arecord -Dplughw:$rk809_card_num -f S16_LE -r 48000 -c 1 -d $REC_TIME $REC_FILENAME
+    arecord -Dhw:$rk809_card_num -f S16_LE -r 48000 -c 2 -d $REC_TIME $REC_FILENAME
 
     if [[ $? -ne 0 ]]
     then
@@ -168,9 +168,7 @@ function audio_test_rec_n_play() {
 }
 
 function audio_test_main() {
-    echo ""
-    echo "audio_test : "
-    #echo "$(date +'%Y%m%d_%H%M%S'), audio_test start:" >> $LOGFILE
+    #echo "audio_test : "
 
     if [ $# -le 0 ]
     then
@@ -179,15 +177,15 @@ function audio_test_main() {
         return 1
     fi
 
-    echo ==================== "Current Sound Card(s)" ====================
-    cat /proc/asound/cards
-    echo ===============================================================
+    #echo ==================== "Current Sound Card(s)" ====================
+    #cat /proc/asound/cards
+    #echo ===============================================================
     out=$(cat /proc/asound/cards | grep rockchiphdmi)
     hdmi_card_num=$(echo $out | cut -d" " -f 1)
-    echo "rockchiphdmi, card number = "$hdmi_card_num
+    #echo "rockchiphdmi, card number = "$hdmi_card_num
     out=$(cat /proc/asound/cards | grep rockchiprk809)
     rk809_card_num=$(echo $out | cut -d" " -f 1)
-    echo "rockchiprk809 card, card number = "$rk809_card_num
+    #echo "rockchiprk809 card, card number = "$rk809_card_num
 
     ACTION="$1"
     shift
@@ -216,9 +214,9 @@ function audio_test_main() {
 }
 
 audio_test_main "$@"
-if [[ $? -eq 0 ]]
-then
-    echo "PASS";
-else
-    echo "FAIL";
-fi
+#if [[ $? -eq 0 ]]
+#then
+    #echo "PASS";
+#else
+    #echo "FAIL";
+#fi
