@@ -320,6 +320,9 @@ chmod a+x /usr/local/share/debian11_rknn_toolkit_lite2/debian11_install_rknn_too
 # Change systemd-suspend.service method to pm-suspend
 cp /etc/Powermanager/systemd-suspend.service  /lib/systemd/system/systemd-suspend.service
 
+#-------Tinker board 3: build-essential for development tools------
+apt-get install -y build-essential
+
 #------remove unused packages------------
 apt remove --purge -fy linux-firmware*
 
