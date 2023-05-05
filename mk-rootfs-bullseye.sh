@@ -299,6 +299,11 @@ if [ "$VERSION" == "factory" ]; then
 fi
 
 #-------ASUS customization end-------
+# Install the gedit packages
+apt-get install -y gedit
+
+# Install the bash-completion for apt-get tab auto search
+apt-get install bash-completion
 
 # Change default Terminal emulator to xfce4-terminal
 \${APT_INSTALL} xfce4-terminal
