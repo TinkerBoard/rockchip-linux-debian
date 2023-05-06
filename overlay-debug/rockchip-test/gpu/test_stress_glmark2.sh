@@ -76,7 +76,7 @@ COMPATIBLE=${COMPATIBLE#rockchip,}
 
 echo performance | tee $(find /sys/ -name *governor) /dev/null || true
 
-echo "run glmark2 with fullscreen......"
+echo "run glmark2 x11 with fullscreen......"
 
 run_glmark2 ${CHIPNAME}
 

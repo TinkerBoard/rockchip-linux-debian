@@ -1,7 +1,6 @@
 #!/bin/bash
-
-export DISPLAY=:0.0
 #export GST_DEBUG=*:5
+export DISPLAY=:0.0
 #test_camera-uvc.sh > /tmp/1.txt 2>&1
 #export GST_DEBUG_FILE=/tmp/2.txt
 #echo 600000000 > /sys/kernel/debug/clk/aclk_vcodec/clk_rate
@@ -9,23 +8,24 @@ export DISPLAY=:0.0
 
 echo "Start UVC Camera M-JPEG Preview!"
 
-COMPATIBLE=$(cat /proc/device-tree/compatible)
-if [[ $COMPATIBLE =~ "rk3588" ]]; then
-    gst-launch-1.0 v4l2src device=/dev/video20 ! image/jpeg, width=1280, height=720, framerate=30/1 ! jpegparse ! mppjpegdec ! xvimagesink sync=false
-elif [[ $COMPATIBLE =~ "rk3562" ]]; then
-    gst-launch-1.0 v4l2src device=/dev/video9 ! image/jpeg, width=1280, height=720, framerate=30/1 ! jpegparse ! mppjpegdec ! xvimagesink sync=false
-elif [[ $COMPATIBLE =~ "rk3566" && $COMPATIBLE =~ "rk3568" ]]; then
-    gst-launch-1.0 v4l2src device=/dev/video9 ! image/jpeg, width=1280, height=720, framerate=30/1 ! jpegparse ! mppjpegdec ! xvimagesink sync=false
-elif [[ $COMPATIBLE =~ "rk3399" ]]; then
-    gst-launch-1.0 v4l2src device=/dev/video5 ! image/jpeg, width=1280, height=720, framerate=30/1 ! jpegparse ! mppjpegdec ! xvimagesink sync=false
+if [ -e "/usr/lib/arm-linux-gnueabihf" ] ;
+then
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/arm-linux-gnueabihf/gstreamer-1.0
 else
-    gst-launch-1.0 v4l2src device=/dev/video10 ! image/jpeg, width=1280, height=720, framerate=30/1 ! jpegparse ! mppjpegdec ! xvimagesink sync=false
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/aarch64-linux-gnu/gstreamer-1.0
 fi
-COMPATIBLE=${COMPATIBLE#rockchip,}
 
-#     gst-launch-1.0 v4l2src device=/dev/video17 ! video/x-raw,format=YUY2,width=640,height=480, framerate=30/1 ! videoconvert ! autovideosink
-#"
-# Fpr spefic size :
+v4l2-ctl --list-devices > /tmp/.v4l2_list
+USB_VIDEO=($(awk '/usb/{getline a;print a}' /tmp/.v4l2_list))
+echo "Found ${#USB_VIDEO[@]} USB Cameras"
+rm /tmp/.v4l2_list
 
-# v4l2-ctl --list-formats-ext -d /dev/video17
-
+for i in USB_VIDEO
+do
+	eval value=\${${i}[@]}
+	for j in $value
+	do
+	echo "Start Preview USB Camera Video Path $j By GStreamer"
+	gst-launch-1.0 v4l2src device="$j" ! image/jpeg! jpegparse ! mppjpegdec ! xvimagesink sync=false
+	done
+done

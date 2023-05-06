@@ -4,22 +4,40 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 function run_glmark2() {
 if [ "$1" == "rk3288" ]; then
 	glmark2-es2 --off-screen
+
+elif [[  "$1" == "rk3036"  ]]; then
+	glmark2-es2 --off-screen
+
+elif [[  "$1" == "rk3528"  ]]; then
+	glmark2-es2 --off-screen
+
+elif [[  "$1" == "rk3358"  ]]; then
+	glmark2-es2 --off-screen
+
 elif [[  "$1" == "rk3328"  ]]; then
 	glmark2-es2 --off-screen
+
 elif [[  "$1" == "rk3399"  ]]; then
 	taskset -c 4-5 glmark2-es2 --off-screen
+
 elif [[  "$1" == "rk3399pro"  ]]; then
 	taskset -c 4-5 glmark2-es2 --off-screen
+
 elif [[  "$1" == "px30" || "$1" == "rk3326"  ]]; then
 	glmark2-es2 --off-screen
+
 elif [[  "$1" == "rk3562" ]]; then
 	glmark2-es2 --off-screen
+
 elif [[  "$1" == "rk3566" || "$1" == "rk3568"  ]]; then
 	glmark2-es2 --off-screen
+
 elif [[  "$1" == "rk3588" || "$1" == "rk3588s"  ]]; then
 	taskset -c 4-8 glmark2-es2 --off-screen
+
 elif [[  "$1" == "rk1808" || "$1" == "rk3308"  ]]; then
 	echo "the chips didn't support gpu"
+
 elif [[  "$1" == "px3se" || "$1" == "rk312x" ]]; then
 	glmark2-es2 --off-screen
 else
@@ -30,6 +48,8 @@ fi
 COMPATIBLE=$(cat /proc/device-tree/compatible)
 if [[ $(expr $COMPATIBLE : ".*rk3288") -ne 0 ]]; then
     CHIPNAME="rk3288"
+elif [[ $(expr $COMPATIBLE : ".*rk3036") -ne 0 ]]; then
+    CHIPNAME="rk3036"
 elif [[ $(expr $COMPATIBLE : ".*rk3308") -ne 0 ]]; then
     CHIPNAME="rk3308"
 elif [[ $(expr $COMPATIBLE : ".*rk3328") -ne 0 ]]; then
@@ -38,8 +58,12 @@ elif [[ $(expr $COMPATIBLE : ".*rk3399") -ne 0 ]]; then
     CHIPNAME="rk3399"
 elif [[ $(expr $COMPATIBLE : ".*rk3326") -ne 0 ]]; then
     CHIPNAME="rk3326"
+elif [[ $(expr $COMPATIBLE : ".*rk3358") -ne 0 ]]; then
+    CHIPNAME="rk3358"
 elif [[ $(expr $COMPATIBLE : ".*rk3399") -ne 0 ]]; then
     CHIPNAME="rk3399"
+elif [[ $(expr $COMPATIBLE : ".*rk3528") -ne 0 ]]; then
+    CHIPNAME="rk3528"
 elif [[ $(expr $COMPATIBLE : ".*rk3562") -ne 0 ]]; then
     CHIPNAME="rk3562"
 elif [[ $(expr $COMPATIBLE : ".*rk3566") -ne 0 ]]; then
@@ -67,7 +91,7 @@ COMPATIBLE=${COMPATIBLE#rockchip,}
 
 echo performance | tee $(find /sys/ -name *governor) /dev/null || true
 
-echo "run glmark2 with offscreen......"
+echo "run glmark2 x11 with offscreen......"
 
 run_glmark2 ${CHIPNAME}
 
