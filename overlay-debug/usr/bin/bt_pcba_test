@@ -3,8 +3,10 @@
 killall brcm_patchram_plus1
 
 echo 0 > /sys/class/rfkill/rfkill0/state
+echo 0 > /proc/bluetooth/sleep/btwrite
 sleep 2
 echo 1 > /sys/class/rfkill/rfkill0/state
+echo 1 > /proc/bluetooth/sleep/btwrite
 sleep 2
 
 COMPATIBLE=$(cat /proc/device-tree/compatible)
