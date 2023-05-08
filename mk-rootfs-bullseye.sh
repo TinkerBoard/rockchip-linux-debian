@@ -48,12 +48,6 @@ sudo cp -rpf overlay-firmware/* $TARGET_ROOTFS_DIR/
 # adb, video, camera  test file
 if [ "$VERSION" == "debug" ]; then
 	sudo cp -rpf overlay-debug/* $TARGET_ROOTFS_DIR/
-	# adb
-	if [[ "$ARCH" == "armhf" && "$VERSION" == "debug" ]]; then
-		sudo cp -f overlay-debug/usr/local/share/adb/adbd-32 $TARGET_ROOTFS_DIR/usr/bin/adbd
-	elif [[ "$ARCH" == "arm64" && "$VERSION" == "debug" ]]; then
-		sudo cp -f overlay-debug/usr/local/share/adb/adbd-64 $TARGET_ROOTFS_DIR/usr/bin/adbd
-	fi
 fi
 
 # bt/wifi firmware
