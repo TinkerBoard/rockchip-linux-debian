@@ -79,6 +79,12 @@ sudo mount -o bind /dev $TARGET_ROOTFS_DIR/dev
 
 cat << EOF | sudo chroot $TARGET_ROOTFS_DIR
 
+# Fixup owners
+find / -user $(id -u) -exec chown -h -R 0:0 {} \;
+for u in \$(ls /home/); do
+	chown -h -R \$u:\$u /home/\$u
+done
+
 echo "deb http://mirrors.ustc.edu.cn/debian/ bullseye-backports main contrib non-free" >> /etc/apt/sources.list
 echo "deb-src http://mirrors.ustc.edu.cn/debian/ bullseye-backports main contrib non-free" >> /etc/apt/sources.list
 
@@ -242,7 +248,6 @@ cd -
 rm -rf /var/lib/apt/lists/*
 rm -rf /var/cache/
 rm -rf /packages/
-
 
 EOF
 
