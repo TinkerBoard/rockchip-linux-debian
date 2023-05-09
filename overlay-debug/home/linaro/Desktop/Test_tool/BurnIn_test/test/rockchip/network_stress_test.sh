@@ -20,8 +20,18 @@ ip netns delete ns_client
 sleep 1
 
 echo ""
-if [ "$boardinfo" == "Tinker Board 3N - SKU1" ] || [ "$boardinfo" == "Tinker Board 3 - SKU2" ]
-then
+oemid=$(cat /proc/odmid)
+projectid=$(cat /proc/projectid)
+
+if [ "$oemid" == "15" ]; then
+
+	echo "LAN Port Number : 1"
+	echo ""
+elif [ "$oemid" == "18" ] && [ "$projectid" == "12" ]; then
+
+	echo "LAN Port Number : 1"
+	echo ""
+else
 	nslist=$(ip netns list)
 	if [ "$nslist" == "" ]
 	then
@@ -97,7 +107,4 @@ then
 			exit
 		fi
 	done
-else
-	echo "LAN Port Number : 1"
-	echo ""
 fi

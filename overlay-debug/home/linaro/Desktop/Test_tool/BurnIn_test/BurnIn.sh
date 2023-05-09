@@ -756,8 +756,13 @@ else
 	test_time=864000
 fi
 
-boardinfo=$(cat /proc/boardinfo)
-if [ "$boardinfo" == "Tinker Board 3N - SKU3" ] || [ "$boardinfo" == "Sanden - SKU1" ]; then
+oemid=$(cat /proc/odmid)
+projectid=$(cat /proc/projectid)
+ 
+if [ "$oemid" == "15" ] ; then
+	DO_ETHERNET_TEST=N
+	echo "Only one Ethernet port"
+elif [ "$oemid" == "18" ] && [ "$projectid" == "12" ]; then
 	DO_ETHERNET_TEST=N
 	echo "Only one Ethernet port"
 fi
