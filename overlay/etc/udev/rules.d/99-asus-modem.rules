@@ -1,7 +1,15 @@
-ACTION=="bind", SUBSYSTEM=="usb", DRIVERS=="usb", ENV{DEVTYPE}=="usb_device", GOTO="asus_modem_bind_start"
-GOTO="asus_modem_bind_end"
+SUBSYSTEM=="usb", DRIVERS=="usb", ENV{DEVTYPE}=="usb_device", GOTO="asus_modem_start"
+GOTO="asus_modem_end"
+
+LABEL="asus_modem_start"
+ACTION=="bind", GOTO="asus_modem_bind_start"
+ACTION=="unbind", GOTO="asus_modem_unbind_start"
+GOTO="asus_modem_end"
 
 LABEL="asus_modem_bind_start"
-ATTRS{idVendor}=="2c7c", RUN+="/etc/modem/mm_cli start"
+ATTRS{idVendor}=="2c7c", TAG+="systemd", ENV{SYSTEMD_WANTS}="asus-modem.service"
+GOTO="asus_modem_end"
 
-LABEL="asus_modem_bind_end"
+LABEL="asus_modem_unbind_start"
+ATTRS{idVendor}=="2c7c", RUN+="/etc/modem/mm_cli stop"
+LABEL="asus_modem_end"

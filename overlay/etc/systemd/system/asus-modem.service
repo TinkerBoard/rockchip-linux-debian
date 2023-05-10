@@ -1,0 +1,12 @@
+[Unit]
+Description=ASUS Modem Service
+
+[Service]
+Type=oneshot
+ExecStart=/etc/modem/mm_cli start
+ExecStop=/etc/modem/mm_cli stop
+PIDFile=/etc/modem/mm_cli_pid
+TimeoutSec=infinity
+
+[Install]
+WantedBy=multi-user.target

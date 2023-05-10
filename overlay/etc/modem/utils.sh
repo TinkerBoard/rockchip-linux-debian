@@ -19,7 +19,7 @@ send_at_command() {
 	fi
 
 	# Send command and save result into $AT_CMD_TEMP
-	RET=$(mmcli -m any -a --command="$CMD" 2> /dev/null \
+	RET=$(mmcli -m any -a --command="$CMD" \
 	       	| tr '\r' ' '\
 		| tr -d '\n')
 	echo "$RET" >> $AT_CMD_TEMP
@@ -30,22 +30,26 @@ send_at_command() {
 		return 1
 	elif [ "$RET" == "" ]
 	then
-		if [ -e $AT_PORT ]; then
-			# Send AT command via $AT_PORT
-			RET=$(echo -ne "${1^^}\r"\
-				| busybox microcom -t ${TIMEOUT} ${AT_PORT}\
-				| tr '\r' ' '\
-				| tr -d '\n')
-			echo "$RET"
-			return 0
-		else
-			echo "ERROR $AT_PORT not found"
-			return 1
-		fi
+		send_at_command_directly $1
 	else
 		echo $RET| sed -rn "s/^response: +'([^']+)'.*/\1/p"
 		return 0
 	fi
+}
+
+send_at_command_directly() {
+	if [ -e $AT_PORT ]; then
+		# Send AT command via $AT_PORT
+		RET=$(echo -ne "${1^^}\r"\
+			| busybox microcom -t ${TIMEOUT} ${AT_PORT}\
+			| tr '\r' ' '\
+			| tr -d '\n')
+		echo "$RET"
+		return 0
+	else
+		echo "ERROR $AT_PORT not found"
+		return 1
+	fi	
 }
 
 wait_until_modem_available() {
