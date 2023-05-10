@@ -1,4 +1,4 @@
 #!/bin/bash -e
 
-MMC=$(lsblk | grep "part /userdata" | awk -F ' ' '{print $1}' | awk -F 'mmcblk' '{new_var="mmcblk"$2;print new_var}')
-mount "/dev/${MMC}" /boot/
+MMC=$(lsblk | grep "part /" | grep -v "/[a-z]" | awk -F ' ' '{print $1}' | awk -F 'p7' '{print $1}' | awk -F 'mmc' '{print $2}')
+mount "/dev/mmc${MMC}p6" /boot/
