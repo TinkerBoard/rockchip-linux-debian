@@ -1,1 +1,0 @@
-export ADB_TCP_PORT=5555
