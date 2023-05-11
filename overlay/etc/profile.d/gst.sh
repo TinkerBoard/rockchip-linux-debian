@@ -58,6 +58,8 @@ export GST_V4L2SRC_MAX_RESOLUTION=3840x2160
 # export AUTOVIDEOSINK_PREFERRED=waylandsink
 # export PLAYBIN2_PREFERRED_AUDIOSINK=alsasink
 # export PLAYBIN2_PREFERRED_VIDEOSINK=waylandsink
+export AUTOVIDEOSINK_PREFERRED=xvimagesink
+export PLAYBIN2_PREFERRED_VIDEOSINK=xvimagesink
 
 # Try RGA 2D accel in videoconvert, videoscale and videoflip.
 # NOTE: Might not success, and might behave different from the official plugin.
