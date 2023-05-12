@@ -88,9 +88,6 @@ if [ "$VERSION" == "factory" ]; then
 fi
 
 
-## hack the serial
-sudo cp -f overlay/usr/lib/systemd/system/serial-getty@.service $TARGET_ROOTFS_DIR/usr/lib/systemd/system/serial-getty@.service
-
 # bt/wifi firmware
 sudo mkdir -p $TARGET_ROOTFS_DIR/system/lib/modules/
 sudo mkdir -p $TARGET_ROOTFS_DIR/vendor/etc
@@ -358,6 +355,9 @@ rm -rf /packages/
 
 
 EOF
+
+## hack the serial
+sudo cp -f overlay/usr/lib/systemd/system/serial-getty@.service $TARGET_ROOTFS_DIR/usr/lib/systemd/system/serial-getty@.service
 
 sudo cp -f overlay/etc/resolv.conf $TARGET_ROOTFS_DIR/etc/
 
