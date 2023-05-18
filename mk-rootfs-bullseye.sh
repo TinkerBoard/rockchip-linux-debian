@@ -68,10 +68,14 @@ sudo cp -f /etc/resolv.conf $TARGET_ROOTFS_DIR/etc/
 
 sudo mount -o bind /dev $TARGET_ROOTFS_DIR/dev
 
+ID=$(stat --format %u $TARGET_ROOTFS_DIR)
+
 cat << EOF | sudo chroot $TARGET_ROOTFS_DIR
 
 # Fixup owners
-find / -user $(id -u) -exec chown -h -R 0:0 {} \;
+if [ "$ID" -ne 0 ]; then
+       find / -user $ID -exec chown -h -R 0:0 {} \;
+fi
 for u in \$(ls /home/); do
 	chown -h -R \$u:\$u /home/\$u
 done
