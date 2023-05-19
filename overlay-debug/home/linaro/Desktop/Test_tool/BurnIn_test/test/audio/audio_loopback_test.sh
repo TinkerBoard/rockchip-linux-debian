@@ -2,6 +2,7 @@
 #This is the audio loopback tool for tinker board 3 with rk809 codec.
 #LOGFILE=/var/log/burnin_test/audio_test.txt
 LOGFILE=$1
+ONESHOT=$2
 pass_cnt=0
 fail_cnt=0
 i2cget=/usr/sbin/i2cget
@@ -65,6 +66,13 @@ do
     if [ "$fail_cnt" -ge 6  ]; then
 	log "audio_loopback_test pass_cnt=$pass_cnt fail_cnt $fail_cnt"
         exit
+    fi
+
+    if [ $# -eq 2 ]; then
+        if [ $ONESHOT -eq 1 ]; then
+            log "audio_loopback_test pass_cnt=$pass_cnt fail_cnt $fail_cnt"
+            exit
+        fi
     fi
 done
 #echo "Oops! memory usage is $usep, audio_lookback_test done."
