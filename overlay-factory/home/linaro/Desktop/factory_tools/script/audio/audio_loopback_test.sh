@@ -2,6 +2,7 @@
 #This is the audio loopback tool for tinker board 3 with rk809 codec.
 #LOGFILE=/var/log/burnin_test/audio_test.txt
 LOGFILE=$1
+ONESHOT=$2
 pass_cnt=0
 fail_cnt=0
 i2cget=/usr/sbin/i2cget
@@ -32,13 +33,13 @@ sleep 1
 while [ 1 != 2 ]
 do
     #echo "$(date +'%Y%m%d_%H%M%S'), audio_loopback_test play 1kHz" >> $LOGFILE
-    /home/linaro/Desktop/factory_tools/script/audio_test.sh 0 0 /home/linaro/Desktop/factory_tools/files/Audio/1kHz_Sinewave_mono_30s.wav &
+    /home/linaro/Desktop/Test_tool/audio_test.sh 0 0 /home/linaro/Desktop/Test_tool/Audio/1kHz_Sinewave_mono_30s.wav &
     sleep 1
     #echo "$(date +'%Y%m%d_%H%M%S'), audio_loopback_test record" >> $LOGFILE
     mkdir -p ${LOGFILE%/*}/audio
     FILENAME=${LOGFILE%/*}/audio/record_$(date +'%Y%m%d_%H%M%S').wav
     #echo "audio loopback save record file with timestamp"
-    /home/linaro/Desktop/factory_tools/script/audio_test.sh 1 8 $FILENAME
+    /home/linaro/Desktop/Test_tool/audio_test.sh 1 8 $FILENAME
 
     #echo "$(date +'%Y%m%d_%H%M%S'), audio_loopback_test kill process" >> $LOGFILE
     pid_of_aplay=$(pidof aplay)
@@ -48,7 +49,7 @@ do
     sleep 2
 
     #echo "$(date +'%Y%m%d_%H%M%S'), analyze record file" >> $LOGFILE
-    result=$(/home/linaro/Desktop/factory_tools/script/audio/asus_audioAnalysis $FILENAME)
+    result=$(/home/linaro/Desktop/Test_tool/BurnIn_test/test/audio/asus_audioAnalysis $FILENAME)
     if [ "$result" = "PASS" ]; then
         ((pass_cnt+=1))
         log "audio_loopback_test analyze result: PASS, pass_cnt=$pass_cnt"
@@ -65,6 +66,13 @@ do
     if [ "$fail_cnt" -ge 6  ]; then
 	log "audio_loopback_test pass_cnt=$pass_cnt fail_cnt $fail_cnt"
         exit
+    fi
+
+    if [ $# -eq 2 ]; then
+        if [ $ONESHOT -eq 1 ]; then
+            log "audio_loopback_test pass_cnt=$pass_cnt fail_cnt $fail_cnt"
+            exit
+        fi
     fi
 done
 #echo "Oops! memory usage is $usep, audio_lookback_test done."
