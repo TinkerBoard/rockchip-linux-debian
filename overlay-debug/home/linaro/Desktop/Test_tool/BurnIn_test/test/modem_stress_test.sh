@@ -43,9 +43,10 @@ do
 	sleep 2
 
 	if [ -e "$qmiport" ]; then
-		read_value=`sudo qmicli -d "$qmiport" -p --uim-get-slot-status`
+		sudo qmicli -d "$qmiport" -p --uim-switch-slot=1
+		read_value=`sudo qmicli -d "$qmiport" -p --uim-get-card-status`
 		log "$read_value"
-		if [[ "$read_value" =~ "Card status: present" ]]
+		if [[ "$read_value" =~ "Card state: 'present'" ]]
 		then
 			pass "SIM PRESENT"
 		else
