@@ -1,0 +1,13 @@
+[Unit]
+Description=ASUS Failover Service
+After=NetworkManager.service
+
+[Service]
+Type=simple
+ExecStart=/etc/fo/asus_failover
+TimeoutSec=infinity
+Environment="DOTNET_BUNDLE_EXTRACT_BASE_DIR=%h/.net/bundling"
+User=root
+
+[Install]
+WantedBy=multi-user.target

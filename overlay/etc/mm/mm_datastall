@@ -1,0 +1,41 @@
+#!/bin/bash
+# VERSION=1.0_20211007
+TEMP=/etc/mm/tmp
+TAG="mm_datastall"
+
+log() {
+    echo "${1}"
+    logger -t ${TAG} ${1}
+}
+
+case "$1" in
+"1")
+    # PDP reconnect
+    log "disconnect current data connection"
+    asus_cmcli stop
+    sleep 3
+    log "reconnect"
+    asus_cmcli start
+    ;;
+"2")
+    # Flight mode on/off
+    log "set modem to low power state"
+    asus_cmcli set_flight_mode on
+    sleep 3
+    log "set modem to full power state"
+    asus_cmcli set_flight_mode off
+    ;;
+"3")
+    # Reset modem
+    asus_cmcli power_cycle
+    asus_cmcli start
+    ;;
+*)
+    echo "Usage: $0 1: PDP reconnect"
+    echo "Usage: $0 2: Flight mode on off"
+    echo "Usage: $0 3: Reset modem"
+    exit 1
+    ;;
+esac
+log "done"
+exit 0

@@ -1,0 +1,684 @@
+#!/bin/bash
+# VERSION=1.1_20221209
+TAG="asus_cmcli"
+NETWORK_NAME="Cellular"
+APN_LIST=/etc/mm/apns-full.xml
+CURRENT_MCC_MNC=/etc/mm/mccmnc
+
+log() {
+    echo "$1"
+    logger -t $TAG "$1"
+}
+
+get_data() {
+    if [[ "$1" =~ "Modem/" ]]; then
+        type="--modem"
+    elif [[ "$1" =~ "SIM/" ]]; then
+        type="--sim"
+    elif [[ "$1" =~ "Bearer/" ]]; then
+        type="--bearer"
+    else
+        exit 1
+    fi
+    rtn=$(mmcli $type "${1}" -K | grep "${2}" | awk -F ": " '{ print $2 }')
+    if [ "$rtn" == "" ]; then
+        echo "--"
+    else
+        echo "$rtn"
+    fi
+}
+
+get_signal_data() {
+    rtn=$(mmcli --modem $1 --signal-get -K | grep $2 | awk -F ": " '{ print $2 }')
+    if [ "$rtn" == "" ]; then
+        exit 1
+    else
+        echo "$rtn"
+    fi
+}
+
+get_location_data() {
+    rtn=$(mmcli --modem $1 --location-get -K | grep $2 | awk -F ": " '{ print $2 }')
+    if [ "$rtn" == "" ]; then
+        exit 1
+    else
+        echo "$rtn"
+    fi
+}
+
+get_profile_data() {
+    rtn=$(nmcli -s -g ${1} c show $NETWORK_NAME)
+    if [ "$rtn" == "" ]; then
+        exit 1
+    else
+        echo "$rtn"
+    fi
+}
+
+read_modem() {
+    if mmcli -L -K | grep 'modem-list.value' &>/dev/null; then
+        modem=$(mmcli -L -K | grep 'modem-list.value' | awk -F ": " '{ print $2 }')
+        bearer=$(get_data $modem 'modem.generic.bearers.value')
+        sim=$(get_data $modem 'modem.generic.sim ')
+        return 0
+    else
+        return 1
+    fi
+}
+
+print_failover_show_command_usage() {
+    echo "Usage: asus_cmcli failover show {status | group}"
+    echo ""
+}
+
+print_failover_set_command_usage() {
+    echo "Usage: asus_cmcli failover set {status {on | off} | group {null | INTERFACES...}}"
+    echo ""
+    echo "Commands:"
+    echo ""
+    echo "  status:                 Stop/Start failover service"
+    echo "  group:                  Set interfaces to form a group to failover."
+    echo "                          Please use device name in nmcli device. The priority"
+    echo "                          are in descending order. If null is set, the default"
+    echo "                          priority is adopted, which is Ethernet > Wi-Fi > Mobile."
+    echo ""
+}
+
+print_failover_command_usage() {
+    echo "Usage: asus_cmcli failover {set | show} [COMMAND]"
+    echo ""
+}
+
+case "$1" in
+"start")
+    if read_modem; then
+        if [ "$sim" == "--" ]; then
+            log "sim not detected"
+            exit 1
+        fi
+        if nmcli -t c show $NETWORK_NAME &>/dev/null; then
+            if nmcli connection show --active | grep $NETWORK_NAME &>/dev/null; then
+                log "already connected"
+            fi
+            current=$(get_data $sim 'sim.properties.imsi')
+            previous=$(cat $CURRENT_MCC_MNC)
+            if [[ "$previous" =~ "${current:0:5}" ]]; then
+                log "use previous settings to connect"
+            else
+                log "detect sim has changed, reset profile"
+                $0 reset_profile
+            fi
+        else
+            log "no previous settings, create new by sim's mcc mnc"
+            $0 reset_profile
+        fi
+        log "connecting..."
+        if ! nmcli c up $NETWORK_NAME &>/dev/null; then
+            log "connect error"
+            exit 1
+        fi
+        log "connected!"
+    else
+        log "modem not detected"
+        exit 1
+    fi
+    ;;
+"stop")
+    if nmcli -t c show $NETWORK_NAME &>/dev/null; then
+        if nmcli connection show --active | grep $NETWORK_NAME &>/dev/null; then
+            log "disconnecting $NETWORK_NAME..."
+            if ! nmcli c down $NETWORK_NAME; then
+                log "disconnect error"
+                exit 1
+            fi
+            log "disconnected!"
+        else
+            log "not connected"
+        fi
+    else
+        log "$NETWORK_NAME not exists"
+        exit 1
+    fi
+    ;;
+"power_on")
+    if read_modem; then
+        current=$(get_data $modem 'modem.generic.power-state')
+        log "modem power state is $current"
+        if [ "$current" == "on" ]; then
+            log "power already on"
+        elif [ "$current" == "off" ]; then
+            log "reset modem to turn on"
+            id=$(get_data $modem 'modem.generic.equipment-identifier')
+            mmcli -m $modem -r &>/dev/null
+            mmcli -m $modem -w &>/dev/null
+            while true; do
+                if mmcli -L &>/dev/null; then
+                    list=$(mmcli -L -K | grep 'modem-list.value' | awk -F ": " '{ print $2 }')
+                    for m in $list; do
+                        log "found modem = $m"
+                        m_id=$(get_data $m 'modem.generic.equipment-identifier')
+                        if [ "$m_id" == "$id" ]; then
+                            log "$id match on $m"
+                            log "power on successfully"
+                            exit
+                        fi
+                    done
+                fi
+                sleep 1
+            done
+        else
+            log "set modem power state on"
+            mmcli -m $modem --set-power-state-on &>/dev/null
+            if mmcli -m $modem -e &>/dev/null; then
+                log "power enabled successfully"
+            fi
+        fi
+    else
+        log "modem not detected"
+        exit 1
+    fi
+    ;;
+"power_off")
+    if read_modem; then
+        current=$(get_data $modem 'modem.generic.power-state')
+        log "modem power state is $current"
+        if [ "$current" == "off" ]; then
+            log "power already off"
+        else
+            mmcli -m $modem -d &>/dev/null
+            if ! mmcli -m $modem --set-power-state-off &>/dev/null; then
+                mmcli -m $modem -e &>/dev/null
+                exit 1
+            fi
+            log "power off successfully"
+        fi
+    else
+        log "modem not detected"
+        exit 1
+    fi
+    ;;
+"power_cycle")
+    $0 power_off
+    sleep 1
+    $0 power_on
+    ;;
+"switch_sim")
+    current="$(mmcli -B | awk -F " " '{ print $3 }')"
+    required="1.16.0"
+    if printf '%s\n' "$required" "$current" | sort -cV &>/dev/null; then
+        # Only supported on ModemManager version >= 1.16.0
+        if read_modem; then
+            mmcli -m $modem --set-primary-sim-slot=$2
+        else
+            log "modem not detected"
+            exit 1
+        fi
+    else
+        # For version < 1.16.0, currently use the BSP way only for PV100A
+        boardinfo=$(cat /proc/boardinfo)
+        if [ "$boardinfo" == "PV100A" ]; then
+            if ex_gpio -s $2 && read_modem; then
+                log "reset modem to take effect..."
+                mmcli -m $modem -r
+            else
+                log "modem not detected or sim slot error"
+                exit 1
+            fi
+        else
+            log "modemmanager version too low or board not supported"
+            exit 1
+        fi
+    fi
+    ;;
+"attach_status")
+    if read_modem; then
+        status=$(get_data $modem 'modem.generic.state\s')
+        interface=$(get_data $modem 'modem.generic.access-technologies.value')
+        power=$(get_data $modem 'modem.generic.power-state')
+        log "Registration state: $status"
+        if [ "$power" == "on" ]; then
+            log "Flight mode: off"
+        elif [ "$power" == "low" ]; then
+            log "Flight mode: on"
+        fi
+
+        if [ "$status" != "locked" ] && [ "$status" != "disabled" ]; then
+            log "Radio interface: $interface"
+        fi
+    else
+        log "modem not detected"
+        exit 1
+    fi
+    ;;
+"status")
+    if read_modem; then
+        if [ "$bearer" == "--" ] || [ "$bearer" == "" ]; then
+            log "bearer not found"
+            exit 1
+        fi
+        for b in $bearer; do
+            bearer=$b
+            break
+        done
+        connected=$(get_data $bearer 'bearer.status.connected')
+        interface=$(get_data $bearer 'bearer.status.interface')
+        apn=$(get_data $bearer 'bearer.properties.apn ')
+        roaming=$(get_data $bearer 'bearer.properties.roaming')
+
+        log "Connected: $connected"
+        log "Interface: $interface"
+        log "Apn: $apn"
+        log "Roaming: $roaming"
+
+        ipv4=$(get_data $bearer 'bearer.ipv4-config.address')
+        ipv4_gateway=$(get_data $bearer 'bearer.ipv4-config.gateway')
+        ipv4_mtu=$(get_data $bearer 'bearer.ipv4-config.mtu')
+        ipv4_dns=$(get_data $bearer 'bearer.ipv4-config.dns.value')
+        if [ "$ipv4_dns" == "" ]; then
+            ipv4_dns="--"
+        fi
+
+        log "IPv4 address: $ipv4"
+        log "IPv4 gateway: $ipv4_gateway"
+        log "IPv4 mtu: $ipv4_mtu"
+        log "IPv4 dns: ${ipv4_dns//$'\n'/ / }"
+
+        ipv6=$(get_data $bearer 'bearer.ipv6-config.address')
+        ipv6_gateway=$(get_data $bearer 'bearer.ipv6-config.gateway')
+        ipv6_mtu=$(get_data $bearer 'bearer.ipv6-config.mtu')
+        ipv6_dns=$(get_data $bearer 'bearer.ipv6-config.dns.value')
+        if [ "$ipv6_dns" == "" ]; then
+            ipv6_dns="--"
+        fi
+
+        log "IPv6 address: $ipv6"
+        log "IPv6 gateway: $ipv6_gateway"
+        log "IPv6 mtu: $ipv6_mtu"
+        log "IPv6 dns: ${ipv6_dns//$'\n'/ / }"
+    else
+        log "modem not detected"
+        exit 1
+    fi
+    ;;
+"unlock_pin")
+    if read_modem; then
+        if [ "$sim" == "--" ]; then
+            log "sim not found"
+            exit 1
+        fi
+        mmcli -i $sim --pin=$2
+    else
+        log "modem not detected"
+        exit 1
+    fi
+    ;;
+"set_flight_mode")
+    if read_modem; then
+        current=$(get_data $modem 'modem.generic.power-state')
+        if [ "$2" == "on" ]; then
+            mmcli -m $modem -d &>/dev/null
+            if ! mmcli -m $modem --set-power-state-low &>/dev/null; then
+                mmcli -m $modem -e &>/dev/null
+                log "set flight mode error"
+                exit 1
+            fi
+        elif [ "$2" == "off" ]; then
+            mmcli -m $modem -d &>/dev/null
+            if ! mmcli -m $modem --set-power-state-on &>/dev/null; then
+                log "set flight mode error"
+                exit 1
+            fi
+            mmcli -m $modem -e
+        else
+            log "parameter error, should be on or off"
+            exit 1
+        fi
+    else
+        log "modem not detected"
+        exit 1
+    fi
+    ;;
+"set_apn")
+    if nmcli -t c show $NETWORK_NAME &>/dev/null; then
+        log "modify connection settings with apn=$2"
+        nmcli c modify $NETWORK_NAME apn $2
+    else
+        log "create connection settings with apn=$2"
+        nmcli c add type gsm con-name $NETWORK_NAME ifname '*' apn $2 autoconnect n
+    fi
+    ;;
+"set_user")
+    if nmcli -t c show $NETWORK_NAME &>/dev/null; then
+        log "modify connection settings with user=$2"
+        nmcli c modify $NETWORK_NAME user $2
+    else
+        log "need to use set_apn first to create a connection setting"
+        exit 1
+    fi
+    ;;
+"set_password")
+    if nmcli -t c show $NETWORK_NAME &>/dev/null; then
+        log "modify connection settings with password=$2"
+        nmcli c modify $NETWORK_NAME password $2
+    else
+        log "need to use set_apn first to create a connection setting"
+        exit 1
+    fi
+    ;;
+"set_ip_type")
+    if nmcli -t c show $NETWORK_NAME &>/dev/null; then
+        case "$2" in
+        "ipv4")
+            nmcli c modify $NETWORK_NAME ipv4.method auto
+            nmcli c modify $NETWORK_NAME ipv6.method disable
+            ;;
+        "ipv6")
+            nmcli c modify $NETWORK_NAME ipv4.method disable
+            nmcli c modify $NETWORK_NAME ipv6.method auto
+            ;;
+        "ipv4v6")
+            nmcli c modify $NETWORK_NAME ipv4.method auto
+            nmcli c modify $NETWORK_NAME ipv6.method auto
+            ;;
+        *)
+            log "paramater error, it should be ipv4, ipv6 or ipv4v6"
+            exit 1
+            ;;
+        esac
+        log "modify connection settings with ip type=$2"
+    else
+        log "need to use set_apn first to create a connection setting"
+        exit 1
+    fi
+    ;;
+"check_carrier")
+    if read_modem; then
+        operator_id=$(get_data $modem 'modem.3gpp.operator-code')
+        operator_name=$(get_data $modem 'modem.3gpp.operator-name')
+
+        if [ "$operator_id" == "--" ]; then
+            log "MCC: --"
+            log "MNC: --"
+        else
+            log "MCC: ${operator_id:0:3}"
+            log "MNC: ${operator_id:3:2}"
+        fi
+        log "Operator name: $operator_name"
+    else
+        log "modem not detected"
+        exit 1
+    fi
+    ;;
+"switch_carrier")
+    if read_modem; then
+        status=$(get_data $modem 'modem.generic.state\s')
+        if [ "$status" == "connected" ]; then
+            $0 stop
+        fi
+        mmcli -m $modem --3gpp-register-in-operator=$2
+    else
+        log "modem not detected"
+        exit 1
+    fi
+    ;;
+"iccid")
+    if read_modem; then
+        if [ "$sim" == "--" ]; then
+            log "sim not found"
+            exit 1
+        fi
+        iccid=$(get_data $sim 'sim.properties.iccid')
+        log "Iccid: $iccid"
+    else
+        log "modem not detected"
+        exit 1
+    fi
+    ;;
+"imsi")
+    if read_modem; then
+        if [ "$sim" == "--" ]; then
+            log "sim not found"
+            exit 1
+        fi
+        imsi=$(get_data $sim 'sim.properties.imsi')
+        log "Imsi: $imsi"
+    else
+        log "modem not detected"
+        exit 1
+    fi
+    ;;
+"signal")
+    if read_modem; then
+        signal=$(get_data $modem 'modem.generic.signal-quality.value')
+        log "Signal strength: $signal%"
+    else
+        log "modem not detected"
+        exit 1
+    fi
+    ;;
+"signal_adv")
+    if read_modem; then
+        if ! mmcli -m $modem --signal-setup=3 &>/dev/null; then
+            log "modem not supported"
+            exit 1
+        fi
+
+        cdma_rssi=$(get_signal_data $modem 'modem.signal.cdma1x.rssi')
+        if [ "$cdma_rssi" != "--" ]; then
+            cdma_ecio=$(get_signal_data $modem 'modem.signal.cdma1x.ecio')
+            log "Cdma rssi: $cdma_rssi dBm"
+            log "Cdma ecio: $cdma_ecio dBm"
+        fi
+
+        evdo_rssi=$(get_signal_data $modem 'modem.signal.evdo.rssi')
+        evdo_ecio=$(get_signal_data $modem 'modem.signal.evdo.ecio')
+        evdo_sinr=$(get_signal_data $modem 'modem.signal.evdo.sinr')
+        evdo_io=$(get_signal_data $modem 'modem.signal.evdo.io')
+        log "Evdo rssi: $evdo_rssi dBm"
+        log "Evdo ecio: $evdo_ecio dBm"
+        log "Evdo sinr: $evdo_sinr dB"
+        log "Evdo io: $evdo_io dBm"
+
+        gsm_rssi=$(get_signal_data $modem 'modem.signal.gsm.rssi')
+        log "Gsm rssi: $gsm_rssi dBm"
+
+        umts_rssi=$(get_signal_data $modem 'modem.signal.umts.rssi')
+        umts_rscp=$(get_signal_data $modem 'modem.signal.umts.rscp')
+        umts_ecio=$(get_signal_data $modem 'modem.signal.umts.ecio')
+        log "Umts rssi: $umts_rssi dBm"
+        log "Umts rscp: $umts_rscp dBm"
+        log "Umts ecio: $umts_ecio dBm"
+
+        lte_rssi=$(get_signal_data $modem 'modem.signal.lte.rssi')
+        lte_rsrq=$(get_signal_data $modem 'modem.signal.lte.rsrq')
+        lte_rsrp=$(get_signal_data $modem 'modem.signal.lte.rsrp')
+        lte_snr=$(get_signal_data $modem 'modem.signal.lte.snr')
+        log "Lte rssi: $lte_rssi dBm"
+        log "Lte rsrq: $lte_rsrq dB"
+        log "Lte rsrp: $lte_rsrp dBm"
+        log "Lte snr: $lte_snr dB"
+    else
+        log "modem not detected"
+        exit 1
+    fi
+    ;;
+"get_profile")
+    if ! nmcli c show $NETWORK_NAME &>/dev/null; then
+        $0 reset_profile
+    fi
+    apn=$(get_profile_data 'gsm.apn')
+    user=$(get_profile_data 'gsm.username')
+    password=$(get_profile_data 'gsm.password')
+    ipv4=$(get_profile_data 'ipv4.method')
+    ipv6=$(get_profile_data 'ipv6.method')
+    log "Apn: $apn"
+    log "User: $user"
+    log "Password: $password"
+    log "Ipv4: $ipv4"
+    log "Ipv6: $ipv6"
+    ;;
+"reset_profile")
+    if read_modem; then
+        log "modem detected"
+        imsi=$(get_data $sim 'sim.properties.imsi')
+        mcc=${imsi:0:3}
+        mnc=${imsi:3:2}
+        log "check profile with mcc=$mcc and mnc=$mnc"
+        apn=$(xmllint --xpath "string(//apn[@mcc=$mcc and @mnc=$mnc]/@apn)" $APN_LIST)
+        user=$(xmllint --xpath "string(//apn[@mcc=$mcc and @mnc=$mnc]/@user)" $APN_LIST)
+        password=$(xmllint --xpath "string(//apn[@mcc=$mcc and @mnc=$mnc]/@password)" $APN_LIST)
+        log "use connection settings with apn=$apn, user=$user, password=$password"
+        nmcli c delete $NETWORK_NAME &>/dev/null
+        nmcli c add type gsm con-name $NETWORK_NAME ifname '*' apn "$apn" user "$user" password "$password" autoconnect n &>/dev/null
+        echo "$imsi" >$CURRENT_MCC_MNC
+    else
+        log "modem not detected"
+        exit 1
+    fi
+    ;;
+"location_info")
+    if read_modem; then
+        status=$(get_data $modem 'modem.generic.state\s')
+        if [ "$status" != "locked" ] && [ "$status" != "disabled" ]; then
+            mcc=$(get_location_data $modem 'modem.location.3gpp.mcc')
+            mnc=$(get_location_data $modem 'modem.location.3gpp.mnc')
+            lac=$(get_location_data $modem 'modem.location.3gpp.lac')
+            tac=$(get_location_data $modem 'modem.location.3gpp.tac')
+            cid=$(get_location_data $modem 'modem.location.3gpp.cid')
+            log "Operator code: $mcc"
+            log "Operator name: $mnc"
+            log "Location area code: $lac"
+            log "Tracking area code: $tac"
+            log "Cell id: $cid"
+        else
+            log "modem not in enabled state"
+            exit 1
+        fi
+    else
+        log "modem not detected"
+        exit 1
+    fi
+    ;;
+"get_modems")
+    mmcli -L -K | grep 'modem-list.value' | awk -F ": " '{ print $2 }' | while read line; do
+        if [ "$line" == "" ]; then
+            log "no modem found"
+            exit 1
+        fi
+        path=$line
+        index=$(echo $line | awk -F "/Modem/" '{ print $2 }')
+        manufacturer=$(get_data $path 'modem.generic.manufacturer')
+        name=$(get_data $path 'modem.generic.model')
+        version=$(get_data $path 'modem.generic.revision')
+        log "Index: $index"
+        log "Path: $path"
+        log "Manufacturer: $manufacturer"
+        log "Name: $name"
+        log "Version: $version"
+        log ""
+    done
+    ;;
+"keepalive")
+    case "$2" in
+    "start")
+        log "Enable keepalive service"
+        focli set mm_keepalive on
+        ;;
+    "stop")
+        log "Disable keepalive service"
+        focli set mm_keepalive off
+        ;;
+    "status")
+        flag=$(focli show mm_keepalive)
+        log "Keepalive status: $flag"
+        ;;
+    *)
+        echo "Usage: asus_cmcli keepalive [COMMAND]"
+        echo ""
+        echo "Commands:"
+        echo "  start:                          Start keepalive service"
+        echo "  stop:                           Stop keepalive service"
+        echo "  status:                         Show keepalive service's status"
+        echo ""
+        exit 1
+        ;;
+    esac
+    ;;
+"failover")
+    case "$2" in
+    "set")
+        case "$3" in
+        "status")
+            case "$4" in
+            "on")
+                focli set status on
+                ;;
+            "off")
+                focli set status off
+                ;;
+            *)
+                print_failover_set_command_usage
+                ;;
+            esac
+            ;;
+        "group")
+            focli set group ${@:4}
+            ;;
+        *)
+            print_failover_set_command_usage
+            ;;
+        esac
+        ;;
+    "show")
+        case "$3" in
+        "status")
+            focli show status
+            ;;
+        "group")
+            focli show group
+            ;;
+        *)
+            print_failover_show_command_usage
+            ;;
+        esac
+        ;;
+    *)
+        print_failover_command_usage
+        ;;
+    esac
+    ;;
+*)
+    echo "Usage: asus_cmcli [COMMAND]"
+    echo ""
+    echo "Commands:"
+    echo "  start:                          Start the network connection"
+    echo "  stop:                           Stop the network connection"
+    echo "  power_on:                       Power on the module"
+    echo "  power_off:                      Power off the module"
+    echo "  power_cycle:                    Power off and then power on the module"
+    echo "  switch_sim [slot]:              Switch the current active SIM slot"
+    echo "  attach_status:                  Show the attach status of the module"
+    echo "  status:                         Show the network connection status and IP information"
+    echo "  unlock_pin [pin]:               Unlock the SIM PIN"
+    echo "  set_flight_mode [on/off]:       Set module into flight mode"
+    echo "  set_apn [apn]:                  Set APN to profiles"
+    echo "  set_user [user]:                Set user to profiles"
+    echo "  set_password [password]:        Set password to profiles"
+    echo "  set_ip_type [type]:             Set ip type to profiles, should be ipv4, ipv6 or ipv4v6"
+    echo "  check_carrier:                  Get the current registered network operator"
+    echo "  switch_carrier [mccmnc]:        Request to register in the network of the given operator"
+    echo "  iccid:                          Get SIM card ID"
+    echo "  imsi:                           Get IMSI"
+    echo "  signal:                         Get signal strength in percent"
+    echo "  signal_adv:                     Get signal strength of serveral signal indicators"
+    echo "  get_profile:                    Show profiles"
+    echo "  reset_profile:                  Reset profiles to current SIM's default settings"
+    echo "  location_info:                  Show LAC, CellID and LCID"
+    echo "  get_modems:                     List all available modems"
+    echo "  keepalive [COMMAND]:            Set or get keepalive status"
+    echo "  failover [COMMAND]:             Failover related commands"
+    echo ""
+    exit 1
+    ;;
+esac
+exit $?

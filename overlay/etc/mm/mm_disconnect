@@ -1,0 +1,16 @@
+#!/bin/bash
+# VERSION=1.0_20211007
+TAG="mm_disconnect"
+
+log() {
+    echo ${1}
+    logger -t ${TAG} ${1}
+}
+
+log "kill all connecting process"
+killall mm_connect &> /dev/null
+
+if asus_cmcli stop &> /dev/null; then
+    log "shut down success"
+    exit 0
+fi

@@ -1,0 +1,50 @@
+#!/bin/bash
+# VERSION=1.0_20211007
+TAG="mm_keepalive[$$]"
+CONFIG_PATH=/etc/mm
+CONFIG=${CONFIG_PATH}/mm.conf
+
+log() {
+    echo "${1}"
+    logger -t ${TAG} ${1}
+}
+
+check_connection() {
+    state=$(asus_cmcli attach_status | grep Registration | awk -F ": " '{ print $2 }')
+    log "Check state is $state"
+    if [ "$state" == "registered" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+case "$1" in
+set)
+    if [ "$2" == "y" ] || [ "$2" == "n" ]; then
+        log "set to $2"
+        sed -i "s/\(USER_ACTION_FLAG *= *\).*/\1$2/" $CONFIG
+    else
+        exit 1
+    fi
+    ;;
+run)
+    dbus-monitor --system "interface='org.freedesktop.ModemManager1.Modem',member='StateChanged'" |
+    while read -r line; do
+        # log "$line"
+        if [[ "$line" == "int32"* ]] && [[ "$line" =~ "8" ]] && check_connection &> /dev/null; then
+            . $CONFIG
+            if [ "$(focli show mm_keepalive)" == "on" ] && [ "$USER_ACTION_FLAG" == "y" ]; then
+                log "reconnecting"
+                /etc/mm/mm_connect
+            else
+                log "Not enabled"
+            fi
+        fi
+    done
+    ;;
+*)
+    exit 1
+    ;;
+esac
+exit 0

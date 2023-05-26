@@ -1,0 +1,61 @@
+#!/bin/bash
+# VERSION=1.0_20211007
+CONFIG_FILE=/etc/mm/mm.conf
+TAG="mm_connect"
+
+log() {
+    echo "${1}"
+    logger -t ${TAG} ${1}
+}
+
+check_state() {
+    . ${CONFIG_FILE}
+    # Wait modem manager launchs
+    until asus_cmcli get_modems; do
+        log "waiting for available modems"
+        sleep 1
+    done
+
+    # Get modem status
+    state=$(asus_cmcli attach_status | grep Registration | awk -F ": " '{ print $2 }')
+    log "state is $state"
+    case "$state" in
+        "locked")
+            log "pin locked, try to use default pin to unlock..."
+            if asus_cmcli unlock_pin ${PIN}; then
+                log "pin unlock success"
+            else
+                log "pin error"
+                exit 1
+            fi
+            ;;
+        "registered")
+            ;;
+        "disabled" | "failed" | "unknown" | "connected")
+            exit 2
+            ;;
+        *)
+            log "not expected state, retry"
+            sleep 1
+            check_state
+            ;;
+    esac
+}
+
+# Bring up connection
+let count=0
+while check_state; do
+    if asus_cmcli start; then
+        log "bring up network success"
+        exit 0
+    else
+        log "bring up network fail ${count}"
+        if ((count > ${#RETRY_TIME[@]}-1)); then
+            let count=${#RETRY_TIME[@]}-1
+        fi
+        next=`echo ${RETRY_TIME[$count]/,/} + $((RANDOM%${RETRY_RANDOM[$count]/,/})) | bc`
+        log "retry after $next sec"
+        sleep $next
+        let count++
+    fi
+done

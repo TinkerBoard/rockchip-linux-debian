@@ -1,0 +1,96 @@
+#-*- mode: shell-script;-*-
+
+_asus_cmcli_completion() {
+	local cur prev cmds command_matches
+
+	COMPREPLY=()
+	cur=${COMP_WORDS[COMP_CWORD]}
+	prev=${COMP_WORDS[COMP_CWORD - 1]}
+
+	# quilt sub commands
+	cmds='start stop power_on power_off power_cycle switch_sim attach_status status \
+	  unlock_pin set_flight_mode set_apn set_user set_password set_ip_type check_carrier \
+	  switch_carrier iccid imsi signal signal_adv get_profile reset_profile location_info \
+	  get_modems keepalive failover'
+
+	# if no command were given, complete on commands
+	if [[ $COMP_CWORD -eq 1 ]]; then
+		COMPREPLY=($(compgen -W "$cmds" -- $cur))
+		return 0
+	fi
+
+	# Accept a partial command if it's unique.
+	command_matches=($(compgen -W "$cmds" -- ${COMP_WORDS[1]}))
+	if [ ${#command_matches[@]} -ne 1 ]; then
+		return 0
+	fi
+
+	# Complete depending on options
+	case ${command_matches[0]} in
+	switch_sim)
+        if [[ ${COMP_CWORD} -eq 2 ]]; then
+		    COMPREPLY=($(compgen -W "[SIM]" -- $cur))
+        fi
+		;;
+	unlock_pin)
+        if [[ ${COMP_CWORD} -eq 2 ]]; then
+		    COMPREPLY=($(compgen -W "[PIN]" -- $cur))
+        fi
+		;;
+	set_flight_mode)
+        if [[ ${COMP_CWORD} -eq 2 ]]; then
+		    COMPREPLY=($(compgen -W "on off" -- $cur))
+        fi
+		;;
+	set_apn)
+        if [[ ${COMP_CWORD} -eq 2 ]]; then
+		    COMPREPLY=($(compgen -W "[APN]" -- $cur))
+        fi
+		;;
+	set_user)
+        if [[ ${COMP_CWORD} -eq 2 ]]; then
+		    COMPREPLY=($(compgen -W "[USER]" -- $cur))
+        fi
+		;;
+	set_password)
+        if [[ ${COMP_CWORD} -eq 2 ]]; then
+		    COMPREPLY=($(compgen -W "[PWD]" -- $cur))
+        fi
+		;;
+	set_ip_type)
+        if [[ ${COMP_CWORD} -eq 2 ]]; then
+		    COMPREPLY=($(compgen -W "ipv4 ipv6 ipv4v6" -- $cur))
+        fi
+		;;
+	switch_carrier)
+        if [[ ${COMP_CWORD} -eq 2 ]]; then
+		    COMPREPLY=($(compgen -W "[MCCMNC]" -- $cur))
+        fi
+		;;
+	keepalive)
+        if [[ ${COMP_CWORD} -eq 2 ]]; then
+		    COMPREPLY=($(compgen -W "status start stop" -- $cur))
+        fi
+		;;
+	failover)
+		if [[ ${COMP_CWORD} -eq 2 ]]; then
+			COMPREPLY=($(compgen -W "set show" -- $cur))
+		elif [[ ${COMP_CWORD} -eq 3 ]]; then
+			COMPREPLY=($(compgen -W "group status" -- $cur))
+        elif [[ ${COMP_CWORD} -eq 4 ]]; then
+            if [ ${COMP_WORDS[COMP_CWORD - 2]} == "set" ]; then
+                if [ $prev == "group" ]; then
+                    COMPREPLY=($(compgen -W "[GROUP...]" -- $cur))
+                elif [ $prev == "status" ]; then
+                    COMPREPLY=($(compgen -W "on off" -- $cur))
+                fi
+            fi
+        fi
+		;;
+	*) ;;
+	esac
+	return 0
+}
+
+complete -F _asus_cmcli_completion $_asus_cmcli_complete_opt asus_cmcli
+unset -v _asus_cmcli_complete_opt
