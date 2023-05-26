@@ -3,10 +3,8 @@ import os
 import subprocess
 
 #Tinker 3
-gpio_a=[105, 107, 146, 148]
-gpio_b=[106, 108, 147, 149]
-adc_pin=[6, 7]
-gpio_adc=150
+gpio_a=[105, 107, 146, 148, 149]
+gpio_b=[106, 108, 148, 149, 146]
 
 gpio_fail = []
 
@@ -22,12 +20,6 @@ def gpio_selftest(pin_a,pin_b):
     if "FAIL" in output:
         gpio_fail.append(pin_a)
 
-def adc_selftest(adc):
-    MyProcess_a=subprocess.Popen("./ADCTest.sh %d"%(adc) , shell=True,stdout=subprocess.PIPE)
-    MyProcess_a.wait()
-    output=MyProcess_a.stdout.read().decode("utf-8")
-    if "FAIL" in output:
-        gpio_fail.append(adc)
 def main():
     for i in range(len(gpio_a)):
 
@@ -39,12 +31,7 @@ def main():
         #test each other
         gpio_selftest(gpio_a[i] , gpio_b[i])
         gpio_selftest(gpio_b[i] , gpio_a[i])
-    gpio_export(gpio_adc)
 
-    for i in range(len(adc_pin)):
-        print("Testing ADC PIN#%d" % (adc_pin[i]))
-        adc_selftest(adc_pin[i])
-   
     if len(gpio_fail) > 0 :
         print("FAIL,ret=", end='')
         print(*gpio_fail, sep=",")
