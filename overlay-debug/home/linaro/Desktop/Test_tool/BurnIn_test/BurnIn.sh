@@ -259,6 +259,12 @@ led_test()
         $SCRIPTPATH/test/rockchip/led_test.sh 1 1
 }
 
+led_disable()
+{
+        killall led_test.sh > /dev/null 2>&1
+        $SCRIPTPATH/test/rockchip/led_test.sh 0 0
+}
+
 usbcc_stress_test()
 {
         logfile=$LOG_PATH/usbcc.txt
@@ -722,6 +728,7 @@ kill_test(){
 	killall eeprom_stress_test.sh > /dev/null 2>&1
 	killall rtc_stress_test.sh > /dev/null 2>&1
 	killall led_test.sh > /dev/null 2>&1
+	led_disable
 	killall check_usb_hub.sh > /dev/null 2>&1
 	killall cc_i2c_stress_test.sh > /dev/null 2>&1
         killall modem_stress_test.sh > /dev/null 2>&1
