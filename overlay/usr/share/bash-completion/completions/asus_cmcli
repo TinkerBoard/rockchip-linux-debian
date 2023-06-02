@@ -11,7 +11,7 @@ _asus_cmcli_completion() {
 	cmds='start stop power_on power_off power_cycle switch_sim attach_status status \
 	  unlock_pin set_flight_mode set_apn set_user set_password set_ip_type check_carrier \
 	  switch_carrier iccid imsi signal signal_adv get_profile reset_profile location_info \
-	  get_modems keepalive failover'
+	  get_modems keepalive'
 
 	# if no command were given, complete on commands
 	if [[ $COMP_CWORD -eq 1 ]]; then
@@ -70,21 +70,6 @@ _asus_cmcli_completion() {
 	keepalive)
         if [[ ${COMP_CWORD} -eq 2 ]]; then
 		    COMPREPLY=($(compgen -W "status start stop" -- $cur))
-        fi
-		;;
-	failover)
-		if [[ ${COMP_CWORD} -eq 2 ]]; then
-			COMPREPLY=($(compgen -W "set show" -- $cur))
-		elif [[ ${COMP_CWORD} -eq 3 ]]; then
-			COMPREPLY=($(compgen -W "group status" -- $cur))
-        elif [[ ${COMP_CWORD} -eq 4 ]]; then
-            if [ ${COMP_WORDS[COMP_CWORD - 2]} == "set" ]; then
-                if [ $prev == "group" ]; then
-                    COMPREPLY=($(compgen -W "[GROUP...]" -- $cur))
-                elif [ $prev == "status" ]; then
-                    COMPREPLY=($(compgen -W "on off" -- $cur))
-                fi
-            fi
         fi
 		;;
 	*) ;;

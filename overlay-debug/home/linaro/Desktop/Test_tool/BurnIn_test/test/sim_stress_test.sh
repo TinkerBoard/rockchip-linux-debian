@@ -1,5 +1,5 @@
 #!/bin/bash
-TAG=MODEM
+TAG=SIM
 logfile=$1
 pass_cnt=0
 fail_cnt=0
@@ -27,21 +27,6 @@ fail()
 sudo systemctl stop ModemManager
 while [ 1 != 2 ]
 do
-	if [ -e "$atport" ]; then
-		source /etc/modem/utils.sh
-		read_value=`send_at_command AT`
-		log "$read_value"
-		if [[ "$read_value" =~ "OK" ]]
-		then
-			pass "AT OK"
-		else
-			fail "AT ERROR"
-		fi
-	else
-		fail "AT PORT NOT FOUND"
-	fi
-	sleep 2
-
 	if [ -e "$qmiport" ]; then
 		sudo qmicli -d "$qmiport" -p --uim-switch-slot=1
 		read_value=`sudo qmicli -d "$qmiport" -p --uim-get-card-status`
@@ -58,7 +43,7 @@ do
 
 	sleep 2
 	if [ "$fail_cnt" -ge 6  ]; then
-		log "modem pass_cnt = $pass_cnt fail_cnt $fail_cnt "
+		log "sim pass_cnt = $pass_cnt fail_cnt $fail_cnt "
 		exit
 	fi
 done

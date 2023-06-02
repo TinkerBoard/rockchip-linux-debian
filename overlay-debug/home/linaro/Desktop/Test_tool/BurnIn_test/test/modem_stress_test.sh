@@ -28,6 +28,7 @@ sudo systemctl stop ModemManager
 while [ 1 != 2 ]
 do
 	if [ -e "$atport" ]; then
+		sudo systemctl stop asus-modem
 		source /etc/modem/utils.sh
 		read_value=`send_at_command AT`
 		log "$read_value"
@@ -43,14 +44,13 @@ do
 	sleep 2
 
 	if [ -e "$qmiport" ]; then
-		sudo qmicli -d "$qmiport" -p --uim-switch-slot=1
-		read_value=`sudo qmicli -d "$qmiport" -p --uim-get-card-status`
+		read_value=`sudo qmicli -d "$qmiport" -p --dms-get-model`
 		log "$read_value"
-		if [[ "$read_value" =~ "Card state: 'present'" ]]
+		if [[ "$read_value" =~ "Model:" ]]
 		then
-			pass "SIM PRESENT"
+			pass "QMI OK"
 		else
-			fail "SIM NOT PRESENT"
+			fail "QMI ERROR"
 		fi
 	else
 		fail "QMI PORT NOT FOUND"

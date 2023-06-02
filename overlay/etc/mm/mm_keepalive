@@ -20,26 +20,14 @@ check_connection() {
 }
 
 case "$1" in
-set)
-    if [ "$2" == "y" ] || [ "$2" == "n" ]; then
-        log "set to $2"
-        sed -i "s/\(USER_ACTION_FLAG *= *\).*/\1$2/" $CONFIG
-    else
-        exit 1
-    fi
-    ;;
 run)
     dbus-monitor --system "interface='org.freedesktop.ModemManager1.Modem',member='StateChanged'" |
     while read -r line; do
         # log "$line"
         if [[ "$line" == "int32"* ]] && [[ "$line" =~ "8" ]] && check_connection &> /dev/null; then
             . $CONFIG
-            if [ "$(focli show mm_keepalive)" == "on" ] && [ "$USER_ACTION_FLAG" == "y" ]; then
-                log "reconnecting"
-                /etc/mm/mm_connect
-            else
-                log "Not enabled"
-            fi
+            log "reconnecting"
+            /etc/mm/mm_connect
         fi
     done
     ;;

@@ -213,7 +213,6 @@ sed -i 's/\/usr\/sbin\/ModemManager/\/usr\/sbin\/ModemManager --debug/' /lib/sys
 
 #------------------connectivity service-------------
 echo -e "\033[36m Enable CM................ \033[0m"
-systemctl enable asus_failover.service
 systemctl enable mm_keepalive.service
 
 if [ "$VERSION" == "debug" ] || [ "$VERSION" == "factory" ]; then

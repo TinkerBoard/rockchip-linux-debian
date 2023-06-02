@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 AT_CMD_TEMP=/etc/modem/at_cmd_tmp
-TIMEOUT=1000
+TIMEOUT=2000
 AT_PORT=/dev/ttyUSB2
 
 send_at_command() {
@@ -23,6 +23,7 @@ send_at_command() {
 	       	| tr '\r' ' '\
 		| tr -d '\n')
 	echo "$RET" >> $AT_CMD_TEMP
+	chmod a+w $AT_CMD_TEMP
 
 	if [[ "$RET" =~ "error" ]]
 	then

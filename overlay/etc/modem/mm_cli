@@ -17,24 +17,34 @@ start)
 		$0 stop
 	fi
 	echo $$ > $PID
-	mmcli -G INFO
+	os=`cat /etc/version`
+	if [[ "$os" =~ "factory" ]]
+	then
+		log "Stop modemmanager for factory image"
+		systemctl stop ModemManager
+	else
+		mmcli -G INFO
+	fi
 	source $UTILS
 	clear_modem_logs
+	send_at_command "AT+QUIMSLOT=1"
+	send_at_command "AT+QDSIM=0"
 	while [ "$SIM_DET" == "" ]
 	do
 		log "Asking QSIMDET..."
-		SIM_DET=$(send_at_command +QSIMDET?| awk -F "\+QSIMDET: " '{print $2}')
+		SIM_DET=$(send_at_command "AT+QSIMDET?"| awk -F "\+QSIMDET: " '{print $2}')
 		sleep 2
 	done
 	log "SIMDET=$SIM_DET"
-	if [ "$SIM_DET" != "1,0" ]
+	if [[ "$SIM_DET" =~ "1,0" ]]
 	then
-		log "Reset SIMDET and reboot module..."
-		send_at_command "+QSIMDET=1,0"
-		send_at_command "+CFUN=1,1"
+		log "Check pass"
+		exit 0
 	fi
+	log "Reset SIMDET and reboot module..."
+	send_at_command "AT+QSIMDET=1,0"
+	send_at_command "AT+CFUN=1,1"
 	rm -f $PID
-	log "Finish"
 	exit 0
 	;;
 stop)
