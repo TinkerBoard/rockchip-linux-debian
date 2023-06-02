@@ -132,6 +132,8 @@ export APT_INSTALL="apt-get install -fy --allow-downgrades"
 
 #---------------audio--------------
 chmod 755 /usr/lib/pm-utils/sleep.d/02pulseaudio-resume
+chmod 755 /etc/pulse/switch_sound_device.sh
+chmod 755 /etc/pulse/jack_hotplug.sh
 
 #---------------ethernet---------------
 chmod 755 /etc/network/ethernet_wol.sh
