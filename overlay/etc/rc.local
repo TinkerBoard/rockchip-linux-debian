@@ -51,4 +51,8 @@ then
     dpkg-reconfigure openssh-server
 fi
 
+# Start switch sound output devices at boot time
+systemctl restart switch-sound-device-boot.service
+systemctl stop switch-sound-device-boot.service
+
 exit 0
