@@ -95,7 +95,7 @@ select_test_item()
 		echo "10. COM1/COM2/COM3 RS232 stress test: $DO_UART_TEST"
 		echo "11. RTC stress test: $DO_RTC_TEST"
 		echo "12. EEPROM stress test: $DO_EEPROM_TEST"
-		echo "13. MODEM stress test: $DO_MODEM_TEST"
+		echo "13. SIM stress test: $DO_SIM_TEST"
 		echo "14. Bluetooth stress test: $DO_BT_TEST"
 		echo "15. LT9211 stress test: $DO_LT9211_TEST"
 		echo "16. LED enable test: $DO_LED_TEST"
@@ -376,6 +376,13 @@ modem_stress_test()
 	logfile=$LOG_PATH/modem.txt
 	killall modem_stress_test.sh > /dev/null 2>&1
 	$SCRIPTPATH/test/modem_stress_test.sh $logfile
+}
+
+sim_stress_test()
+{
+        logfile=$LOG_PATH/sim.txt
+        killall sim_stress_test.sh > /dev/null 2>&1
+        $SCRIPTPATH/test/sim_stress_test.sh $logfile
 }
 
 gps_stress_test(){
@@ -675,6 +682,9 @@ check_all_status()
 	if [ "$DO_MODEM_TEST" == "Y" ]; then
 		check_status MODEM $MODEM
 	fi
+        if [ "$DO_SIM_TEST" == "Y" ]; then
+                check_status SIM $SIM
+        fi
 	if [ "$DO_LT9211_TEST" == "Y" ]; then
 		check_status LT9211 $LT9211
 	fi
@@ -732,6 +742,7 @@ kill_test(){
 	killall check_usb_hub.sh > /dev/null 2>&1
 	killall cc_i2c_stress_test.sh > /dev/null 2>&1
         killall modem_stress_test.sh > /dev/null 2>&1
+	killall sim_stress_test.sh > /dev/null 2>&1
         killall audio_loopback_test.sh > /dev/null 2>&1
         killall audio_test.sh > /dev/null 2>&1
 	killall audio_amplifier_test.sh > /dev/null 2>&1
@@ -841,6 +852,7 @@ NPU="npu_stress_test.sh"
 RTC="/test/rtc_stress_test.sh"
 EEPROM="/test/eeprom_stress_test.sh"
 MODEM="/test/modem_stress_test.sh"
+SIM="/test/sim_stress_test.sh"
 BLUETOOTH="/test/bluetooth_stress_test.sh"
 WIFI="/test/wifi_stress_test.sh"
 LT9211="/test/lt9211_i2c_test.sh"
@@ -923,8 +935,8 @@ case $test_item in
 		;;
 	13)
                 if [ $SOC_TYPE == "rockchip" ]; then
-			info_view MODEM
-                        modem_stress_test
+			info_view SIM
+                        sim_stress_test
 		else
                         info_view Audio recored/playback
                         audio_stress_test -a
@@ -1051,6 +1063,9 @@ case $test_item in
 		if [ "$DO_MODEM_TEST" == "Y" ]; then
 			modem_stress_test > /dev/null 2>&1 &
 		fi
+                if [ "$DO_SIM_TEST" == "Y" ]; then
+                        sim_stress_test > /dev/null 2>&1 &
+                fi
 		if [ "$DO_LT9211_TEST" == "Y" ]; then
 			lt9211_stress_test > /dev/null 2>&1 &
 		fi
