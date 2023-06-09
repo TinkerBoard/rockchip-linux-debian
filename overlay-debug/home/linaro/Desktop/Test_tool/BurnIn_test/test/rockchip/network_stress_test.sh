@@ -25,12 +25,12 @@ projectid=$(cat /proc/projectid)
 
 if [ "$oemid" == "15" ]; then
 
-	echo "LAN Port Number : 1"
-	echo ""
+	log "LAN Port Number : 1"
+	log ""
 elif [ "$oemid" == "18" ] && [ "$projectid" == "12" ]; then
 
-	echo "LAN Port Number : 1"
-	echo ""
+	log "LAN Port Number : 1"
+	log ""
 else
 	nslist=$(ip netns list)
 	if [ "$nslist" == "" ]
@@ -39,11 +39,11 @@ else
 		eth1=$(ifconfig eth1 | grep "eth1")
 		if [ "$eth0" == "" ]
 		then
-			echo "eth0 not exist" | tee -a $logfile
+			log "eth0 not exist" | tee -a $logfile
 			exit
 		elif [ "$eth1" == "" ]
 		then
-			echo "eth1 not exist" | tee -a $logfile
+			log "eth1 not exist" | tee -a $logfile
 			exit
 		fi
 
@@ -62,10 +62,10 @@ else
 
 	while [ 1 != 2 ]
 	do
-		echo
-		echo "============================================================"
-		echo "		Ethernet : LAN0-TX, LAN1-RX "
-		echo "============================================================"
+		log
+		log "============================================================"
+		log "		Ethernet : LAN0-TX, LAN1-RX "
+		log "============================================================"
 		ip netns exec ns_client iperf3 -B "$eth1_addr" -s -i 10 --one-off &
 		sleep 2
 		ret=$(ip netns exec ns_server iperf3 -B "$eth0_addr" -c "$eth1_addr" -i 10 -t 10 --connect-timeout 3000 | tee -a $logfile | grep Done)
@@ -76,13 +76,13 @@ else
 			((passcount1+=1))
 			failconut1=0
 		fi
-		echo "============================================================"
-		echo "failcount1=$failcount1, failcount2=$failcount2, passcount1=$passcount1, passcount2=$passcount2"
-		echo
-		echo
-		echo "============================================================"
-		echo "		Ethernet : LAN0-RX, LAN1-TX "
-		echo "=========================================================== "
+		log "============================================================"
+		log "failcount1=$failcount1, failcount2=$failcount2, passcount1=$passcount1, passcount2=$passcount2"
+		log
+		log
+		log "============================================================"
+		log "		Ethernet : LAN0-RX, LAN1-TX "
+		log "=========================================================== "
 		ip netns exec ns_client iperf3 -B "$eth1_addr" -s -i 10 --one-off &
 		sleep 2
 		ret=$(ip netns exec ns_server iperf3 -B "$eth0_addr" -c "$eth1_addr" -i 10 -t 10 --connect-timeout 3000 -R | tee -a $logfile | grep Done)
@@ -93,10 +93,10 @@ else
 			((passcount2+=1))
 			failcount2=0
 		fi
-		echo "============================================================"
-		echo "failcount1=$failcount1, failcount2=$failcount2, passcount1=$passcount1, passcount2=$passcount2"
-		echo
-		echo
+		log "============================================================"
+		log "failcount1=$failcount1, failcount2=$failcount2, passcount1=$passcount1, passcount2=$passcount2"
+		log
+		log
 		sleep 3
 
 		if [ "$failcount1" -ge 6  ] || [ "$failcount2" -ge 6  ]
