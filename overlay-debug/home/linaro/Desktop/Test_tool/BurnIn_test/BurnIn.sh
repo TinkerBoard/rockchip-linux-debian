@@ -103,6 +103,7 @@ select_test_item()
 		echo "18. USB CC logic stress test: $DO_USBCC_TEST"
 		echo "19. Audio loopback stress test:: $DO_AUDIO_TEST"
 		echo "20. Audio amplifier stress test:: $DO_AUDIOAMP_TEST"
+		echo "21. LTE modem stress test:: $DO_MODEM_TEST"
 	else
                 echo " 9. UART loopback stress test: $DO_UART_TEST"
                 echo "10. UART1/UART2 RS232 stress test: $DO_UART_to_UART_TEST"
@@ -989,6 +990,10 @@ case $test_item in
         20)
                 info_view AUDIOAMP
                 audioamp_stress_test
+                ;;
+        21)
+                info_view MODEM
+                modem_stress_test
                 ;;
 
 	*)
