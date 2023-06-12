@@ -285,15 +285,15 @@ uart_stress_test()
 	sleep 1
 	if [ $1 == "ui" ]; then
 		#xterm -fg lightgray -bg black -e "$SCRIPTPATH/test/uart2_stress_test.sh $logfile2" &
-		/usr/bin/xfce4-terminal --command "$SCRIPTPATH/test/uart3_stress_test.sh $COM_3 $logfile3" --hold &
+		/usr/bin/xfce4-terminal --command "$SCRIPTPATH/test/com_port_stress_test.sh $COM_3 0 $logfile3" --hold &
 		sleep 1
-		/usr/bin/xfce4-terminal --command "$SCRIPTPATH/test/uart2_stress_test.sh $COM_2 $logfile2" --hold &
+		/usr/bin/xfce4-terminal --command "$SCRIPTPATH/test/com_port_stress_test.sh $COM_2 0 $logfile2" --hold &
 		sleep 1
-		$SCRIPTPATH/test/uart1_stress_test.sh $COM_1 $logfile1
+		$SCRIPTPATH/test/com_port_stress_test.sh $COM_1 0 $logfile1
 	else
-		$SCRIPTPATH/test/uart1_stress_test.sh $COM_1 $logfile1 > /dev/null 2>&1 &
-		$SCRIPTPATH/test/uart2_stress_test.sh $COM_2 $logfile2 > /dev/null 2>&1 &
-		$SCRIPTPATH/test/uart3_stress_test.sh $COM_3 $logfile3 > /dev/null 2>&1 &
+		$SCRIPTPATH/test/com_port_stress_test.sh $COM_1 0 $logfile1 > /dev/null 2>&1 &
+		$SCRIPTPATH/test/com_port_stress_test.sh $COM_2 0 $logfile2 > /dev/null 2>&1 &
+		$SCRIPTPATH/test/com_port_stress_test.sh $COM_3 0 $logfile3 > /dev/null 2>&1 &
 	fi
 }
 
