@@ -27,7 +27,6 @@ install_packages() {
 		ISP=rkisp
 		RGA=rga
 		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
-		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
         rk3328)
 		MALI=utgard-450
@@ -65,7 +64,6 @@ install_packages() {
     esac
 
     apt install -fy --allow-downgrades /libmali-*$MALI*-x11*.deb
-    apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
     apt install -fy --allow-downgrades /$RGA/*.deb
 }
 
