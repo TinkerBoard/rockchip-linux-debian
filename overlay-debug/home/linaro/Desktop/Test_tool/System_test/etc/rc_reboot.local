@@ -36,9 +36,6 @@ fi
 touch $HDMI_HOTPLUG_CONFIG
 touch $DP_HOTPLUG_CONFIG
 
-
-rk_wifi_init /dev/ttyS0
-
 # Generate the SSH keys if non-existent
 ssh-keygen -A
 
