@@ -77,7 +77,7 @@ if [ "$ID" -ne 0 ]; then
        find / -user $ID -exec chown -h 0:0 {} \;
 fi
 for u in \$(ls /home/); do
-	chown -h \$u:\$u /home/\$u
+	chown -h -R \$u:\$u /home/\$u
 done
 
 echo "deb http://mirrors.ustc.edu.cn/debian/ bullseye-backports main contrib non-free" >> /etc/apt/sources.list
