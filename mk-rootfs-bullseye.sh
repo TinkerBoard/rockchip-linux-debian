@@ -45,20 +45,20 @@ sudo tar -xpf linaro-bullseye-alip-*.tar.gz
 
 # packages folder
 sudo mkdir -p $TARGET_ROOTFS_DIR/packages
-sudo cp -rf packages/$ARCH/* $TARGET_ROOTFS_DIR/packages
+sudo cp -rpf packages/$ARCH/* $TARGET_ROOTFS_DIR/packages
 
 # overlay folder
-sudo cp -rf overlay/* $TARGET_ROOTFS_DIR/
+sudo cp -rpf overlay/* $TARGET_ROOTFS_DIR/
 
 # overlay-firmware folder
-sudo cp -rf overlay-firmware/* $TARGET_ROOTFS_DIR/
+sudo cp -rpf overlay-firmware/* $TARGET_ROOTFS_DIR/
 sudo mkdir -p $TARGET_ROOTFS_DIR/tmp_firmware
 sudo cp -rf overlay-firmware/usr/lib/firmware/* $TARGET_ROOTFS_DIR/tmp_firmware
 
 # overlay-debug folder
 # adb, video, camera  test file
 if [ "$VERSION" == "debug" ]; then
-	sudo cp -rf overlay-debug/* $TARGET_ROOTFS_DIR/
+	sudo cp -rpf overlay-debug/* $TARGET_ROOTFS_DIR/
         sudo rm -rf $TARGET_ROOTFS_DIR/home/linaro/Desktop/Test_tool
         sudo cp -arp overlay-debug/home/linaro/Desktop/Test_tool $TARGET_ROOTFS_DIR/home/linaro/Desktop/
 	# adb
@@ -72,7 +72,7 @@ fi
 # overlay-debug and overlay-factory folder
 # adb, video, camera  test file
 if [ "$VERSION" == "factory" ]; then
-        sudo cp -rf overlay-debug/* $TARGET_ROOTFS_DIR/
+        sudo cp -rpf overlay-debug/* $TARGET_ROOTFS_DIR/
         sudo rm -rf $TARGET_ROOTFS_DIR/home/linaro/Desktop/Test_tool
         sudo cp -arp overlay-debug/home/linaro/Desktop/Test_tool $TARGET_ROOTFS_DIR/home/linaro/Desktop/
 
@@ -113,7 +113,17 @@ sudo cp -rf lib_modules/lib/modules $TARGET_ROOTFS_DIR/lib/
 
 sudo mount -o bind /dev $TARGET_ROOTFS_DIR/dev
 
+ID=$(stat --format %u $TARGET_ROOTFS_DIR)
+
 cat << EOF | sudo chroot $TARGET_ROOTFS_DIR
+
+# Fixup owners
+if [ "$ID" -ne 0 ]; then
+       find / -user $ID -exec chown -h 0:0 {} \;
+fi
+for u in \$(ls /home/); do
+	chown -h -R \$u:\$u /home/\$u
+done
 
 echo "deb http://mirrors.ustc.edu.cn/debian/ bullseye-backports main contrib non-free" >> /etc/apt/sources.list
 echo "deb-src http://mirrors.ustc.edu.cn/debian/ bullseye-backports main contrib non-free" >> /etc/apt/sources.list
@@ -125,6 +135,9 @@ chmod o+x /usr/lib/dbus-1.0/dbus-daemon-launch-helper
 chmod +x /etc/rc.local
 
 export APT_INSTALL="apt-get install -fy --allow-downgrades"
+
+# enter root username without password
+sed -i "s~\(^ExecStart=.*\)~# \1\nExecStart=-/bin/sh -c '/bin/bash -l </dev/%I >/dev/%I 2>\&1'~" /usr/lib/systemd/system/serial-getty@.service
 
 #---------------power management --------------
 \${APT_INSTALL} pm-utils bsdmainutils
@@ -367,7 +380,6 @@ cd -
 rm -rf /var/lib/apt/lists/*
 rm -rf /var/cache/
 rm -rf /packages/
-
 
 EOF
 

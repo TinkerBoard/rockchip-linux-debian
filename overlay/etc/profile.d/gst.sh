@@ -4,6 +4,9 @@ export GST_GL_PLATFORM=egl
 export GST_DEBUG_NO_COLOR=1
 export GST_INSPECT_NO_COLORS=1
 
+# Allow faking vp8enc, for cheese
+export GST_MPP_VP8ENC_FAKE_VP8ENC=1
+
 # Skip vstride aligning, which is not required when using RKVENC.
 # export GST_MPP_ENC_UNALIGNED_VSTRIDE=1
 
@@ -55,6 +58,8 @@ export GST_V4L2SRC_MAX_RESOLUTION=3840x2160
 # export AUTOVIDEOSINK_PREFERRED=waylandsink
 # export PLAYBIN2_PREFERRED_AUDIOSINK=alsasink
 # export PLAYBIN2_PREFERRED_VIDEOSINK=waylandsink
+export AUTOVIDEOSINK_PREFERRED=xvimagesink
+export PLAYBIN2_PREFERRED_VIDEOSINK=xvimagesink
 
 # Try RGA 2D accel in videoconvert, videoscale and videoflip.
 # NOTE: Might not success, and might behave different from the official plugin.

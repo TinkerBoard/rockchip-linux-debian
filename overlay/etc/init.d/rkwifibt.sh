@@ -14,28 +14,30 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 init_rkwifibt() {
     case $1 in
         rk3288)
-	    rk_wifi_init /dev/ttyS0
+	    rk_wifibt_init /dev/ttyS0
             ;;
         rk3399|rk3399pro)
-	    rk_wifi_init /dev/ttyS0
+	    rk_wifibt_init /dev/ttyS0
             ;;
         rk3328)
-	    rk_wifi_init /dev/ttyS0
+	    rk_wifibt_init /dev/ttyS0
             ;;
         rk3326|px30)
-	    rk_wifi_init /dev/ttyS1
+	    rk_wifibt_init /dev/ttyS1
             ;;
         rk3128|rk3036)
-	    rk_wifi_init /dev/ttyS0
+	    rk_wifibt_init /dev/ttyS0
+            ;;
+        rk3562)
+	    rk_wifibt_init /dev/ttyS1
             ;;
         rk3566)
-	    rk_wifi_init /dev/ttyS1
+	    rk_wifibt_init /dev/ttyS1
             ;;
         rk3568)
-
             ;;
         rk3588|rk3588s)
-	    rk_wifi_init /dev/ttyS8
+	    rk_wifibt_init /dev/ttyS8
             ;;
     esac
 }
@@ -57,6 +59,8 @@ elif [[ $COMPATIBLE =~ "px30" ]]; then
     CHIPNAME="px30"
 elif [[ $COMPATIBLE =~ "rk3128" ]]; then
     CHIPNAME="rk3128"
+elif [[ $COMPATIBLE =~ "rk3562" ]]; then
+    CHIPNAME="rk3562"
 elif [[ $COMPATIBLE =~ "rk3566" ]]; then
     CHIPNAME="rk3566"
 elif [[ $COMPATIBLE =~ "rk3568" ]]; then

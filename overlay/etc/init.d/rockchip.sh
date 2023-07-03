@@ -28,14 +28,14 @@ install_packages() {
 		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
 		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
-        rk3328)
+        rk3328|rk3528)
 		MALI=utgard-450
 		ISP=rkisp
 		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
 		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
         rk3326|px30)
-		MALI=bifrost-g31-g2p0
+		MALI=bifrost-g31-g13p0
 		ISP=rkisp
 		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
 		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
@@ -47,23 +47,31 @@ install_packages() {
 		[ -e /usr/lib/arm-linux-gnueabihf/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
         rk3568|rk3566)
-		MALI=bifrost-g52-g2p0
+		MALI=bifrost-g52-g13p0
 		ISP=rkaiq_rk3568
 		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
-		[ -e /usr/lib/aarch64-linux-gnu/ ] && tar xvf /rknpu2-rk3568-*.tar -C /
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && tar xvf /rknpu2-*.tar -C /
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
+		;;
+        rk3562)
+		MALI=bifrost-g52-g13p0
+		ISP=rkaiq_rk3562
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && tar xvf /rknpu2-*.tar -C /
 		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
 		;;
         rk3588|rk3588s)
 		ISP=rkaiq_rk3588
-		MALI=valhall-g610-g6p0
-		[ -e /usr/lib/aarch64-linux-gnu/ ] && tar xvf /rknpu2-rk3588-*.tar -C /
+		MALI=valhall-g610-g13p0
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && tar xvf /rknpu2-*.tar -C /
 		[ -e /usr/lib/aarch64-linux-gnu/ ] && apt install -fy --allow-downgrades /camera_engine_$ISP*.deb
+		;;
+        *)
+        echo "This chip does not support gpu acceleration or not input!!!"
 		;;
     esac
 
     apt install -fy --allow-downgrades /libmali-*$MALI*-x11*.deb
 }
-
 
 function update_npu_fw() {
     /usr/bin/npu-image.sh
@@ -88,15 +96,24 @@ elif [[ $COMPATIBLE =~ "px30" ]]; then
     CHIPNAME="px30"
 elif [[ $COMPATIBLE =~ "rk3128" ]]; then
     CHIPNAME="rk3128"
+elif [[ $COMPATIBLE =~ "rk3562" ]]; then
+    CHIPNAME="rk3562"
 elif [[ $COMPATIBLE =~ "rk3566" ]]; then
     CHIPNAME="rk3566"
 elif [[ $COMPATIBLE =~ "rk3568" ]]; then
     CHIPNAME="rk3568"
 elif [[ $COMPATIBLE =~ "rk3588" ]]; then
     CHIPNAME="rk3588"
-
-else
+elif [[ $COMPATIBLE =~ "rk3036" ]]; then
     CHIPNAME="rk3036"
+elif [[ $COMPATIBLE =~ "rk3308" ]]; then
+    CHIPNAME="rk3208"
+elif [[ $COMPATIBLE =~ "rv1126" ]]; then
+    CHIPNAME="rv1126"
+elif [[ $COMPATIBLE =~ "rv1109" ]]; then
+    CHIPNAME="rv1109"
+else
+    echo "please check if the Socs had been supported on rockchip linux!!!!!!!"
 fi
 COMPATIBLE=${COMPATIBLE#rockchip,}
 BOARDNAME=${COMPATIBLE%%rockchip,*}

@@ -12,7 +12,10 @@ if [ -e ${ROOTFSIMAGE} ]; then
 	rm ${ROOTFSIMAGE}
 fi
 
-sudo ./post-build.sh ${TARGET_ROOTFS_DIR}
+for script in ./post-build.sh ../device/rockchip/common/post-build.sh; do
+	[ -x $script ] || continue
+	sudo $script "$(realpath "$TARGET_ROOTFS_DIR")"
+done
 
 dd if=/dev/zero of=${ROOTFSIMAGE} bs=1M count=0 seek=${IMAGE_SIZE_MB}
 
