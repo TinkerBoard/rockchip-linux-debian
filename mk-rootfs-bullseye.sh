@@ -102,7 +102,7 @@ sudo cp -f /etc/resolv.conf $TARGET_ROOTFS_DIR/etc/
 #    xargs -n1 -i sudo cp {} $TARGET_ROOTFS_DIR/system/lib/modules/
 
 # ASUS: Change to copy all the kernel modules built from build.sh.
-#sudo cp -rf lib_modules/lib/modules $TARGET_ROOTFS_DIR/lib/
+sudo cp -rf lib_modules/lib/modules $TARGET_ROOTFS_DIR/lib/
 
 
 sudo mount -o bind /dev $TARGET_ROOTFS_DIR/dev
