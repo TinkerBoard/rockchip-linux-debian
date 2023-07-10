@@ -61,12 +61,6 @@ if [ "$VERSION" == "debug" ]; then
 	sudo cp -rpf overlay-debug/* $TARGET_ROOTFS_DIR/
         sudo rm -rf $TARGET_ROOTFS_DIR/home/linaro/Desktop/Test_tool
         sudo cp -arp overlay-debug/home/linaro/Desktop/Test_tool $TARGET_ROOTFS_DIR/home/linaro/Desktop/
-	# adb
-	if [[ "$ARCH" == "armhf" && "$VERSION" == "debug" ]]; then
-		sudo cp -f overlay-debug/usr/local/share/adb/adbd-32 $TARGET_ROOTFS_DIR/usr/bin/adbd
-	elif [[ "$ARCH" == "arm64" && "$VERSION" == "debug" ]]; then
-		sudo cp -f overlay-debug/usr/local/share/adb/adbd-64 $TARGET_ROOTFS_DIR/usr/bin/adbd
-	fi
 fi
 
 # overlay-debug and overlay-factory folder
@@ -382,9 +376,6 @@ rm -rf /var/cache/
 rm -rf /packages/
 
 EOF
-
-## hack the serial
-sudo cp -f overlay/usr/lib/systemd/system/serial-getty@.service $TARGET_ROOTFS_DIR/usr/lib/systemd/system/serial-getty@.service
 
 sudo cp -f overlay/etc/resolv.conf $TARGET_ROOTFS_DIR/etc/
 
