@@ -10,4 +10,4 @@ sysfs	/sys	sysfs	defaults	0 0
 configfs	/sys/kernel/config	configfs	defaults	0 0
 debugfs	/sys/kernel/debug	debugfs	defaults	0 0
 pstore	/sys/fs/pstore	pstore	defaults	0 0
-PARTLABEL=userdata	/userdata	ext4	defaults	0 2
+# PARTLABEL=userdata	/userdata	ext4	defaults	0 2
