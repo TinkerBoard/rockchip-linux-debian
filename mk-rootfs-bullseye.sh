@@ -73,12 +73,6 @@ if [ "$VERSION" == "factory" ]; then
         sudo cp -rf overlay-factory/* $TARGET_ROOTFS_DIR/
         sudo rm -rf $TARGET_ROOTFS_DIR/home/linaro/Desktop/factory_tools
         sudo cp -arp overlay-factory/home/linaro/Desktop/factory_tools $TARGET_ROOTFS_DIR/home/linaro/Desktop/
-        # adb
-        if [[ "$ARCH" == "armhf" && "$VERSION" == "factory" ]]; then
-                sudo cp -f overlay-debug/usr/local/share/adb/adbd-32 $TARGET_ROOTFS_DIR/usr/bin/adbd
-        elif [[ "$ARCH" == "arm64" && "$VERSION" == "factory" ]]; then
-                sudo cp -f overlay-debug/usr/local/share/adb/adbd-64 $TARGET_ROOTFS_DIR/usr/bin/adbd
-        fi
 fi
 
 
