@@ -180,7 +180,7 @@ fi
 echo dec > /dev/video-dec0
 echo enc > /dev/video-enc0
 chmod 660 /dev/video-*
-chown root.video /dev/video-*
+chown root:video /dev/video-*
 
 # The chromium using fixed pathes for libv4l2.so
 ln -rsf /usr/lib/*/libv4l2.so /usr/lib/
