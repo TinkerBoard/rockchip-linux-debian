@@ -1,0 +1,16 @@
+## BurnIn Test Tool SOP##
+1. sudo Burnin.sh $PRODUCT ,ex: TINKERBOARD_3N
+2. Enter test case number, and start test
+
+Log will print to terminal directly, also save to /var/log/burnin_test and a link folder /home/linaro/Desktop/burnin_test
+ex. cpu.txt,BurnIn.txt......
+
+
+
+# Tool set up
+1. iperf3 (using 3.11)
+   - Download source from http://software.es.net/iperf/news.html#iperf-3-11-released and place it taget device
+   - sudo ./configure
+   - sudo make
+   - sudo make install   
+   - replace files by overlay

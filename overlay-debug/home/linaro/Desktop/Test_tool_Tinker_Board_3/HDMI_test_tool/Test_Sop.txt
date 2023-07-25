@@ -1,0 +1,18 @@
+Display_Test :
+	步驟:
+	    1.連上網路，開啟左上角terminal，安裝瀏覽器套件
+		  $sudo apt-get update
+		  $sudo apt-get install -y chromium
+		2.將Camera&Display_test_tool資料夾複製到路徑:/home/mendel/
+		3.切換到執行script資料夾
+		  $cd /home/mendel/HDMI_test_tool/
+		4.run script as root
+		  $./HDMI_test.sh
+		5.stop chromium
+		  F11關掉全螢幕、手動關閉網頁
+		6.stop all 
+		  按Ctrl+Z鍵
+		 
+		Wifi連線方法:
+		https://coral.withgoogle.com/docs/dev-board/get-started/#connect-to-the-internet
+		  

@@ -59,20 +59,23 @@ sudo cp -rf overlay-firmware/usr/lib/firmware/* $TARGET_ROOTFS_DIR/tmp_firmware
 # adb, video, camera  test file
 if [ "$VERSION" == "debug" ]; then
 	sudo cp -rpf overlay-debug/* $TARGET_ROOTFS_DIR/
-        sudo rm -rf $TARGET_ROOTFS_DIR/home/linaro/Desktop/Test_tool
-        sudo cp -arp overlay-debug/home/linaro/Desktop/Test_tool $TARGET_ROOTFS_DIR/home/linaro/Desktop/
+        sudo rm -rf $TARGET_ROOTFS_DIR/home/linaro/Desktop/Test_tool*
+	mkdir -p $TARGET_ROOTFS_DIR/home/linaro/Desktop/Test_tool
+        sudo cp -arp overlay-debug/home/linaro/Desktop/Test_tool_$RK_PROJECT_NAME/* $TARGET_ROOTFS_DIR/home/linaro/Desktop/Test_tool/
 fi
 
 # overlay-debug and overlay-factory folder
 # adb, video, camera  test file
 if [ "$VERSION" == "factory" ]; then
         sudo cp -rpf overlay-debug/* $TARGET_ROOTFS_DIR/
-        sudo rm -rf $TARGET_ROOTFS_DIR/home/linaro/Desktop/Test_tool
-        sudo cp -arp overlay-debug/home/linaro/Desktop/Test_tool $TARGET_ROOTFS_DIR/home/linaro/Desktop/
+        sudo rm -rf $TARGET_ROOTFS_DIR/home/linaro/Desktop/Test_tool*
+        mkdir -p $TARGET_ROOTFS_DIR/home/linaro/Desktop/Test_tool
+        sudo cp -arp overlay-debug/home/linaro/Desktop/Test_tool_$RK_PROJECT_NAME/* $TARGET_ROOTFS_DIR/home/linaro/Desktop/Test_tool/
 
         sudo cp -rf overlay-factory/* $TARGET_ROOTFS_DIR/
-        sudo rm -rf $TARGET_ROOTFS_DIR/home/linaro/Desktop/factory_tools
-        sudo cp -arp overlay-factory/home/linaro/Desktop/factory_tools $TARGET_ROOTFS_DIR/home/linaro/Desktop/
+        sudo rm -rf $TARGET_ROOTFS_DIR/home/linaro/Desktop/factory_tools*
+        mkdir -p $TARGET_ROOTFS_DIR/home/linaro/Desktop/factory_tools
+        sudo cp -arp overlay-factory/home/linaro/Desktop/factory_tools_$RK_PROJECT_NAME/* $TARGET_ROOTFS_DIR/home/linaro/Desktop/factory_tools/
 fi
 
 

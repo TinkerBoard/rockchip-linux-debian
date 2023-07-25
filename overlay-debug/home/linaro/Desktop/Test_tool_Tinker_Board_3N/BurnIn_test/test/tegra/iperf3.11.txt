@@ -1,0 +1,15 @@
+asus@tegra-ubuntu:~$ ls -l /usr/local/lib/libiperf.*
+-rw-r--r-- 1 root root 1096340 Apr 26 05:38 /usr/local/lib/libiperf.a
+-rwxr-xr-x 1 root root     927 Apr 26 05:38 /usr/local/lib/libiperf.la
+lrwxrwxrwx 1 root root      17 Apr 26 05:38 /usr/local/lib/libiperf.so -> libiperf.so.0.0.0
+lrwxrwxrwx 1 root root      17 Apr 26 05:38 /usr/local/lib/libiperf.so.0 -> libiperf.so.0.0.0
+-rwxr-xr-x 1 root root  591296 Apr 26 05:38 /usr/local/lib/libiperf.so.0.0.0
+asus@tegra-ubuntu:~$ ls -l /usr/local/include/iperf_api.h 
+-rw-r--r-- 1 root root 21255 Apr 26 05:38 /usr/local/include/iperf_api.h
+asus@tegra-ubuntu:~$ ls -l /usr/local/bin/iperf3 
+-rwxr-xr-x 1 root root 35216 Apr 26 05:38 /usr/local/bin/iperf3
+asus@tegra-ubuntu:~$ ls -l /usr/local/share/man/man1/iperf3.1 
+-rw-r--r-- 1 root root 19041 Apr 26 05:38 /usr/local/share/man/man1/iperf3.1
+asus@tegra-ubuntu:~$ ls -l /usr/local/share/man/man3/libiperf.3
+-rw-r--r-- 1 root root 3784 Apr 26 05:38 /usr/local/share/man/man3/libiperf.3
+

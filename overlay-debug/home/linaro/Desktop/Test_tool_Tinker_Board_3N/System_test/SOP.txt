@@ -1,0 +1,14 @@
+## System Test Tool SOP##
+
+1. Shutdown test
+	sudo Desktop/Test_tool/System_test.sh TINKERBOARD_3N 1
+2. Reboot test 
+	sudo Desktop/Test_tool/System_test.sh TINKERBOARD_3N 2
+3. Suspend/Resume test
+	sudo Desktop/Test_tool/System_test.sh TINKERBOARD_3N 3
+
+If want to stop Shutdown and Reboot test
+	sudo Desktop/Test_tool/System_test.sh TINKERBOARD_3N 4
+
+
+Log: /var/log/
