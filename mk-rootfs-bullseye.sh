@@ -310,6 +310,9 @@ fi
 # Install the gedit packages
 apt-get install -y gedit
 
+#-------Tinker board 3: python-dev for development tools------
+apt-get install -y python-dev
+
 # Install the bash-completion for apt-get tab auto search
 apt-get install bash-completion
 
@@ -335,9 +338,6 @@ cp /etc/Powermanager/systemd-suspend.service  /lib/systemd/system/systemd-suspen
 
 #-------Tinker board 3: build-essential for development tools------
 apt-get install -y build-essential
-
-#-------Tinker board 3: python-dev for development tools------
-apt-get install -y python-dev
 
 #---------------ncurses library--------------
 \${APT_INSTALL} libncurses5-dev libncursesw5-dev
