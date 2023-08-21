@@ -347,7 +347,12 @@ gcc tinker-power-management.c -o tinker-power-management -lncursesw
 mv tinker-power-management /usr/bin
 cd /
 
-#------remove unused packages------------
+#------- Wiring PI -------------------
+cd /usr/local/share/WiringPI
+./build Rockchip
+cd /
+
+#------remk-rootfs-bullseye.shmove unused packages------------
 apt remove --purge -fy linux-firmware*
 
 #---------------Clean--------------
