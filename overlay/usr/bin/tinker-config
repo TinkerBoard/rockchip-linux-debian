@@ -821,6 +821,86 @@ EOF
 set +x
 }
 
+do_switch_com3() {
+  if [ "$INTERACTIVE" = True ]; then
+    FUN=$(whiptail --menu "Choose the COM3 protocol" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
+      "1" "RS232" \
+      "2" "RS422" \
+      "3" "RS485" \
+      3>&1 1>&2 2>&3)
+  else
+    FUN=$1
+    true
+  fi
+
+  if [ $? -eq 0 ]; then
+    #R_DIS
+    if [[ ! -d /sys/class/gpio/gpio6/ ]]; then
+        echo "6" > /sys/class/gpio/export
+        echo "out" > /sys/class/gpio/gpio6/direction
+    fi
+    #M0
+    if [[ ! -d /sys/class/gpio/gpio32/ ]]; then
+        echo "32" > /sys/class/gpio/export
+        echo "out" > /sys/class/gpio/gpio32/direction
+    fi
+    #M1
+    if [[ ! -d /sys/class/gpio/gpio33/ ]]; then
+        echo "33" > /sys/class/gpio/export
+        echo "out" > /sys/class/gpio/gpio33/direction
+    fi
+
+    if grep -q "uart3_rs422" $HWCONFIG ; then
+        sed -i $HWCONFIG -e "s/ uart3_rs422 //"
+        sed -i $HWCONFIG -e "s/ uart3_rs422//"
+        sed -i $HWCONFIG -e "s/uart3_rs422 //"
+        sed -i $HWCONFIG -e "s/uart3_rs422//"
+    elif grep -q "uart3_rs485" $HWCONFIG ; then
+        sed -i $HWCONFIG -e "s/ uart3_rs485 //"
+        sed -i $HWCONFIG -e "s/ uart3_rs485//"
+        sed -i $HWCONFIG -e "s/uart3_rs485 //"
+        sed -i $HWCONFIG -e "s/uart3_rs485//"
+    fi
+
+    case "$FUN" in
+      1*)
+        echo "1" > /sys/class/gpio/gpio6/value
+        echo "0" > /sys/class/gpio/gpio32/value
+        echo "0" > /sys/class/gpio/gpio33/value
+        whiptail --msgbox "Set COM3 protocol to RS232." 20 60 1
+        ;;
+      2*)
+        echo "0" > /sys/class/gpio/gpio6/value
+        echo "0" > /sys/class/gpio/gpio32/value
+        echo "1" > /sys/class/gpio/gpio33/value
+
+        OUTPUT=$(tail -n1 $HWCONFIG)
+        if [ "$OUTPUT" = "overlay=" ]; then
+            sed -i $HWCONFIG -e "\$s/\$/uart3_rs422/"
+        else
+            sed -i $HWCONFIG -e "\$s/\$/ uart3_rs422/"
+        fi
+        whiptail --msgbox "Set COM3 protocol to RS422." 20 60 1
+        ;;
+      3*)
+        echo "0" > /sys/class/gpio/gpio6/value
+        echo "1" > /sys/class/gpio/gpio32/value
+        echo "0" > /sys/class/gpio/gpio33/value
+
+        OUTPUT=$(tail -n1 $HWCONFIG)
+        if [ "$OUTPUT" = "overlay=" ]; then
+            sed -i $HWCONFIG -e "\$s/\$/uart3_rs485/"
+        else
+            sed -i $HWCONFIG -e "\$s/\$/ uart3_rs485/"
+        fi
+        whiptail --msgbox "Set COM3 protocol to RS485." 20 60 1
+        ;;
+      *) whiptail --msgbox "Programmer error, unrecognised option" 20 60 2
+        return 1 ;;
+    esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
+  fi
+}
+
 do_about() {
   whiptail --msgbox "\
 Asus Tinker Board Software Configuration Tool v$TOOL_VERSION \n\nThis tool provides a straight-forward way of doing initial configuration of the Asus Tinker Board. Although it can be run at any time, some of the options may have difficulties if you have heavily customised your installation.\
@@ -879,6 +959,7 @@ do_interface_menu() {
     "F4  UART" "Enable/Disable automatic loading of UART kernel module" \
     "F5  Audio" "Audio device setting" \
     "F6  VNC" "Enable/Disable graphical remote access to your Tinker using TightVNC" \
+    "F7  COM" "Switch COM3 protocol (232/422/485)" \
     3>&1 1>&2 2>&3)
   RET=$?
   if [ $RET -eq 1 ]; then
@@ -891,6 +972,7 @@ do_interface_menu() {
       F4\ *) do_uart ;;
       F5\ *) do_audio ;;
       F6\ *) do_vnc ;;
+      F7\ *) do_switch_com3 ;;
       *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
     esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
   fi
