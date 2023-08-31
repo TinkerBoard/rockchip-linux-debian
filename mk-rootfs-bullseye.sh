@@ -163,6 +163,7 @@ gstreamer1.0-plugins-base-apps qtmultimedia5-examples
 echo -e "\033[36m Install camera.................... \033[0m"
 \${APT_INSTALL} cheese v4l-utils
 \${APT_INSTALL} /packages/libv4l/*.deb
+\${APT_INSTALL} /packages/cheese/*.deb
 
 #---------Network----------
 apt-get install -y ethtool
