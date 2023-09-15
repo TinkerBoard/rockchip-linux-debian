@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version=4.11.20221129
+version=4.12.20230915
 
 COLOR_REST='\e[0m'
 COLOR_GREEN='\e[0;32m';
@@ -46,7 +46,7 @@ return_ext_disk_dev() {
 		if [ `realpath /sys/block/$i | grep fcc00000` ]; then
 			disk_type[$i]=USB-C
 		elif [ `realpath /sys/block/$i | grep fd800000` ]; then
-                        disk_type[$i]=USB-NOHUB
+			disk_type[$i]=USB-NOHUB
 		elif [ `realpath /sys/block/$i | grep fd000000` ]; then
 			disk_type[$i]=USB-A
 			if [ `cat /sys/block/$i/removable` == 0 ];then
@@ -76,7 +76,8 @@ select_test_item()
 	echo "============================================"
 	echo
 	echo "       $PROJECT Burn In Test v_$version"
-	echo "       Check LTE: $DO_LTE_CHECK Chheck GPS: $DO_GPS_CHECK"
+	echo "       Check LTE: $DO_LTE_CHECK"
+	echo "       Check GPS: $DO_GPS_CHECK"
 	echo "       Thermal logging: $DO_THERMAL_LOGGING"
 	echo "============================================"
 	initial_setting
@@ -105,15 +106,15 @@ select_test_item()
 		echo "20. Audio amplifier stress test:: $DO_AUDIOAMP_TEST"
 		echo "21. LTE modem stress test:: $DO_MODEM_TEST"
 	else
-                echo " 9. UART loopback stress test: $DO_UART_TEST"
-                echo "10. UART1/UART2 RS232 stress test: $DO_UART_to_UART_TEST"
-                echo "11. TPU stres test: $DO_TPU_TEST"
-                echo "12. CAN bus stress test: $DO_CAN_TEST"
-                echo "13. Audio stress test: $DO_AUDIO_TEST"
-                echo "14. MCU DIO stress test: $DO_MCU_DIO_TEST"
-                echo "15. MCU COM RS232 stress test: $DO_MCU_UART_TEST"
-                echo "16. GPS stress test: $DO_GPS_TEST"
-                echo "17. AEM Ethernet test : $DO_AEM_ETHERNET_TEST"
+		echo " 9. UART loopback stress test: $DO_UART_TEST"
+		echo "10. UART1/UART2 RS232 stress test: $DO_UART_to_UART_TEST"
+		echo "11. TPU stres test: $DO_TPU_TEST"
+		echo "12. CAN bus stress test: $DO_CAN_TEST"
+		echo "13. Audio stress test: $DO_AUDIO_TEST"
+		echo "14. MCU DIO stress test: $DO_MCU_DIO_TEST"
+		echo "15. MCU COM RS232 stress test: $DO_MCU_UART_TEST"
+		echo "16. GPS stress test: $DO_GPS_TEST"
+		echo "17. AEM Ethernet test : $DO_AEM_ETHERNET_TEST"
 	fi
 	read -p "Select test case: " test_item
 }
@@ -169,8 +170,8 @@ gpu_test()
 		killall glmark2-es2-wayland > /dev/null 2>&1
 	elif [ $SOC_TYPE == "tegra" ]; then
 		killall glmark2 > /dev/null 2>&1
-	fi 
-    	bash $SCRIPTPATH/test/gpu_stress.sh $SOC_TYPE $GPU_TEST_NUM
+	fi
+		bash $SCRIPTPATH/test/gpu_stress.sh $SOC_TYPE $GPU_TEST_NUM
 }
 
 ddr_test()
@@ -225,8 +226,8 @@ network_stress_test()
 		sleep 5
 		$SCRIPTPATH/test/$SOC_TYPE/check_network.sh $logfile &
 	else
-                sleep 10
-                $SCRIPTPATH/test/check_network.sh $logfile &
+		sleep 10
+		$SCRIPTPATH/test/check_network.sh $logfile &
 	fi
 }
 
@@ -249,28 +250,28 @@ wifi_stress_test()
 
 bluetooth_stress_test()
 {
-        logfile=$LOG_PATH/bluetooth.txt
-        killall bluetooth_stress_test.sh > /dev/null 2>&1
-        $SCRIPTPATH/test/bluetooth_stress_test.sh $SCRIPTPATH $logfile $SOC_TYPE
+	logfile=$LOG_PATH/bluetooth.txt
+	killall bluetooth_stress_test.sh > /dev/null 2>&1
+	$SCRIPTPATH/test/bluetooth_stress_test.sh $SCRIPTPATH $logfile $SOC_TYPE
 }
 
 led_test()
 {
-        killall led_test.sh > /dev/null 2>&1
-        $SCRIPTPATH/test/rockchip/led_test.sh 1 1
+	killall led_test.sh > /dev/null 2>&1
+	$SCRIPTPATH/test/rockchip/led_test.sh 1 1
 }
 
 led_disable()
 {
-        killall led_test.sh > /dev/null 2>&1
-        $SCRIPTPATH/test/rockchip/led_test.sh 0 0
+	killall led_test.sh > /dev/null 2>&1
+	$SCRIPTPATH/test/rockchip/led_test.sh 0 0
 }
 
 usbcc_stress_test()
 {
-        logfile=$LOG_PATH/usbcc.txt
-        killall cc_i2c_stress_test.sh > /dev/null 2>&1
-        $SCRIPTPATH/test/cc_i2c_stress_test.sh $logfile
+	logfile=$LOG_PATH/usbcc.txt
+	killall cc_i2c_stress_test.sh > /dev/null 2>&1
+	$SCRIPTPATH/test/cc_i2c_stress_test.sh $logfile
 }
 
 uart_stress_test()
@@ -324,9 +325,9 @@ audio_stress_test()
 
 audioamp_stress_test()
 {
-        logfile=$LOG_PATH/audio_amplifier_test.txt
-        killall audio_amplifier_test.sh > /dev/null 2>&1
-        $SCRIPTPATH/test/audio/audio_amplifier_test.sh $logfile
+	logfile=$LOG_PATH/audio_amplifier_test.txt
+	killall audio_amplifier_test.sh > /dev/null 2>&1
+	$SCRIPTPATH/test/audio/audio_amplifier_test.sh $logfile
 }
 
 mcu_dio_stress_test()
@@ -381,15 +382,15 @@ modem_stress_test()
 
 sim_stress_test()
 {
-        logfile=$LOG_PATH/sim.txt
-        killall sim_stress_test.sh > /dev/null 2>&1
-        $SCRIPTPATH/test/sim_stress_test.sh $logfile
+	logfile=$LOG_PATH/sim.txt
+	killall sim_stress_test.sh > /dev/null 2>&1
+	$SCRIPTPATH/test/sim_stress_test.sh $logfile
 }
 
 gps_stress_test(){
-    #logfile=$LOG_PATH/gps.txt
-    killall gpstest > /dev/null 2>&1
-    sudo gnome-terminal --geometry 80x45+1200+500 --title="GPS" -e "$SCRIPTPATH/../GPS_test/gpstest /dev/ttyUSB1 quectel info" > /dev/null 2>&1 &
+	#logfile=$LOG_PATH/gps.txt
+	killall gpstest > /dev/null 2>&1
+	sudo gnome-terminal --geometry 80x45+1200+500 --title="GPS" -e "$SCRIPTPATH/../GPS_test/gpstest /dev/ttyUSB1 quectel info" > /dev/null 2>&1 &
 }
 
 lt9211_stress_test()
@@ -496,7 +497,7 @@ check_wifi()
 
 check_SSD()
 {
-    echo "check SSD"
+	echo "check SSD"
 }
 
 check_lte()
@@ -543,7 +544,7 @@ check_wifi_setting()
 	results=` sudo nmcli d wifi connect ${AP_NAME} password ${AP_PW} | awk '{print $3 " "}'`
 	if [ $results == "successfully" ]; then
 		echo "       check_wifi_setting: $results"
-	else 
+	else
 		echo "       check_wifi_setting: fail"
 		exit
 	fi
@@ -551,9 +552,9 @@ check_wifi_setting()
 
 check_usbhub()
 {
-        logfile=$LOG_PATH/usbhub.txt
-        killall check_usb_hub.sh > /dev/null 2>&1
-        $SCRIPTPATH/test/check_usb_hub.sh $logfile
+	logfile=$LOG_PATH/usbhub.txt
+	killall check_usb2_hub.sh > /dev/null 2>&1
+	$SCRIPTPATH/test/check_usb2_hub.sh $logfile
 }
 
 initial_setting()
@@ -566,19 +567,19 @@ initial_setting()
 		fi
 		if [ "$SOC_TYPE" == "tegra" ]; then
 			if [[ $checkwlan0 ]]; then
-   				check_wifi_setting
+				check_wifi_setting
 			fi
 		fi
 	fi
 	if [[ "$DO_SSD_CHECK" == "Y" ]]; then
-   		check_SSD
+		check_SSD
 	fi
-	
+
 	sudo killall -9 ModemManager
 	sudo systemctl stop ModemManager
-	
+
 	if [[ $SOC_TYPE == "tegra" ]]; then
-		# force power mode 
+		# force power mode
 		sudo $CMD_SOC_SPECIAL_1
 		# show clock setting
 		sudo $CMD_SOC_SPECIAL_2
@@ -620,9 +621,9 @@ check_all_status()
 		check_status WIFI $WIFI
 	fi
 
-        if [ "$DO_BT_TEST" == "Y" ]; then
-                check_status BLUETOOTH $BLUETOOTH
-        fi
+	if [ "$DO_BT_TEST" == "Y" ]; then
+		check_status BLUETOOTH $BLUETOOTH
+	fi
 
 	if [ "$DO_UART_TEST" == "Y" ]; then
 		if [ $SOC_TYPE == "rockchip" ]; then
@@ -630,9 +631,9 @@ check_all_status()
 			check_status COM2 $UART2
 			check_status COM3 $UART3
 		else
-                        check_status UART1 $UART1
-                        check_status UART2 $UART2
-                        check_status UART3 $UART3
+			check_status UART1 $UART1
+			check_status UART2 $UART2
+			check_status UART3 $UART3
 		fi
 	fi
 	if [ "$DO_UART_to_UART_TEST" == "Y" ]; then
@@ -644,9 +645,9 @@ check_all_status()
 	if [ "$DO_AUDIO_TEST" == "Y" ]; then
 		check_status AUDIO $AUDIO
 	fi
-        if [ "$DO_AUDIOAMP_TEST" == "Y" ]; then
-                check_status AUDIOAMP $AUDIOAMP
-        fi
+	if [ "$DO_AUDIOAMP_TEST" == "Y" ]; then
+		check_status AUDIOAMP $AUDIOAMP
+	fi
 	if [ "$DO_MCU_DIO_TEST" == "Y" ]; then
 		check_status MCU_DIO $MCU_DIO
 	fi
@@ -683,18 +684,18 @@ check_all_status()
 	if [ "$DO_MODEM_TEST" == "Y" ]; then
 		check_status MODEM $MODEM
 	fi
-        if [ "$DO_SIM_TEST" == "Y" ]; then
-                check_status SIM $SIM
-        fi
+	if [ "$DO_SIM_TEST" == "Y" ]; then
+		check_status SIM $SIM
+	fi
 	if [ "$DO_LT9211_TEST" == "Y" ]; then
 		check_status LT9211 $LT9211
 	fi
-        if [ "$DO_USBHUB_CHECK" == "Y" ]; then
-                check_status USBHUB $USBHUB
-        fi
-        if [ "$DO_USBCC_TEST" == "Y" ]; then
-                check_status USBCC $USBCC
-        fi
+	if [ "$DO_USBHUB_CHECK" == "Y" ]; then
+		check_status USBHUB $USBHUB
+	fi
+	if [ "$DO_USBCC_TEST" == "Y" ]; then
+		check_status USBCC $USBCC
+	fi
 
 #	check_status UART1 $UART1
 #	check_status UART2 $UART2
@@ -709,7 +710,7 @@ kill_test(){
 		killall glmark2 > /dev/null 2>&1
 	elif [ $SOC_TYPE == "rockchip" ]; then
 		killall glmark2-es2 > /dev/null 2>&1
-	fi 
+	fi
 	killall memtester > /dev/null 2>&1
 	killall emmc_stress_test.sh > /dev/null 2>&1
 	killall sd_card_stress_test.sh > /dev/null 2>&1
@@ -740,12 +741,12 @@ kill_test(){
 	killall rtc_stress_test.sh > /dev/null 2>&1
 	killall led_test.sh > /dev/null 2>&1
 	led_disable
-	killall check_usb_hub.sh > /dev/null 2>&1
+	killall check_usb2_hub.sh > /dev/null 2>&1
 	killall cc_i2c_stress_test.sh > /dev/null 2>&1
-        killall modem_stress_test.sh > /dev/null 2>&1
+	killall modem_stress_test.sh > /dev/null 2>&1
 	killall sim_stress_test.sh > /dev/null 2>&1
-        killall audio_loopback_test.sh > /dev/null 2>&1
-        killall audio_test.sh > /dev/null 2>&1
+	killall audio_loopback_test.sh > /dev/null 2>&1
+	killall audio_test.sh > /dev/null 2>&1
 	killall audio_amplifier_test.sh > /dev/null 2>&1
 
 }
@@ -789,7 +790,7 @@ fi
 
 oemid=$(cat /proc/odmid)
 projectid=$(cat /proc/projectid)
- 
+
 if [ "$oemid" == "15" ] ; then
 	DO_ETHERNET_TEST=N
 	echo "Only one Ethernet port"
@@ -805,7 +806,7 @@ else
 fi
 
 if [ "$DO_GPS_CHECK" == "Y" ]; then
-   select_gps_module
+	select_gps_module
 fi
 
 if [ ! -z "$4" ]; then
@@ -821,17 +822,18 @@ sudo rm -r /var/log/burnin_test/*
 sudo rm -rf /home/linaro/Desktop/burnin_test
 start_time="$(date +'%Y%m%d_%H%M')"
 if [ ! -z "$sn" ]; then
-   LOG_NAME=$sn"_"$start_time
+	LOG_NAME=$sn"_"$start_time
 else
-   LOG_NAME=$PROJECT"_"$start_time
+	LOG_NAME=$PROJECT"_"$start_time
 fi
 LOG_PATH=/var/log/burnin_test/$LOG_NAME
 mkdir -p $LOG_PATH
 sudo ln -s /var/log/burnin_test /home/linaro/Desktop/burnin_test
 start_time="$(date +'%Y/%m/%d/%H:%M:%S')"
 start_sec=$(date +%s)
-log "SN = $sn"
-
+if [ ! -z "$sn" ]; then
+	log "SN = $sn"
+fi
 
 CPU="/test/stressapptest -s 864000 --pause_delay 3600 --pause_duration 1 -W --stop_on_errors"
 GPU="glmark2 --benchmark refract --run-forever --off-screen"
@@ -858,7 +860,7 @@ BLUETOOTH="/test/bluetooth_stress_test.sh"
 WIFI="/test/wifi_stress_test.sh"
 LT9211="/test/lt9211_i2c_test.sh"
 USBCC="/test/cc_i2c_stress_test.sh"
-USBHUB="/test/check_usb_hub.sh"
+USBHUB="/test/check_usb2_hub.sh"
 AUDIO="/test/audio/audio_loopback_test.sh"
 AUDIOAMP="/test/audio/audio_amplifier_test.sh"
 
@@ -905,7 +907,7 @@ case $test_item in
 	9)
 		if [ $SOC_TYPE == "rockchip" ]; then
 			info_view NPU
-                	npu_stress_test
+			npu_stress_test
 		else
 			info_view UART loopback
 			uart_stress_test ui
@@ -917,84 +919,84 @@ case $test_item in
 #		uart_stress_test ui
 		;;
 	11)
-                if [ $SOC_TYPE == "rockchip" ]; then
+		if [ $SOC_TYPE == "rockchip" ]; then
 			info_view RTC
-                        rtc_stress_test
+			rtc_stress_test
 		else
-                        info_view TPU
-                        tpu_stress_test
+			info_view TPU
+			tpu_stress_test
 		fi
 		;;
 	12)
-                if [ $SOC_TYPE == "rockchip" ]; then
+		if [ $SOC_TYPE == "rockchip" ]; then
 			info_view EEPROM
-                        eeprom_stress_test
+			eeprom_stress_test
 		else
-                        info_view CAN bus loopback
-                        can_stress_test
+			info_view CAN bus loopback
+			can_stress_test
 		fi
 		;;
 	13)
-                if [ $SOC_TYPE == "rockchip" ]; then
+		if [ $SOC_TYPE == "rockchip" ]; then
 			info_view SIM
-                        sim_stress_test
+			sim_stress_test
 		else
-                        info_view Audio recored/playback
-                        audio_stress_test -a
+			info_view Audio recored/playback
+			audio_stress_test -a
 		fi
 		;;
-	14)	
-                if [ $SOC_TYPE == "rockchip" ]; then
-                        info_view BLUETOOTH
-                        bluetooth_stress_test
-                else
-                        info_view MCU DIO
-                        mcu_dio_stress_test
-                fi
-                ;;
+	14)
+		if [ $SOC_TYPE == "rockchip" ]; then
+			info_view BLUETOOTH
+			bluetooth_stress_test
+		else
+			info_view MCU DIO
+			mcu_dio_stress_test
+		fi
+		;;
 	15)
-                if [ $SOC_TYPE == "rockchip" ]; then
-                        info_view LT9211
-                        lt9211_stress_test
-                else
-                        info_view MCU UART loopback
-                        mcu_uart_stress_test
-                fi
-                ;;		
+		if [ $SOC_TYPE == "rockchip" ]; then
+			info_view LT9211
+			lt9211_stress_test
+		else
+			info_view MCU UART loopback
+			mcu_uart_stress_test
+		fi
+		;;
 	16)
-                if [ $SOC_TYPE == "rockchip" ]; then
-                        info_view LED
-                        led_test
-                else
+		if [ $SOC_TYPE == "rockchip" ]; then
+			info_view LED
+			led_test
+		else
 			info_view GPS
 			gps_stress_test
-                fi
-                ;;	
-	17)
-                if [ $SOC_TYPE == "rockchip" ]; then
-                        info_view USBHUB 
-                        check_usbhub
-                else
-                        info_view AEM_Ethernet
-                        aem_network_stress_test
-                fi
-                ;;
-        18)
-                info_view USBCC
-                usbcc_stress_test
+		fi
 		;;
-        19)
-                info_view AUDIOLOOPBACK
-                audio_stress_test
-                ;;
-        20)
-                info_view AUDIOAMP
-                audioamp_stress_test
-                ;;
-        21)
-                info_view MODEM
-                modem_stress_test
-                ;;
+	17)
+		if [ $SOC_TYPE == "rockchip" ]; then
+			info_view USBHUB
+			check_usbhub
+		else
+			info_view AEM_Ethernet
+			aem_network_stress_test
+		fi
+		;;
+	18)
+		info_view USBCC
+		usbcc_stress_test
+		;;
+	19)
+		info_view AUDIOLOOPBACK
+		audio_stress_test
+		;;
+	20)
+		info_view AUDIOAMP
+		audioamp_stress_test
+		;;
+	21)
+		info_view MODEM
+		modem_stress_test
+		;;
 
 	*)
 		check_system_status=true
@@ -1023,11 +1025,11 @@ case $test_item in
 		if [ "$DO_WIFI_TEST" == "Y" ]; then
 			wifi_stress_test > /dev/null 2>&1 &
 		fi
-                if [ "$DO_BT_TEST" == "Y" ]; then
-                        bluetooth_stress_test > /dev/null 2>&1 &
-                fi
+		if [ "$DO_BT_TEST" == "Y" ]; then
+			bluetooth_stress_test > /dev/null 2>&1 &
+		fi
 		if [ "$DO_UART_TEST" == "Y" ]; then
-		    uart_stress_test bk
+			uart_stress_test bk
 		fi
 		if [ "$DO_TPU_TEST" == "Y" ]; then
 			tpu_stress_test > /dev/null 2>&1 &
@@ -1041,9 +1043,9 @@ case $test_item in
 		if [ "$DO_AUDIO_TEST" == "Y" ]; then
 			audio_stress_test  > /dev/null 2>&1 &
 		fi
-                if [ "$DO_AUDIOAMP_TEST" == "Y" ]; then
-                        audioamp_stress_test  > /dev/null 2>&1 &
-                fi
+		if [ "$DO_AUDIOAMP_TEST" == "Y" ]; then
+			audioamp_stress_test  > /dev/null 2>&1 &
+		fi
 		if [ "$DO_MCU_DIO_TEST" == "Y" ]; then
 			mcu_dio_stress_test > /dev/null 2>&1 &
 		fi
@@ -1068,22 +1070,22 @@ case $test_item in
 		if [ "$DO_MODEM_TEST" == "Y" ]; then
 			modem_stress_test > /dev/null 2>&1 &
 		fi
-                if [ "$DO_SIM_TEST" == "Y" ]; then
-                        sim_stress_test > /dev/null 2>&1 &
-                fi
+		if [ "$DO_SIM_TEST" == "Y" ]; then
+			sim_stress_test > /dev/null 2>&1 &
+		fi
 		if [ "$DO_LT9211_TEST" == "Y" ]; then
 			lt9211_stress_test > /dev/null 2>&1 &
 		fi
-                if [ "$DO_LED_TEST" == "Y" ]; then
-                        led_test > /dev/null 2>&1 &
-                fi
-                if [ "$DO_USBHUB_CHECK" == "Y" ]; then
-                        check_usbhub > /dev/null 2>&1 &
-                fi
-                if [ "$DO_USBCC_TEST" == "Y" ]; then
-                        usbcc_stress_test > /dev/null 2>&1 &
-                fi
-                ;;
+		if [ "$DO_LED_TEST" == "Y" ]; then
+			led_test > /dev/null 2>&1 &
+		fi
+		if [ "$DO_USBHUB_CHECK" == "Y" ]; then
+			check_usbhub > /dev/null 2>&1 &
+		fi
+		if [ "$DO_USBCC_TEST" == "Y" ]; then
+			usbcc_stress_test > /dev/null 2>&1 &
+		fi
+		;;
 esac
 
 sleep 2
@@ -1091,9 +1093,9 @@ sleep 2
 
 while true; do
 	end_sec=$(date +%s)
-    diff=$(( $end_sec - $start_sec ))
+	diff=$(( $end_sec - $start_sec ))
 
-    if [ $check_system_status == false ]; then
+	if [ $check_system_status == false ]; then
 		exit
 	fi
 	get_device_info
@@ -1108,7 +1110,7 @@ while true; do
 	log "GPU freq       = $gpu_freq MHz"
 	log "DDR freq       = $ddr_freq MHz"
 	log ""
-        log "$PROJECT test from $start_time, diff= $diff sec"
+	log "$PROJECT test from $start_time, diff= $diff sec"
 	log "Test Status"
 	check_all_status
 	log "============================================"
@@ -1116,7 +1118,7 @@ while true; do
 
 	if [ "$SOC_TYPE" == "imx8" ]; then
 		if dmesg -T | grep "xhci: HC died" > /dev/null
-       			then
+				then
 			#log "detect firmware hang"
 			log "detect usb controller hang"
 			ip -all netns delete
@@ -1150,17 +1152,17 @@ while true; do
 		exit
 	fi
 	if [ "$SOC_TYPE" = "tegra" ] || [ "$SOC_TYPE" = "imx8" ]; then
-                if [ $diff -ge $test_time ]; then
-                        check_all_status
-                        log "Time is up"
-                        log "PASS"
-                        sudo tar zcvf /home/asus/burn_in_log.tar.gz /var/log
-                        sleep 10
-                        sudo shutdown now
-                        kill_test
-                        #echo "PASS" > $top_path/logs/burn_in_result.txt
-                        exit 0
-                fi
-        fi
+		if [ $diff -ge $test_time ]; then
+			check_all_status
+			log "Time is up"
+			log "PASS"
+			sudo tar zcvf /home/asus/burn_in_log.tar.gz /var/log
+			sleep 10
+			sudo shutdown now
+			kill_test
+			#echo "PASS" > $top_path/logs/burn_in_result.txt
+			exit 0
+		fi
+	fi
 
 done

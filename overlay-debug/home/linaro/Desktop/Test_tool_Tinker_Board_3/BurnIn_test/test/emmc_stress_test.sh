@@ -25,7 +25,7 @@ get_mount_point()
 		#Check MMC device exist or not
 		mount_point=$(cat /proc/mounts | grep $mmcdev | awk '{print $2}')
 		mount_point=$(echo $mount_point | awk '{print $1}')
-		log" mount_point: $mount_point"
+		log "mount_point: $mount_point"
 
 		if [ -z $mount_point ]; then
 			mmc_blk=$(cat /proc/partitions | grep $mmcdev | awk '{print $4}')
@@ -39,12 +39,12 @@ get_mount_point()
 				exit
 			fi
 		fi
-		
+
 		if [ $mount_point == "/" ];then
 			tmpfile="/tmpfile"
 		else
 			tmpfile=$mount_point/tmpfile
-		fi 
+		fi
 	fi
 }
 
