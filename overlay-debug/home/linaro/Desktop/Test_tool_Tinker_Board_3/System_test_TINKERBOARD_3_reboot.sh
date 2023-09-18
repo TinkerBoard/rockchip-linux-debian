@@ -1,7 +1,9 @@
 #!/bin/bash
 
-version=2.9.20221129
+version=2.9.20230918
 
-cd ./System_test
-sudo ./System_test.sh TINKERBOARD_3 2
+SCRIPT=`realpath $0`
+SCRIPTPATH=`dirname $SCRIPT`/System_test
+
+sudo $SCRIPTPATH/System_test.sh TINKERBOARD_3 2
 

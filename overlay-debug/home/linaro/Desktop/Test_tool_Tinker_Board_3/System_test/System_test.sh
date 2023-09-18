@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version=2.9.20221129
+version=2.9.20230918
 
 select_test_item()
 {
@@ -84,7 +84,7 @@ case $test_item in
 		info_view Shutdown
 		sudo cp $SCRIPTPATH/shutdown_test.sh /etc/init.d/
 		sudo update-rc.d shutdown_test.sh defaults
-		sudo update-rc.d shutdown_test.sh enable
+		#sudo update-rc.d shutdown_test.sh enable
 		sudo bash -c "echo +20 > /sys/class/rtc/rtc0/wakealarm"
 		sudo echo $SOC_TYPE > /etc/soc_type.txt
 		SOC_TYPE_TEMP=`cat /etc/soc_type.txt`
@@ -97,21 +97,21 @@ case $test_item in
 		;;
 	2)
 		info_view Reboot
-		
+
 		echo | sudo tee /etc/temp_check_io
 		sudo cp $SCRIPTPATH/reboot_test.sh /etc/init.d/
 		sudo update-rc.d reboot_test.sh defaults
-		sudo update-rc.d reboot_test.sh enable
+		#sudo update-rc.d reboot_test.sh enable
 		sudo echo $SOC_TYPE > /etc/soc_type.txt
 		SOC_TYPE_TEMP=`cat /etc/soc_type.txt`
 		echo $SOC_TYPE_TEMP
-		
+
 		sync
 		sleep 5
 		if [ -f /etc/pci_device.txt ]; then
 			sudo rm /etc/pci_device.txt
 		fi
-		
+
 		#echo 1 | sudo tee /proc/sys/kernel/sysrq
 		#echo b | sudo tee /proc/sysrq-trigger
 		sudo systemctl reboot
@@ -125,7 +125,7 @@ case $test_item in
 				sudo rm -rf $fail_file
 			fi
 			log "trigger suspend"
-			if [ "$SOC_TYPE" == "tegra" ]; then 
+			if [ "$SOC_TYPE" == "tegra" ]; then
 				# Set the rtc 1 to wakeup system
 				sudo bash $SCRIPTPATH/suspend_test.sh 1
 			else
@@ -146,7 +146,7 @@ case $test_item in
 					echo $result >> /etc/suspend_times.txt
 					sudo dmesg > /var/log/dmesg
 					LOGFILE="${MODEL}_Suspend.tar"
-					if [ "$SOC_TYPE" == "rockchip" ]; then 
+					if [ "$SOC_TYPE" == "rockchip" ]; then
 						sudo tar -cvf /home/linaro/Desktop/$LOGFILE /var/log
 					else
 						sudo tar -cvf /home/asus/Desktop/$LOGFILE /var/log
@@ -155,9 +155,9 @@ case $test_item in
 					touch $fail_file
 					echo "scan_io.sh" >> $fail_file
 					exit
-				fi				
+				fi
 			fi
-			
+
 			log "resume to checkio and suspend_times = $times"
 			result=`$SCRIPTPATH/check_io.sh $CONFIGFILE | grep Fail`
 			if [ -n "$result" ]; then
@@ -166,11 +166,11 @@ case $test_item in
 				echo $result >> /etc/suspend_times.txt
 				sudo dmesg > /var/log/dmesg
 				LOGFILE="${MODEL}_Suspend.tar"
-				if [ "$SOC_TYPE" == "rockchip" ]; then 
+				if [ "$SOC_TYPE" == "rockchip" ]; then
 					sudo tar -cvf /home/linaro/Desktop/$LOGFILE /var/log
 				else
 					sudo tar -cvf /home/asus/Desktop/$LOGFILE /var/log
-				fi	
+				fi
 				sleep 1
 				touch $fail_file
 				echo "check_io.sh" >> $fail_file
@@ -185,7 +185,7 @@ case $test_item in
 		sudo bash -c "$SCRIPT $PROJECT 5"
 		sleep 5
 		LOGFILE="${MODEL}_Reboot_Shutdown.tar"
-#		if [ "$SOC_TYPE" == "rockchip" ]; then 
+#		if [ "$SOC_TYPE" == "rockchip" ]; then
 #			sudo tar cvf /home/linaro/Desktop/$LOGFILE /var/log
 #		else
 #			sudo tar cvf /home/$USER/Desktop/$LOGFILE /var/log
