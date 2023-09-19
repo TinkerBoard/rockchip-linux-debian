@@ -327,6 +327,28 @@ typedef enum {
 } mraa_tinkerboard_s_spi_t;
 
 /**
+* ASUS Tinker Board 3N compatible numbering enum
+*/
+typedef enum {
+    MRAA_TINKERBOARD_3N_I2C5 = 0,
+} mraa_tinkerboard_3n_i2c_t;
+
+typedef enum {
+    MRAA_TINKERBOARD_3N_SPI3 = 0,
+} mraa_tinkerboard_3n_spi_t;
+
+typedef enum {
+    MRAA_TINKERBOARD_3N_PWM12 = 12,
+    MRAA_TINKERBOARD_3N_PWM13 = 13,
+    MRAA_TINKERBOARD_3N_PWM14 = 14,
+    MRAA_TINKERBOARD_3N_PWM15 = 15
+} mraa_tinkerboard_3n_pwm_t;
+
+typedef enum {
+    MRAA_TINKERBOARD_3N_UART4 = 0,
+    MRAA_TINKERBOARD_3N_UART9 = 1
+} mraa_tinkerboard_3n_uart_t;
+/**
  * MRAA return codes
  */
 typedef enum {
