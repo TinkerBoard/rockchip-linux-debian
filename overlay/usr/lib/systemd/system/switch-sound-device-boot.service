@@ -2,7 +2,7 @@
 Description=Switch sound device after boot
 
 [Service]
-Type=idle
+Type=simple
 ExecStartPre=/bin/sleep 1
 ExecStart=/usr/local/bin/switch_sound_device_boot.sh
 ExecStop=/usr/local/bin/switch_sound_device_boot.sh
